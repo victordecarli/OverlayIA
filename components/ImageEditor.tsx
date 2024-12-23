@@ -3,63 +3,68 @@
 import { EditorTools } from './EditorTools';
 import { Canvas } from './Canvas';
 import { FloatingToolbar } from './FloatingToolbar';
-import { useState } from 'react';
 import { useEditor } from '@/hooks/useEditor';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
 
 export function ImageEditor() {
-  const [isToolsOpen, setIsToolsOpen] = useState(false);
-  const { image } = useEditor();
+  const { image, isProcessing } = useEditor();
+  const showTools = image.original && !isProcessing;
+  const [isEditorVisible, setIsEditorVisible] = useState(true);
 
   return (
     <div className="relative h-screen max-h-[calc(100vh-100px)]">
-      {/* Main Canvas Area */}
-      <div className="h-full lg:mr-[340px]">
-        <div className="relative h-full bg-black/20 rounded-lg overflow-hidden">
+      {/* Mobile Layout */}
+      <div className="lg:hidden flex flex-col h-full">
+        {/* Canvas Section */}
+        <div className={`relative bg-black/20 rounded-lg overflow-hidden transition-all duration-300 ${
+          showTools && isEditorVisible ? 'h-[65vh]' : 'h-full'
+        }`}>
           <Canvas />
-          <FloatingToolbar onOpenTools={() => setIsToolsOpen(true)} />
+          {showTools && (
+            <div className="absolute bottom-4 right-4 flex items-center gap-2">
+              <button
+                onClick={() => setIsEditorVisible(!isEditorVisible)}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-black/90 border border-white/10 backdrop-blur-sm"
+              >
+                {isEditorVisible ? (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                )}
+              </button>
+              <FloatingToolbar />
+            </div>
+          )}
         </div>
-      </div>
-
-      {/* Editor Panel */}
-      <div
-        className={`
-          fixed top-auto bottom-0 left-0 right-0 
-          lg:bottom-[20px] lg:right-[20px] lg:top-[84px] lg:left-auto
-          h-[80vh] lg:h-[calc(100vh-124px)] w-full lg:w-[320px]
-          bg-slate-900/95 backdrop-blur-md
-          transform transition-transform duration-300
-          ${isToolsOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}
-          border border-white/10 lg:rounded-xl z-50 overflow-hidden
-        `}
-      >
-        {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10">
-          <h2 className="text-white font-medium">Edit Text</h2>
-          <button
-            onClick={() => setIsToolsOpen(false)}
-            className="p-2 hover:bg-white/10 rounded-lg text-white"
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Empty State or Editor Tools */}
-        {!image.original ? (
-          <div className="h-full flex items-center justify-center p-6 text-center">
-            <div className="space-y-4">
-              <div className="flex justify-center">
-                <div className="text-2xl">✨</div>
-              </div>
-              <h3 className="text-lg font-medium text-white">Start Creating</h3>
-              <p className="text-sm text-gray-400 max-w-[240px]">
-                Upload an image to begin adding beautiful text overlays to your creation
-              </p>
+        
+        {/* Collapsible Editor Tools Section */}
+        {showTools && (
+          <div className={`
+            transform transition-all duration-300 bg-gradient-to-b from-slate-900/95 to-black/95 
+            border-t border-white/10 overflow-hidden
+            ${isEditorVisible ? 'h-[35vh]' : 'h-0'}
+          `}>
+            <div className="h-full overflow-y-auto no-scrollbar p-4">
+              <EditorTools />
             </div>
           </div>
-        ) : (
-          <div className="h-full overflow-hidden">
-            <div className="p-4 h-full overflow-y-auto no-scrollbar">
-              <EditorTools onClose={() => setIsToolsOpen(false)} />
+        )}
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:block h-full">
+        <div className="h-full lg:mr-[400px]">
+          <div className="relative h-full bg-black/20 rounded-lg overflow-hidden">
+            <Canvas />
+            {showTools && <FloatingToolbar />}
+          </div>
+        </div>
+
+        {showTools && (
+          <div className="fixed top-[84px] bottom-[20px] right-[20px] w-[380px] bg-gradient-to-b from-slate-900/95 to-black/95 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-xl">
+            <div className="h-full overflow-y-auto no-scrollbar p-4">
+              <EditorTools />
             </div>
           </div>
         )}

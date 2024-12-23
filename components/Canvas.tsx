@@ -47,30 +47,27 @@ export function Canvas() {
         <div 
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600/50 rounded-lg transition-colors hover:border-gray-400/50"
+          className="w-full h-full"
         >
-          <div className="text-center p-6">
-            <input
-              id="canvas-upload"
-              type="file"
-              onChange={onFileChange}
-              accept="image/jpeg,image/png,image/webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
-              className="hidden"
-            />
-            <label
-              htmlFor="canvas-upload"
-              className="flex flex-col items-center gap-4 cursor-pointer"
-            >
-              <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center">
+          <input
+            id="canvas-upload"
+            type="file"
+            onChange={onFileChange}
+            accept="image/jpeg,image/png,image.webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
+            className="hidden"
+          />
+          <label
+            htmlFor="canvas-upload"
+            className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600/50 rounded-lg transition-colors hover:border-gray-400/50 cursor-pointer"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gray-800 flex items-center justify-center">
                 <Upload className="w-8 h-8 text-gray-400" />
               </div>
-              <div className="space-y-2">
-                <p className="text-gray-300 text-lg font-medium">Drop your image here</p>
-                <p className="text-gray-500 text-sm">or click to upload</p>
-                <p className="text-gray-600 text-xs">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
-              </div>
-            </label>
-          </div>
+              <p className="mt-4 text-gray-500 text-sm">Drop image here or click to upload</p>
+              <p className="text-gray-600 text-xs">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
+            </div>
+          </label>
         </div>
       ) : (
         <div className="relative w-full h-full flex items-center justify-center">

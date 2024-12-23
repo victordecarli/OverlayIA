@@ -6,6 +6,7 @@ interface TextSet {
   id: number;
   text: string;
   fontFamily: string;
+  fontWeight: string;
   fontSize: number;
   color: string;
   position: { vertical: number; horizontal: number };
@@ -48,8 +49,9 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     textSets: [...state.textSets, {
       id: Date.now(),
       text: 'Edit text',
-      fontFamily: 'Inter',
-      fontSize: 32,
+      fontFamily: 'Inter', // Changed from var(--font-inter)
+      fontWeight: '400',
+      fontSize: 150,
       color: '#FFFFFF',
       position: { vertical: 50, horizontal: 50 },
       opacity: 1,
@@ -116,8 +118,11 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     const { image, textSets } = get();
     if (!image.background || !image.foreground) return;
 
-    // Load Inter font
-    await document.fonts.load('1rem "Inter"');
+    // Load all fonts used in text sets
+    const fontPromises = textSets.map(textSet => 
+      document.fonts.load(`${textSet.fontWeight} 1rem ${textSet.fontFamily}`)
+    );
+    await Promise.all(fontPromises);
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -141,12 +146,11 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     // Draw background
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-    // Draw text layers
+    // Draw text layers with font family and weight
     textSets.forEach(textSet => {
       ctx.save();
       
-      // Use exact font size from preview
-      ctx.font = `${textSet.fontSize}px Inter`;
+      ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px ${textSet.fontFamily}`;
       ctx.fillStyle = textSet.color;
       ctx.globalAlpha = textSet.opacity;
       ctx.textAlign = 'center';

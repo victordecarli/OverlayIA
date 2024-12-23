@@ -32,11 +32,19 @@ export function CanvasPreview() {
   }, [image.background, image.foreground]);
 
   useEffect(() => {
-    // Load Inter font
-    document.fonts.load('1rem "Inter"').then(() => {
+    // Load all fonts used in text sets
+    const loadFonts = async () => {
+      const fontPromises = textSets.map(textSet => {
+        // Create proper font string for loading
+        const fontString = `${textSet.fontWeight} ${textSet.fontSize}px ${textSet.fontFamily}`;
+        return document.fonts.load(fontString);
+      });
+      await Promise.all(fontPromises);
       render();
-    });
-  }, []);
+    };
+    
+    loadFonts();
+  }, [textSets]);
 
   const render = () => {
     const canvas = canvasRef.current;
@@ -53,11 +61,12 @@ export function CanvasPreview() {
     // Draw background
     ctx.drawImage(bgImageRef.current, 0, 0);
 
-    // Draw text layers
+    // Draw text layers with font family and weight
     textSets.forEach(textSet => {
       ctx.save();
       
-      ctx.font = `${textSet.fontSize}px Inter`;
+      // Create proper font string for rendering
+      ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px ${textSet.fontFamily}`;
       ctx.fillStyle = textSet.color;
       ctx.globalAlpha = textSet.opacity;
       ctx.textAlign = 'center';
