@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEditor } from '@/hooks/useEditor';
+import { Upload } from 'lucide-react'; // Add this import
 
 export function Canvas() {
   const { image, textSets, isProcessing, handleImageUpload } = useEditor();
@@ -12,23 +13,50 @@ export function Canvas() {
     }
   };
 
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      handleImageUpload(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       {!image.original ? (
-        <div className="text-center">
-          <input
-            id="canvas-upload"
-            type="file"
-            onChange={onFileChange}
-            accept="image/*"
-            className="hidden"
-          />
-          <label
-            htmlFor="canvas-upload"
-            className="px-6 py-3 bg-white hover:bg-gray-100 text-gray-900 rounded-lg cursor-pointer inline-block"
-          >
-            Upload Image
-          </label>
+        <div 
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600 rounded-lg transition-colors hover:border-gray-400"
+        >
+          <div className="text-center p-6">
+            <input
+              id="canvas-upload"
+              type="file"
+              onChange={onFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+            <label
+              htmlFor="canvas-upload"
+              className="flex flex-col items-center gap-4 cursor-pointer"
+            >
+              <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center">
+                <Upload className="w-8 h-8 text-gray-400" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-gray-300 text-lg font-medium">Drop your image here</p>
+                <p className="text-gray-500 text-sm">or click to upload</p>
+                <p className="text-gray-600 text-xs">Supports: JPG, PNG, WEBP</p>
+              </div>
+            </label>
+          </div>
         </div>
       ) : (
         <div className="relative w-full h-full">

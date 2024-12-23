@@ -4,14 +4,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-const galleryImages = [
-  { src: '/gallery/1.jpg', alt: 'Example 1' },
-  { src: '/gallery/2.jpg', alt: 'Example 2' },
-  { src: '/gallery/3.jpg', alt: 'Example 3' },
-  { src: '/gallery/4.jpg', alt: 'Example 4' },
-  { src: '/gallery/5.jpg', alt: 'Example 5' },
-  { src: '/gallery/6.jpg', alt: 'Example 6' },
-];
+// const galleryImages = [
+//   { src: '/gallery/1.jpg', alt: 'Example 1' },
+//   { src: '/gallery/2.jpg', alt: 'Example 2' },
+//   { src: '/gallery/3.jpg', alt: 'Example 3' },
+//   { src: '/gallery/4.jpg', alt: 'Example 4' },
+//   { src: '/gallery/5.jpg', alt: 'Example 5' },
+//   { src: '/gallery/6.jpg', alt: 'Example 6' },
+// ];
 
 export default function Home() {
   return (
@@ -37,7 +37,7 @@ export default function Home() {
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {galleryImages.map((image, index) => (
             <motion.div
               key={index}
@@ -54,7 +54,7 @@ export default function Home() {
               />
             </motion.div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

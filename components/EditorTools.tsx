@@ -11,26 +11,51 @@ export function EditorTools() {
     resetEditor, 
     downloadImage, 
     image,
-    textSets 
+    textSets,
+    isProcessing
   } = useEditor();
 
   return (
     <div className="flex flex-col h-full">
       {/* Fixed Controls - Always Visible */}
-      <div className="flex gap-3 mb-4">
-        <button
-          onClick={downloadImage}
-          className="flex-1 px-4 py-2 bg-white hover:bg-gray-100 text-gray-900 rounded-lg text-sm font-medium"
-        >
-          Download
-        </button>
-        <button
-          onClick={resetEditor}
-          className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium"
-        >
-          Reset
-        </button>
-      </div>
+      {image.original && (
+        <div className="flex gap-3 mb-4">
+          <button
+            onClick={downloadImage}
+            disabled={isProcessing}
+            className={`flex-1 px-4 py-2 ${
+              isProcessing
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-white hover:bg-gray-100'
+            } text-gray-900 rounded-lg text-sm font-medium`}
+          >
+            Download
+          </button>
+          <button
+            onClick={resetEditor}
+            disabled={isProcessing}
+            className={`flex-1 px-4 py-2 ${
+              isProcessing
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gray-600 hover:bg-gray-700'
+            } text-white rounded-lg text-sm font-medium`}
+          >
+            Reset
+          </button>
+        </div>
+      )}
+
+      {/* Message when no image is uploaded */}
+      {!image.original && (
+        <div className="text-center p-6">
+          <p className="text-gray-400 text-lg">
+            ✨ Upload an image to begin your creative journey!
+          </p>
+          <p className="text-gray-500 mt-2">
+            Transform your photos with custom text and shapes overlays
+          </p>
+        </div>
+      )}
 
       {/* Scrollable Text Controls */}
       <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
