@@ -176,6 +176,21 @@ export function EditorTools() {
 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
+                    <Label className="text-sm text-gray-400">Opacity</Label>
+                    <span className="text-sm text-gray-400">{Math.round(textSet.opacity * 100)}%</span>
+                  </div>
+                  <Slider
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={[textSet.opacity]}
+                    onValueChange={([value]) => updateTextSet(textSet.id, { opacity: value })}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center">
                     <Label className="text-sm text-gray-400">Position X</Label>
                     <span className="text-sm text-gray-400">{textSet.position.horizontal}%</span>
                   </div>

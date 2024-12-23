@@ -54,7 +54,7 @@ export function ImageEditor() {
 
       {/* Desktop Layout */}
       <div className="hidden lg:block h-full">
-        <div className="h-full lg:mr-[400px]">
+        <div className="h-full lg:mr-[450px]"> {/* Increased from 400px to 450px */}
           <div className="relative h-full bg-black/20 rounded-lg overflow-hidden">
             <Canvas />
             {showTools && <FloatingToolbar />}
@@ -62,7 +62,7 @@ export function ImageEditor() {
         </div>
 
         {showTools && (
-          <div className="fixed top-[84px] bottom-[20px] right-[20px] w-[380px] bg-gradient-to-b from-slate-900/95 to-black/95 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-xl">
+          <div className="fixed top-[84px] bottom-[20px] right-[20px] w-[430px] bg-gradient-to-b from-slate-900/95 to-black/95 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-xl"> {/* Increased from 380px to 430px */}
             <div className="h-full overflow-y-auto no-scrollbar p-4">
               <EditorTools />
             </div>

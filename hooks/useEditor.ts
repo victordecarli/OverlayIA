@@ -50,7 +50,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       id: Date.now(),
       text: 'Edit text',
       fontFamily: 'Inter', // Changed from var(--font-inter)
-      fontWeight: '400',
+      fontWeight: '500', // Changed from '400' to '700'
       fontSize: 150,
       color: '#FFFFFF',
       position: { vertical: 50, horizontal: 50 },
