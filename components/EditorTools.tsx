@@ -27,7 +27,7 @@ export function EditorTools() {
               isProcessing
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-white hover:bg-gray-100'
-            } text-gray-900 rounded-lg text-sm font-medium`}
+            } text-gray-900 rounded-lg text-xs md:text-sm font-medium`}
           >
             Download
           </button>
@@ -38,7 +38,7 @@ export function EditorTools() {
               isProcessing
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-gray-600 hover:bg-gray-700'
-            } text-white rounded-lg text-sm font-medium`}
+            } text-white rounded-lg text-xs md:text-sm font-medium`}
           >
             Reset
           </button>
@@ -48,10 +48,10 @@ export function EditorTools() {
       {/* Message when no image is uploaded */}
       {!image.original && (
         <div className="text-center p-6">
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-base md:text-lg">
             ✨ Upload an image to begin your creative journey!
           </p>
-          <p className="text-gray-500 mt-2">
+          <p className="text-gray-500 mt-2 text-sm md:text-base">
             Transform your photos with custom text and shapes overlays
           </p>
         </div>
@@ -63,7 +63,7 @@ export function EditorTools() {
           <div className="space-y-4">
             <button
               onClick={addTextSet}
-              className="w-full px-4 py-2 bg-white hover:bg-gray-100 text-gray-900 rounded-lg text-sm font-medium"
+              className="w-full px-4 py-2 bg-white hover:bg-gray-100 text-gray-900 rounded-lg text-xs md:text-sm font-medium"
             >
               Add New Text
             </button>
@@ -71,7 +71,7 @@ export function EditorTools() {
             {textSets.map((textSet) => (
               <div key={textSet.id} className="p-3 bg-white/5 rounded-lg space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-white">Text Layer</h3>
+                  <h3 className="text-base md:text-lg font-medium text-white">Text Layer</h3>
                   <div className="flex gap-2">
                     <button
                       onClick={() => duplicateTextSet(textSet.id)}
@@ -89,7 +89,7 @@ export function EditorTools() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm text-gray-400">Text Content</label>
+                  <label className="block text-xs md:text-sm text-gray-400">Text Content</label>
                   <input
                     type="text"
                     value={textSet.text}
@@ -99,7 +99,7 @@ export function EditorTools() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm text-gray-400">Font Size: {textSet.fontSize}px</label>
+                  <label className="block text-xs md:text-sm text-gray-400">Font Size: {textSet.fontSize}px</label>
                   <input
                     type="range"
                     min="12"
@@ -111,7 +111,7 @@ export function EditorTools() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm text-gray-400">Color</label>
+                  <label className="block text-xs md:text-sm text-gray-400">Color</label>
                   <input
                     type="color"
                     value={textSet.color}
@@ -121,7 +121,7 @@ export function EditorTools() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm text-gray-400">Opacity: {textSet.opacity}</label>
+                  <label className="block text-xs md:text-sm text-gray-400">Opacity: {textSet.opacity}</label>
                   <input
                     type="range"
                     min="0"
@@ -135,7 +135,7 @@ export function EditorTools() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <label className="block text-sm text-gray-400">Horizontal: {textSet.position.horizontal}%</label>
+                    <label className="block text-xs md:text-sm text-gray-400">Horizontal: {textSet.position.horizontal}%</label>
                     <input
                       type="range"
                       min="0"
@@ -148,7 +148,7 @@ export function EditorTools() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-sm text-gray-400">Y: {textSet.position.vertical}%</label>
+                    <label className="block text-xs md:text-sm text-gray-400">Y: {textSet.position.vertical}%</label>
                     <input
                       type="range"
                       min="0"
@@ -163,7 +163,7 @@ export function EditorTools() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm text-gray-400">Rotation: {textSet.rotation}°</label>
+                  <label className="block text-xs md:text-sm text-gray-400">Rotation: {textSet.rotation}°</label>
                   <input
                     type="range"
                     min="-180"
