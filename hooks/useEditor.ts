@@ -129,22 +129,22 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     textSets.forEach(textSet => {
       ctx.save();
       
-      // Set text properties here
-      ctx.font = `${textSet.fontSize * 2}px ${textSet.fontFamily}`; // Increased font size for better quality
+      ctx.font = `${textSet.fontSize * 2}px ${textSet.fontFamily}`;
       ctx.fillStyle = textSet.color;
       ctx.globalAlpha = textSet.opacity;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Calculate position
       const x = (canvas.width * textSet.position.horizontal) / 100;
       const y = (canvas.height * textSet.position.vertical) / 100;
 
-      // Apply transformations
       ctx.translate(x, y);
       ctx.rotate((textSet.rotation * Math.PI) / 180);
 
-      // Draw text
+      // Add text stroke for better visibility
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.lineWidth = Math.max(1, textSet.fontSize / 10);
+      ctx.strokeText(textSet.text, 0, 0);
       ctx.fillText(textSet.text, 0, 0);
       
       ctx.restore();
@@ -161,18 +161,24 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     
     ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
 
-    // Create download link
-    try {
-      const dataUrl = canvas.toDataURL('image/png');
+    // Convert to blob and download
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        console.error('Failed to generate image');
+        return;
+      }
+      
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download = 'text-behind-image.png';
-      link.href = dataUrl;
-      document.body.appendChild(link);
+      link.download = 'underlayX.png';
+      link.href = url;
       link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error('Error creating download:', error);
-    }
+      
+      // Clean up
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
+    }, 'image/png', 1.0);
   },
 
   resetEditor: () => set(() => ({
