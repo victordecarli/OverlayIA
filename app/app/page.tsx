@@ -223,7 +223,7 @@ export default function ImageEditor() {
                     <div className="flex flex-col items-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mb-2" />
                       <span className="text-white text-sm">
-                        {isUploading ? 'Uploading...' : 'Removing Background...'}
+                        {isUploading ? 'Uploading...' : 'Processing image...'}
                       </span>
                     </div>
                   </div>
