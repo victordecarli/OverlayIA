@@ -141,10 +141,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       ctx.translate(x, y);
       ctx.rotate((textSet.rotation * Math.PI) / 180);
 
-      // Add text stroke for better visibility
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.lineWidth = Math.max(1, textSet.fontSize / 10);
-      ctx.strokeText(textSet.text, 0, 0);
+      // Just draw the text with user selected color
       ctx.fillText(textSet.text, 0, 0);
       
       ctx.restore();
