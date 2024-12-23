@@ -184,10 +184,24 @@ export default function ImageEditor() {
     ctx.drawImage(bgCanvasRef.current, 0, 0);
     ctx.drawImage(fgCanvasRef.current, 0, 0);
 
-    const link = document.createElement('a');
-    link.download = 'text-behind-image.png';
-    link.href = finalCanvas.toDataURL('image/png');
-    link.click();
+    // Convert to blob and download
+    finalCanvas.toBlob((blob) => {
+      if (!blob) {
+        console.error('Failed to generate image');
+        return;
+      }
+      
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = 'underlayX.png';
+      link.href = url;
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
+    }, 'image/png');
   };
 
   return (
