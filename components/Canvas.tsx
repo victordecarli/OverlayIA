@@ -3,13 +3,22 @@
 import Image from 'next/image';
 import { useEditor } from '@/hooks/useEditor';
 import { Upload } from 'lucide-react'; // Add this import
+import { CanvasPreview } from './CanvasPreview';
 
 export function Canvas() {
-  const { image, textSets, isProcessing, handleImageUpload } = useEditor();
+  const { image, textSets, isProcessing, isConverting, handleImageUpload } = useEditor();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
-      handleImageUpload(e.target.files[0]);
+      const file = e.target.files[0];
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+      const fileType = file.type.toLowerCase();
+      
+      if (validTypes.includes(fileType) || file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+        handleImageUpload(file);
+      } else {
+        alert('Please upload a valid image file (JPG, PNG, WEBP, HEIC, or HEIF)');
+      }
     }
   };
 
@@ -17,8 +26,13 @@ export function Canvas() {
     e.preventDefault();
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+    const fileType = file.type.toLowerCase();
+
+    if (validTypes.includes(fileType) || file.name.toLowerCase().match(/\.(heic|heif)$/)) {
       handleImageUpload(file);
+    } else {
+      alert('Please upload a valid image file (JPG, PNG, WEBP, HEIC, or HEIF)');
     }
   };
 
@@ -40,7 +54,7 @@ export function Canvas() {
               id="canvas-upload"
               type="file"
               onChange={onFileChange}
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
               className="hidden"
             />
             <label
@@ -53,66 +67,27 @@ export function Canvas() {
               <div className="space-y-2">
                 <p className="text-gray-300 text-lg font-medium">Drop your image here</p>
                 <p className="text-gray-500 text-sm">or click to upload</p>
-                <p className="text-gray-600 text-xs">Supports: JPG, PNG, WEBP</p>
+                <p className="text-gray-600 text-xs">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
               </div>
             </label>
           </div>
         </div>
       ) : (
         <div className="relative w-full h-full">
-          {isProcessing && (
+          {(isProcessing || isConverting) && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
-                <p className="text-white text-sm">Processing image...</p>
+                <p className="text-white text-sm">
+                  {isConverting ? 'Converting image format...' : 'Processing image...'}
+                </p>
               </div>
             </div>
           )}
           
           {image.original ? (
             <div className="relative w-full h-full">
-              {/* Background Image */}
-              <div className="absolute inset-0">
-                <Image
-                  src={image.background!}
-                  alt="Background"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
-              
-              {/* Text Layers */}
-              {textSets.map((textSet) => (
-                <div
-                  key={textSet.id}
-                  className="absolute z-10"
-                  style={{
-                    top: `${textSet.position.vertical}%`,
-                    left: `${textSet.position.horizontal}%`,
-                    transform: `translate(-50%, -50%) rotate(${textSet.rotation}deg)`,
-                    fontSize: `${textSet.fontSize}px`,
-                    fontFamily: textSet.fontFamily,
-                    color: textSet.color,
-                    opacity: textSet.opacity,
-                  }}
-                >
-                  {textSet.text}
-                </div>
-              ))}
-              
-              {/* Foreground Image */}
-              {image.foreground && (
-                <div className="absolute inset-0 z-20">
-                  <Image
-                    src={image.foreground}
-                    alt="Foreground"
-                    fill
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-              )}
+              <CanvasPreview />
             </div>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">

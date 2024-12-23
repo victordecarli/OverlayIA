@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { removeBackground } from '@imgly/background-removal';
+import { convertHeicToJpeg } from '@/lib/image-utils';
 
 interface TextSet {
   id: number;
@@ -20,6 +21,7 @@ interface EditorState {
   };
   textSets: TextSet[];
   isProcessing: boolean;
+  isConverting: boolean; // Add this new state
 }
 
 interface EditorActions {
@@ -40,6 +42,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   },
   textSets: [],
   isProcessing: false,
+  isConverting: false,
 
   addTextSet: () => set((state) => ({
     textSets: [...state.textSets, {
@@ -74,10 +77,17 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
 
   handleImageUpload: async (file: File) => {
     if (!file) return;
-    set({ isProcessing: true });
     
     try {
+      // Check if conversion is needed
+      if (file.type === 'image/heic' || file.type === 'image/heif') {
+        set({ isConverting: true });
+        file = await convertHeicToJpeg(file);
+      }
+
+      set({ isProcessing: true });
       const originalUrl = URL.createObjectURL(file);
+      
       set(state => ({
         image: {
           ...state.image,
@@ -88,6 +98,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
 
       const blob = await removeBackground(originalUrl);
       const processedUrl = URL.createObjectURL(blob);
+      
       set(state => ({
         image: {
           ...state.image,
@@ -97,13 +108,16 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     } catch (error) {
       console.error('Error processing image:', error);
     } finally {
-      set({ isProcessing: false });
+      set({ isConverting: false, isProcessing: false });
     }
   },
 
   downloadImage: async () => {
     const { image, textSets } = get();
     if (!image.background || !image.foreground) return;
+
+    // Load Inter font
+    await document.fonts.load('1rem "Inter"');
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -118,9 +132,11 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       bgImg.src = image.background!;
     });
 
-    // Set canvas size to match image
-    canvas.width = bgImg.width;
-    canvas.height = bgImg.height;
+    // Set canvas size to match display size
+    const displayWidth = bgImg.width;
+    const displayHeight = bgImg.height;
+    canvas.width = displayWidth;
+    canvas.height = displayHeight;
 
     // Draw background
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
@@ -129,7 +145,8 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     textSets.forEach(textSet => {
       ctx.save();
       
-      ctx.font = `${textSet.fontSize * 2}px ${textSet.fontFamily}`;
+      // Use exact font size from preview
+      ctx.font = `${textSet.fontSize}px Inter`;
       ctx.fillStyle = textSet.color;
       ctx.globalAlpha = textSet.opacity;
       ctx.textAlign = 'center';
@@ -141,7 +158,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       ctx.translate(x, y);
       ctx.rotate((textSet.rotation * Math.PI) / 180);
 
-      // Just draw the text with user selected color
       ctx.fillText(textSet.text, 0, 0);
       
       ctx.restore();
@@ -165,9 +181,16 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         return;
       }
       
+      const now = new Date();
+      const timestamp = [
+        now.getDate().toString().padStart(2, '0'),
+        (now.getMonth() + 1).toString().padStart(2, '0'),
+        now.getSeconds().toString().padStart(2, '0')
+      ].join('_');
+      
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download = 'underlayX.png';
+      link.download = `UnderlayX_${timestamp}.png`;
       link.href = url;
       link.click();
       

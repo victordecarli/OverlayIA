@@ -103,7 +103,7 @@ export function EditorTools() {
                   <input
                     type="range"
                     min="12"
-                    max="200"
+                    max="1000"
                     value={textSet.fontSize}
                     onChange={(e) => updateTextSet(textSet.id, { fontSize: parseInt(e.target.value) })}
                     className="w-full"
