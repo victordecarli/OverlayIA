@@ -150,4 +150,11 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  /* Add these styles */
+  .prevent-save {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    pointer-events: none;
+  }
 }

@@ -83,7 +83,7 @@ export function Canvas() {
           )}
           
           {image.original ? (
-            <div className="relative w-full h-full">
+            <div className="relative w-full h-full prevent-save">
               <CanvasPreview />
             </div>
           ) : (

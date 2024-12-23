@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from 'react';
 import { useEditor } from '@/hooks/useEditor';
+import { SHAPES } from '@/constants/shapes';
 
 export function CanvasPreview() {
-  const { image, textSets } = useEditor();
+  const { image, textSets, shapeSets } = useEditor(); // Added shapeSets
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
   const fgImageRef = useRef<HTMLImageElement | null>(null);
@@ -61,6 +62,40 @@ export function CanvasPreview() {
     // Draw background
     ctx.drawImage(bgImageRef.current, 0, 0);
 
+    // Draw shapes
+    shapeSets.forEach(shapeSet => {
+      ctx.save();
+      
+      const x = (canvas.width * shapeSet.position.horizontal) / 100;
+      const y = (canvas.height * shapeSet.position.vertical) / 100;
+      const scale = shapeSet.scale / 100;
+
+      // Move to position and apply transformations
+      ctx.translate(x, y);
+      ctx.rotate((shapeSet.rotation * Math.PI) / 180);
+      ctx.scale(scale, scale);
+
+      // Set opacity
+      ctx.globalAlpha = shapeSet.opacity;
+
+      // Find shape path
+      const shape = SHAPES.find(s => s.value === shapeSet.type);
+      if (shape) {
+        const path = new Path2D(shape.path);
+        
+        if (shapeSet.isFilled) {
+          ctx.fillStyle = shapeSet.color;
+          ctx.fill(path);
+        } else {
+          ctx.strokeStyle = shapeSet.color;
+          ctx.lineWidth = shapeSet.strokeWidth || 2;
+          ctx.stroke(path);
+        }
+      }
+      
+      ctx.restore();
+    });
+
     // Draw text layers with font family and weight
     textSets.forEach(textSet => {
       ctx.save();
@@ -82,16 +117,33 @@ export function CanvasPreview() {
       ctx.restore();
     });
 
+    // Add watermark for non-premium users
+    // if (!isPremiumUser) { // Add this condition based on your premium user logic
+    //   ctx.save();
+    //   ctx.globalAlpha = 0.1;
+    //   ctx.font = '20px Inter';
+    //   ctx.fillStyle = '#ffffff';
+    //   ctx.textAlign = 'center';
+      
+    //   // Create diagonal watermark pattern
+    //   for (let i = 0; i < canvas.width; i += 200) {
+    //     for (let j = 0; j < canvas.height; j += 100) {
+    //       ctx.fillText('DEMO VERSION', i, j);
+    //     }
+    //   }
+    //   ctx.restore();
+    // }
+
     // Draw foreground
     if (fgImageRef.current) {
       ctx.drawImage(fgImageRef.current, 0, 0);
     }
   };
 
-  // Re-render on text changes
+  // Re-render on text or shape changes
   useEffect(() => {
     render();
-  }, [textSets]);
+  }, [textSets, shapeSets]); // Added shapeSets to dependencies
 
   return (
     <canvas

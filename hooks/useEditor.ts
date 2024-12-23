@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { removeBackground } from '@imgly/background-removal';
 import { convertHeicToJpeg } from '@/lib/image-utils';
+import { SHAPES } from '@/constants/shapes';
 
 interface TextSet {
   id: number;
@@ -14,6 +15,19 @@ interface TextSet {
   rotation: number;
 }
 
+// Add new interfaces for shapes
+interface ShapeSet {
+  id: number;
+  type: string;
+  color: string;
+  isFilled: boolean;
+  position: { vertical: number; horizontal: number };
+  scale: number;
+  opacity: number;
+  rotation: number;
+  strokeWidth: number;  // Add this new property
+}
+
 interface EditorState {
   image: {
     original: string | null;
@@ -23,6 +37,7 @@ interface EditorState {
   textSets: TextSet[];
   isProcessing: boolean;
   isConverting: boolean; // Add this new state
+  shapeSets: ShapeSet[];
 }
 
 interface EditorActions {
@@ -33,6 +48,10 @@ interface EditorActions {
   handleImageUpload: (file: File) => Promise<void>;
   downloadImage: () => Promise<void>;
   resetEditor: () => void;
+  addShapeSet: (type: string) => void;
+  updateShapeSet: (id: number, updates: Partial<ShapeSet>) => void;
+  removeShapeSet: (id: number) => void;
+  duplicateShapeSet: (id: number) => void;
 }
 
 export const useEditor = create<EditorState & EditorActions>((set, get) => ({
@@ -44,6 +63,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   textSets: [],
   isProcessing: false,
   isConverting: false,
+  shapeSets: [],
 
   addTextSet: () => set((state) => ({
     textSets: [...state.textSets, {
@@ -74,6 +94,38 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     if (!textSet) return state;
     return {
       textSets: [...state.textSets, { ...textSet, id: Date.now() }]
+    };
+  }),
+
+  addShapeSet: (type: string) => set((state) => ({
+    shapeSets: [...state.shapeSets, {
+      id: Date.now(),
+      type,
+      color: '#FFFFFF',
+      isFilled: false,
+      strokeWidth: 2,  // Add default stroke width
+      position: { vertical: 50, horizontal: 50 },
+      scale: 100,
+      opacity: 1,
+      rotation: 0
+    }]
+  })),
+
+  updateShapeSet: (id, updates) => set((state) => ({
+    shapeSets: state.shapeSets.map(set => 
+      set.id === id ? { ...set, ...updates } : set
+    )
+  })),
+
+  removeShapeSet: (id) => set((state) => ({
+    shapeSets: state.shapeSets.filter(set => set.id !== id)
+  })),
+
+  duplicateShapeSet: (id) => set((state) => {
+    const shapeSet = state.shapeSets.find(set => set.id === id);
+    if (!shapeSet) return state;
+    return {
+      shapeSets: [...state.shapeSets, { ...shapeSet, id: Date.now() }]
     };
   }),
 
@@ -114,8 +166,9 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     }
   },
 
+  // Update downloadImage function to include shapes
   downloadImage: async () => {
-    const { image, textSets } = get();
+    const { image, textSets, shapeSets } = get();
     if (!image.background || !image.foreground) return;
 
     // Load all fonts used in text sets
@@ -145,6 +198,32 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
 
     // Draw background
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+    // Draw shapes before text
+    shapeSets.forEach(shapeSet => {
+      ctx.save();
+      
+      const x = (canvas.width * shapeSet.position.horizontal) / 100;
+      const y = (canvas.height * shapeSet.position.vertical) / 100;
+      const scale = shapeSet.scale / 100;
+
+      ctx.translate(x, y);
+      ctx.rotate((shapeSet.rotation * Math.PI) / 180);
+      ctx.scale(scale, scale);
+
+      const path = new Path2D(SHAPES.find(s => s.value === shapeSet.type)?.path);
+      
+      if (shapeSet.isFilled) {
+        ctx.fillStyle = shapeSet.color;
+        ctx.fill(path);
+      } else {
+        ctx.strokeStyle = shapeSet.color;
+        ctx.lineWidth = shapeSet.strokeWidth;  // Use stroke width
+        ctx.stroke(path);
+      }
+      
+      ctx.restore();
+    });
 
     // Draw text layers with font family and weight
     textSets.forEach(textSet => {
@@ -211,6 +290,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       original: null,
       background: null,
       foreground: null
-    }
+    },
+    shapeSets: []
   }))
 }));

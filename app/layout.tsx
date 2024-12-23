@@ -1,5 +1,5 @@
 import './globals.css';
-import * as fonts from './fonts';
+import { inter } from './fonts';
 
 export const metadata = {
   title: 'UnderlayX - Text and Shapes behind Images',
@@ -12,20 +12,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`
-      ${fonts.inter.variable} 
-      ${fonts.roboto.variable}
-      ${fonts.poppins.variable}
-      ${fonts.montserrat.variable}
-      ${fonts.openSans.variable}
-      ${fonts.raleway.variable}
-      ${fonts.playfairDisplay.variable}
-      ${fonts.oswald.variable}
-      ${fonts.lato.variable}
-      ${fonts.notoSans.variable}
-      ${fonts.nunito.variable}
-      ${fonts.workSans.variable}
-    `}>
+    <html lang="en" className={inter.variable}>
       <body>{children}</body>
     </html>
   );

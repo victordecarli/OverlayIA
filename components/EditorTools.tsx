@@ -1,7 +1,7 @@
 'use client';
 
 import { useEditor } from '@/hooks/useEditor';
-import { Trash2, Copy, GripVertical, ChevronDown } from 'lucide-react';
+import { Trash2, Copy, GripVertical, ChevronDown, Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { FONT_OPTIONS, FONT_WEIGHTS } from '@/constants/fonts';
 import {
@@ -15,26 +15,12 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ShapeEditor } from './ShapeEditor';
+import { SHAPES } from '@/constants/shapes';
 
 export function EditorTools() {
-  const { textSets, updateTextSet, removeTextSet, duplicateTextSet, image } = useEditor();
-  const [openAccordions, setOpenAccordions] = useState<Record<number, boolean>>({});
-
-  // Auto-open new accordions
-  useEffect(() => {
-    const newOpenState: Record<number, boolean> = {};
-    textSets.forEach(set => {
-      newOpenState[set.id] = openAccordions[set.id] !== false; // Keep closed if explicitly closed
-    });
-    setOpenAccordions(newOpenState);
-  }, [textSets.length]);
-
-  const toggleAccordion = (id: number) => {
-    setOpenAccordions(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
-  };
+  const { image, addTextSet, addShapeSet } = useEditor();
 
   if (!image.original) {
     return (
@@ -53,6 +39,64 @@ export function EditorTools() {
       </div>
     );
   }
+
+  return (
+    <Tabs defaultValue="text" className="w-full">
+      <TabsList className="w-full mb-4 bg-white/5 border border-white/10">
+        <TabsTrigger value="text" className="data-[state=active]:bg-white/10 text-gray-400 data-[state=active]:text-white flex-1">Text Layers</TabsTrigger>
+        <TabsTrigger value="shapes" className="data-[state=active]:bg-white/10 text-gray-400 data-[state=active]:text-white flex-1">Shapes</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="text" className="mt-0">
+        <button
+          onClick={() => addTextSet()}
+          className="w-full mb-4 p-2 flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 rounded-lg text-white"
+        >
+          <Plus size={16} />
+          Add Text Layer
+        </button>
+        <TextEditor />
+      </TabsContent>
+      
+      <TabsContent value="shapes" className="mt-0">
+        <Select onValueChange={(value) => addShapeSet(value)}>
+          <SelectTrigger className="w-full mb-4 bg-white/5 hover:bg-white/10 border-white/10 text-white">
+            <SelectValue placeholder="Add Shape" />
+          </SelectTrigger>
+          <SelectContent>
+            {SHAPES.map((shape) => (
+              <SelectItem key={shape.value} value={shape.value}>
+                {shape.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <ShapeEditor />
+      </TabsContent>
+    </Tabs>
+  );
+}
+
+// Move existing text editor code to a new component
+function TextEditor() {
+  const { textSets, updateTextSet, removeTextSet, duplicateTextSet } = useEditor();
+  const [openAccordions, setOpenAccordions] = useState<Record<number, boolean>>({});
+
+  // Auto-open new accordions
+  useEffect(() => {
+    const newOpenState: Record<number, boolean> = {};
+    textSets.forEach(set => {
+      newOpenState[set.id] = openAccordions[set.id] !== false; // Keep closed if explicitly closed
+    });
+    setOpenAccordions(newOpenState);
+  }, [textSets.length]);
+
+  const toggleAccordion = (id: number) => {
+    setOpenAccordions(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
 
   return (
     <div className="space-y-3">
