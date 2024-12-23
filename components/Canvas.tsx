@@ -42,12 +42,12 @@ export function Canvas() {
   };
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div className="absolute inset-0 flex items-center justify-center p-4">
       {!image.original ? (
         <div 
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600 rounded-lg transition-colors hover:border-gray-400"
+          className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600/50 rounded-lg transition-colors hover:border-gray-400/50"
         >
           <div className="text-center p-6">
             <input
@@ -73,7 +73,7 @@ export function Canvas() {
           </div>
         </div>
       ) : (
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full flex items-center justify-center">
           {(isProcessing || isConverting) && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
               <div className="flex flex-col items-center gap-2">
