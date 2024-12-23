@@ -129,7 +129,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     textSets.forEach(textSet => {
       ctx.save();
       
-      // Set text properties
+      // Set text properties here
       ctx.font = `${textSet.fontSize * 2}px ${textSet.fontFamily}`; // Increased font size for better quality
       ctx.fillStyle = textSet.color;
       ctx.globalAlpha = textSet.opacity;
