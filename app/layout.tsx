@@ -1,6 +1,8 @@
 import './globals.css';
 import { inter } from './fonts';
 import { Toaster } from "@/components/ui/toaster"
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata = {
   title: 'UnderlayX AI - Text and Shapes behind Images',
@@ -17,6 +19,8 @@ export default function RootLayout({
       <body className="min-h-screen bg-[#0A0A0A]">
         {children}
         <Toaster />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
