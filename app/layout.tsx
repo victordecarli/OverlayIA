@@ -3,7 +3,7 @@ import { inter } from './fonts';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata = {
-  title: 'UnderlayX - Text and Shapes behind Images',
+  title: 'UnderlayX AI - Text and Shapes behind Images',
   description: 'Create unique designs by adding text and shapes behind your images',
 };
 

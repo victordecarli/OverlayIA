@@ -3,6 +3,13 @@ import { removeBackground } from '@imgly/background-removal';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 
+
+interface GlowEffect {
+  enabled: boolean;
+  color: string;
+  intensity: number;
+}
+
 interface TextSet {
   id: number;
   text: string;
@@ -13,7 +20,9 @@ interface TextSet {
   position: { vertical: number; horizontal: number };
   opacity: number;
   rotation: number;
+  glow?: GlowEffect;
 }
+
 
 // Add new interfaces for shapes
 interface ShapeSet {
@@ -26,6 +35,9 @@ interface ShapeSet {
   opacity: number;
   rotation: number;
   strokeWidth: number;  // Add this new property
+  glow?: GlowEffect;
+  width: number;
+  height: number;
 }
 
 interface EditorState {
@@ -109,6 +121,8 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       color: '#FFFFFF',
       isFilled: false,
       strokeWidth: 5,  // Add default stroke width
+      width: 1000,    // Default width
+      height: 1000,   // Default height
       position: { vertical: 50, horizontal: 50 },
       scale: 1000,
       opacity: 1,
@@ -200,41 +214,58 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       });
 
       // Set canvas size to match display size
-      const displayWidth = bgImg.width;
-      const displayHeight = bgImg.height;
-      canvas.width = displayWidth;
-      canvas.height = displayHeight;
+      canvas.width = bgImg.width;
+      canvas.height = bgImg.height;
 
       // Draw background
-      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bgImg, 0, 0);
 
-      // Draw shapes before text
+      // Draw shapes with updated logic
       shapeSets.forEach(shapeSet => {
         ctx.save();
         
         const x = (canvas.width * shapeSet.position.horizontal) / 100;
         const y = (canvas.height * shapeSet.position.vertical) / 100;
-        const scale = shapeSet.scale / 100;
-
+        
+        // Move to position and apply transformations
         ctx.translate(x, y);
         ctx.rotate((shapeSet.rotation * Math.PI) / 180);
-        ctx.scale(scale, scale);
-
-        const path = new Path2D(SHAPES.find(s => s.value === shapeSet.type)?.path);
         
-        if (shapeSet.isFilled) {
-          ctx.fillStyle = shapeSet.color;
-          ctx.fill(path);
-        } else {
-          ctx.strokeStyle = shapeSet.color;
-          ctx.lineWidth = shapeSet.strokeWidth;  // Use stroke width
-          ctx.stroke(path);
+        // Add glow effect if enabled
+        if (shapeSet.glow?.enabled) {
+          ctx.shadowColor = shapeSet.glow.color;
+          ctx.shadowBlur = shapeSet.glow.intensity;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+        }
+
+        // Scale based on width and height
+        const scaleX = shapeSet.width / 100;
+        const scaleY = shapeSet.height / 100;
+        ctx.scale(scaleX, scaleY);
+
+        // Set opacity
+        ctx.globalAlpha = shapeSet.opacity;
+
+        // Find shape path and draw
+        const shape = SHAPES.find(s => s.value === shapeSet.type);
+        if (shape) {
+          const path = new Path2D(shape.path);
+          
+          if (shapeSet.isFilled) {
+            ctx.fillStyle = shapeSet.color;
+            ctx.fill(path);
+          } else {
+            ctx.strokeStyle = shapeSet.color;
+            ctx.lineWidth = shapeSet.strokeWidth || 2;
+            ctx.stroke(path);
+          }
         }
         
         ctx.restore();
       });
 
-      // Draw text layers with font family and weight
+      // Draw text layers with updated glow effect
       textSets.forEach(textSet => {
         ctx.save();
         
@@ -250,12 +281,20 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ctx.translate(x, y);
         ctx.rotate((textSet.rotation * Math.PI) / 180);
 
+        // Add glow effect if enabled
+        if (textSet.glow?.enabled) {
+          ctx.shadowColor = textSet.glow.color;
+          ctx.shadowBlur = textSet.glow.intensity;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+        }
+
         ctx.fillText(textSet.text, 0, 0);
         
         ctx.restore();
       });
 
-      // Load and draw foreground image
+      // Draw foreground image
       const fgImg = new Image();
       fgImg.crossOrigin = "anonymous";
       await new Promise((resolve, reject) => {
@@ -285,7 +324,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.download = `UnderlayX_${timestamp}.png`;
+        link.download = `UnderlayXAI_${timestamp}.png`;
         link.href = url;
         link.click();
         

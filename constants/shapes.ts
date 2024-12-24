@@ -57,7 +57,7 @@ export const SHAPES = [
   {
     name: 'Cross',
     value: 'cross',
-    path: 'M35,0 V35 H0 V65 H35 V100 H65 V65 H100 V35 H65 V0 Z'
+    path: 'M0,0 L100,100 M100,0 L0,100'  // Changed path to create an X shape
   },
   {
     name: 'Arrow',

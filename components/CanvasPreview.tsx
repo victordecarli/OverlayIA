@@ -68,17 +68,28 @@ export function CanvasPreview() {
       
       const x = (canvas.width * shapeSet.position.horizontal) / 100;
       const y = (canvas.height * shapeSet.position.vertical) / 100;
-      const scale = shapeSet.scale / 100;
-
+      
       // Move to position and apply transformations
       ctx.translate(x, y);
       ctx.rotate((shapeSet.rotation * Math.PI) / 180);
-      ctx.scale(scale, scale);
+      
+      // Add glow effect if enabled
+      if (shapeSet.glow?.enabled) {
+        ctx.shadowColor = shapeSet.glow.color;
+        ctx.shadowBlur = shapeSet.glow.intensity;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+      }
+
+      // Scale based on width and height
+      const scaleX = shapeSet.width / 100;
+      const scaleY = shapeSet.height / 100;
+      ctx.scale(scaleX, scaleY);
 
       // Set opacity
       ctx.globalAlpha = shapeSet.opacity;
 
-      // Find shape path
+      // Find shape path and draw
       const shape = SHAPES.find(s => s.value === shapeSet.type);
       if (shape) {
         const path = new Path2D(shape.path);
@@ -112,6 +123,15 @@ export function CanvasPreview() {
 
       ctx.translate(x, y);
       ctx.rotate((textSet.rotation * Math.PI) / 180);
+
+      // Add glow effect if enabled
+      if (textSet.glow?.enabled && textSet.glow.color && textSet.glow.intensity > 0) {
+        ctx.shadowColor = textSet.glow.color;
+        ctx.shadowBlur = textSet.glow.intensity;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+      }
+
       ctx.fillText(textSet.text, 0, 0);
       
       ctx.restore();
