@@ -2,32 +2,21 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { AnimatedBackground } from '@/components/AnimatedBackground';
-
-const galleryImages = [
-  { src: '/images/move.png', alt: 'Example 1' },
-  { src: '/images/pose.png', alt: 'Example 2' },
-  { src: '/images/journey.png', alt: 'Example 3' },
-  { src: '/images/joy.png', alt: 'Example 4' },
-  { src: '/images/star.png', alt: 'Example 5' },
-  { src: '/images/car.png', alt: 'Example 6' },
-];
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useState, useRef } from 'react';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const scrollRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: scrollRef,
+    offset: ["start start", "end start"]
+  });
 
-  const handleClick = () => {
-    setIsLoading(true);
-    router.push('/custom-editor');
-  };
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
   return (
     <div className="min-h-screen">
-      <AnimatedBackground />
       <div className="container mx-auto px-4 py-16">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -57,25 +46,108 @@ export default function Home() {
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {galleryImages.map((image, index) => (
+        {/* Gallery Grid */}
+        <div className="flex flex-col gap-2 md:gap-6 max-w-7xl mx-auto">
+          {/* First Row */}
+          <motion.div 
+            style={{ y }}
+            className="flex flex-col md:flex-row gap-2 md:gap-6"
+          >
             <motion.div
-              key={index}
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="relative aspect-square rounded-lg overflow-hidden bg-gray-900"
+              className="w-full md:w-[70%] aspect-video md:h-[500px] relative overflow-hidden"
             >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-300"
-              />
+              <div className="absolute inset-0 rounded-xl overflow-hidden">
+                <Image
+                  src="/images/journey.png"
+                  alt="Landscape example"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 70vw"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-0 p-6">
+                    <h3 className="text-white text-2xl font-bold">Transform Landscapes</h3>
+                    <p className="text-gray-200">Add depth to your scenic shots</p>
+                  </div>
+                </div>
+              </div>
             </motion.div>
-          ))}
+            
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full md:w-[30%] aspect-[3/4] md:h-[500px] relative overflow-hidden"
+            >
+              <div className="absolute inset-0 rounded-xl overflow-hidden">
+                <Image
+                  src="/images/pose.png"
+                  alt="Portrait example"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 30vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-0 p-6">
+                    <h3 className="text-white text-xl font-bold">Perfect Portraits</h3>
+                    <p className="text-gray-200">Enhanced studio effects</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Second Row */}
+          <motion.div 
+            style={{ y }}
+            className="flex flex-col md:flex-row gap-2 md:gap-6"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full md:w-[70%] aspect-video md:h-[500px] relative overflow-hidden"
+            >
+              <div className="absolute inset-0 rounded-xl overflow-hidden">
+                <Image
+                  src="/images/move.png"
+                  alt="Journey example"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 70vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-0 p-6">
+                    <h3 className="text-white text-2xl font-bold">Epic Journeys</h3>
+                    <p className="text-gray-200">Create storytelling imagery</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full md:w-[30%] aspect-[3/4] md:h-[500px] relative overflow-hidden"
+            >
+              <div className="absolute inset-0 rounded-xl overflow-hidden">
+                <Image
+                  src="/images/star.png"
+                  alt="Star example"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 30vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-0 p-6">
+                    <h3 className="text-white text-xl font-bold">Stellar Effects</h3>
+                    <p className="text-gray-200">Add magical elements</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
-    </div>
-  );
-}
+    </div>  );}
