@@ -1,8 +1,9 @@
+'use client';
+
 import { create } from 'zustand';
 import { removeBackground } from '@imgly/background-removal';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
-
 
 interface GlowEffect {
   enabled: boolean;
@@ -23,8 +24,6 @@ interface TextSet {
   glow?: GlowEffect;
 }
 
-
-// Add new interfaces for shapes
 interface ShapeSet {
   id: number;
   type: string;
@@ -34,8 +33,19 @@ interface ShapeSet {
   scale: number;
   opacity: number;
   rotation: number;
-  strokeWidth: number;  // Add this new property
+  strokeWidth: number;
   glow?: GlowEffect;
+}
+
+interface ImageEnhancements {
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  fade: number;
+  exposure: number;
+  highlights: number;
+  shadows: number;
+  sharpness: number;
 }
 
 interface EditorState {
@@ -46,10 +56,12 @@ interface EditorState {
   };
   textSets: TextSet[];
   isProcessing: boolean;
-  isConverting: boolean; // Add this new state
+  isConverting: boolean;
   shapeSets: ShapeSet[];
   exportQuality: 'high' | 'medium' | 'low';
-  isDownloading: boolean; // Add this new state
+  isDownloading: boolean;
+  imageEnhancements: ImageEnhancements;
+  originalFileName: string | null;
 }
 
 interface EditorActions {
@@ -65,6 +77,7 @@ interface EditorActions {
   removeShapeSet: (id: number) => void;
   duplicateShapeSet: (id: number) => void;
   setExportQuality: (quality: 'high' | 'medium' | 'low') => void;
+  updateImageEnhancements: (enhancements: ImageEnhancements) => void;
 }
 
 export const useEditor = create<EditorState & EditorActions>((set, get) => ({
@@ -79,13 +92,24 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   shapeSets: [],
   exportQuality: 'high',
   isDownloading: false,
+  imageEnhancements: {
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+    fade: 0,
+    exposure: 0,
+    highlights: 0,
+    shadows: 0,
+    sharpness: 0,
+  },
+  originalFileName: null,
 
   addTextSet: () => set((state) => ({
     textSets: [...state.textSets, {
       id: Date.now(),
       text: 'edit text',
-      fontFamily: 'Inter', // Changed from var(--font-inter)
-      fontWeight: '800', // Changed from '400' to '700'
+      fontFamily: 'Inter',
+      fontWeight: '800',
       fontSize: 600,
       color: '#FFFFFF',
       position: { vertical: 50, horizontal: 50 },
@@ -118,9 +142,9 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       type,
       color: '#FFFFFF',
       isFilled: false,
-      strokeWidth: 5,  // Add default stroke width
+      strokeWidth: 5,
       position: { vertical: 50, horizontal: 50 },
-      scale: 2000, // Default scale
+      scale: 200, // Changed initial scale to be 50
       opacity: 1,
       rotation: 0
     }]
@@ -148,7 +172,10 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     if (!file) return;
     
     try {
-      // Check if conversion is needed
+      // Save original filename without extension
+      const fileName = file.name.replace(/\.[^/.]+$/, "");
+      set({ originalFileName: fileName });
+
       if (file.type === 'image/heic' || file.type === 'image/heif') {
         set({ isConverting: true });
         file = await convertHeicToJpeg(file);
@@ -183,14 +210,12 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     }
   },
 
-  // Update downloadImage function to include shapes
   downloadImage: async () => {
-    const { image, textSets, shapeSets, exportQuality } = get();
+    const { image, textSets, shapeSets, imageEnhancements, exportQuality, originalFileName } = get();
     if (!image.background || !image.foreground) return;
 
     set({ isDownloading: true });
     try {
-      // Load all fonts used in text sets
       const fontPromises = textSets.map(textSet => 
         document.fonts.load(`${textSet.fontWeight} 1rem ${textSet.fontFamily}`)
       );
@@ -200,7 +225,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Load and draw background image
       const bgImg = new Image();
       bgImg.crossOrigin = "anonymous";
       await new Promise((resolve, reject) => {
@@ -209,25 +233,32 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         bgImg.src = image.background!;
       });
 
-      // Set canvas size to match display size
       canvas.width = bgImg.width;
       canvas.height = bgImg.height;
 
-      // Draw background
+      ctx.filter = `
+        brightness(${imageEnhancements.brightness}%)
+        contrast(${imageEnhancements.contrast}%)
+        saturate(${imageEnhancements.saturation}%)
+        opacity(${100 - imageEnhancements.fade}%)
+      `;
+
       ctx.drawImage(bgImg, 0, 0);
 
-      // Draw shapes with updated logic
       shapeSets.forEach(shapeSet => {
         ctx.save();
         
         const x = (canvas.width * shapeSet.position.horizontal) / 100;
         const y = (canvas.height * shapeSet.position.vertical) / 100;
         
-        // Move to position and apply transformations
         ctx.translate(x, y);
         ctx.rotate((shapeSet.rotation * Math.PI) / 180);
-        
-        // Add glow effect if enabled
+
+        // Use the same scale calculation as CanvasPreview
+        const baseSize = Math.min(canvas.width, canvas.height);
+        const scale = (baseSize * (shapeSet.scale / 100)) / 1000;
+        ctx.scale(scale, scale);
+
         if (shapeSet.glow?.enabled) {
           ctx.shadowColor = shapeSet.glow.color;
           ctx.shadowBlur = shapeSet.glow.intensity;
@@ -235,15 +266,8 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
           ctx.shadowOffsetY = 0;
         }
 
-        // Scale based on width and height
-        // const scaleX = shapeSet.width / 100;
-        // const scaleY = shapeSet.height / 100;
-        // ctx.scale(scaleX, scaleY);
-
-        // Set opacity
         ctx.globalAlpha = shapeSet.opacity;
 
-        // Find shape path and draw
         const shape = SHAPES.find(s => s.value === shapeSet.type);
         if (shape) {
           const path = new Path2D(shape.path);
@@ -261,7 +285,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ctx.restore();
       });
 
-      // Draw text layers with updated glow effect
       textSets.forEach(textSet => {
         ctx.save();
         
@@ -277,7 +300,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ctx.translate(x, y);
         ctx.rotate((textSet.rotation * Math.PI) / 180);
 
-        // Add glow effect if enabled
         if (textSet.glow?.enabled) {
           ctx.shadowColor = textSet.glow.color;
           ctx.shadowBlur = textSet.glow.intensity;
@@ -290,7 +312,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ctx.restore();
       });
 
-      // Draw foreground image
       const fgImg = new Image();
       fgImg.crossOrigin = "anonymous";
       await new Promise((resolve, reject) => {
@@ -301,7 +322,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       
       ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
 
-      // Convert to blob and download
       const qualityValue = exportQuality === 'high' ? 1.0 : 
                           exportQuality === 'medium' ? 0.8 : 0.6;
 
@@ -312,6 +332,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         }
         
         const now = new Date();
+        const baseFileName = originalFileName || 'UnderlayXAI';
         const timestamp = [
           now.getDate().toString().padStart(2, '0'),
           (now.getMonth() + 1).toString().padStart(2, '0'),
@@ -320,11 +341,10 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.download = `UnderlayXAI_${timestamp}.png`;
+        link.download = `${baseFileName}_${timestamp}.png`;
         link.href = url;
         link.click();
         
-        // Clean up
         setTimeout(() => {
           URL.revokeObjectURL(url);
         }, 100);
@@ -345,5 +365,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       foreground: null
     } : state.image
   })),
-  setExportQuality: (quality) => set({ exportQuality: quality })
+  setExportQuality: (quality) => set({ exportQuality: quality }),
+  updateImageEnhancements: (enhancements) => set({ imageEnhancements: enhancements })
 }));

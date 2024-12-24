@@ -33,7 +33,7 @@ export function ImageEditor() {
   );
 
   return (
-    <div className="relative h-screen max-h-[calc(100vh-100px)]">
+    <div className="relative h-[calc(100vh-100px)]">
       {/* Mobile Layout */}
       <div className="lg:hidden flex flex-col h-full">
         <div className="flex flex-col h-[60vh]">
@@ -71,15 +71,15 @@ export function ImageEditor() {
       {/* Desktop Layout */}
       <div className="hidden lg:block h-full">
         <div className="h-full lg:mr-[500px]">
-          <div className="flex flex-col gap-4">
-            <div className="space-y-3">
-              <h2 className="text-white/80 font-medium">Preview Canvas</h2>
-              <div className="relative h-[calc(100vh-180px)] bg-black/20 rounded-xl border border-white/10 shadow-[0_0_25px_rgba(0,0,0,0.3)] overflow-hidden" onContextMenu={handleContextMenu}>
+          <div className="flex flex-col gap-4 h-full">
+            <div className="flex-1">
+              <h2 className="text-white/80 font-medium mb-3">Preview Canvas</h2>
+              <div className="relative h-[calc(100%-50px)] bg-black/20 rounded-xl border border-white/10 shadow-[0_0_25px_rgba(0,0,0,0.3)] overflow-hidden" onContextMenu={handleContextMenu}>
                 <Canvas />
               </div>
             </div>
             {showTools && (
-              <div className="flex gap-3">
+              <div className="flex gap-3 py-2">
                 <button
                   onClick={() => resetEditor(false)} // false to keep the image
                   disabled={isDownloading}
@@ -99,7 +99,7 @@ export function ImageEditor() {
               <h2 className="text-white/80 font-medium">Editing Tools</h2>
               <p className="text-sm text-white/50">Customize your image with shapes and text</p>
             </div>
-            <div className="h-[calc(100%-65px)] overflow-y-auto no-scrollbar p-4">
+            <div className="h-[calc(100%-65px)] overflow-y-auto no-scrollbar p-4 scroll-smooth">
               <EditorTools />
             </div>
           </div>
