@@ -17,16 +17,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8 md:py-6 md:h-screen md:flex md:flex-col">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-24"
+          className="text-center mb-8 md:mb-6"
         >
-          <h1 className="text-4xl md:text-7xl font-bold text-white mb-6">
-          UnderlayX AI
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+            UnderlayX AI
           </h1>
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-6">
             Create stunning visuals with text and shapes behind your images.
             Professional-grade effects for your creative projects.
           </p>
@@ -47,16 +47,16 @@ export default function Home() {
         </motion.div>
 
         {/* Gallery Grid */}
-        <div className="flex flex-col gap-2 md:gap-6 max-w-7xl mx-auto">
+        <div className="flex flex-col gap-2 md:gap-6 max-w-7xl mx-auto md:flex-grow">
           {/* First Row */}
           <motion.div 
             style={{ y }}
-            className="flex flex-col md:flex-row gap-2 md:gap-6"
+            className="flex flex-col md:flex-row gap-2 md:gap-6 md:h-[calc(100vh-280px)]"
           >
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              className="w-full md:w-[70%] aspect-video md:h-[500px] relative overflow-hidden"
+              className="w-full md:w-[70%] aspect-video md:h-full relative overflow-hidden"
             >
               <div className="absolute inset-0 rounded-xl overflow-hidden">
                 <Image
@@ -79,11 +79,11 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              className="w-full md:w-[30%] aspect-[3/4] md:h-[500px] relative overflow-hidden"
+              className="w-full md:w-[30%] aspect-[3/4] md:h-full relative overflow-hidden"
             >
               <div className="absolute inset-0 rounded-xl overflow-hidden">
                 <Image
-                  src="/images/pose.png"
+                  src="/images/star.png"
                   alt="Portrait example"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"
@@ -102,8 +102,31 @@ export default function Home() {
           {/* Second Row */}
           <motion.div 
             style={{ y }}
-            className="flex flex-col md:flex-row gap-2 md:gap-6"
+            className="flex flex-col md:flex-row gap-2 md:gap-6 md:h-[calc(100vh-280px)]"
           >
+
+          <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full md:w-[30%] aspect-[3/4] md:h-[500px] relative overflow-hidden"
+            >
+              <div className="absolute inset-0 rounded-xl overflow-hidden">
+                <Image
+                  src="/images/pose.png"
+                  alt="Star example"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 30vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-0 p-6">
+                    <h3 className="text-white text-xl font-bold">Stellar Effects</h3>
+                    <p className="text-gray-200">Add magical elements</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
@@ -126,28 +149,9 @@ export default function Home() {
               </div>
             </motion.div>
             
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full md:w-[30%] aspect-[3/4] md:h-[500px] relative overflow-hidden"
-            >
-              <div className="absolute inset-0 rounded-xl overflow-hidden">
-                <Image
-                  src="/images/star.png"
-                  alt="Star example"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-700"
-                  sizes="(max-width: 768px) 100vw, 30vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-0 p-6">
-                    <h3 className="text-white text-xl font-bold">Stellar Effects</h3>
-                    <p className="text-gray-200">Add magical elements</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </div>
-    </div>  );}
+    </div>
+  );
+}
