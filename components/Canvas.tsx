@@ -58,14 +58,16 @@ export function Canvas() {
           />
           <label
             htmlFor="canvas-upload"
-            className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600/50 rounded-lg transition-colors hover:border-gray-400/50 cursor-pointer"
+            className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600/50 rounded-xl transition-all hover:border-gray-400/50 hover:bg-white/[0.02] cursor-pointer"
           >
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gray-800 flex items-center justify-center">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-700">
                 <Upload className="w-8 h-8 text-gray-400" />
               </div>
-              <p className="mt-4 text-gray-500 text-sm">Drop image here or click to upload</p>
-              <p className="text-gray-600 text-xs">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
+              <div className="space-y-2">
+                <p className="text-gray-400 font-medium">Drop image here or click to upload</p>
+                <p className="text-gray-500 text-sm">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
+              </div>
             </div>
           </label>
         </div>
