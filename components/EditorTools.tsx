@@ -1,8 +1,8 @@
 'use client';
 
 import { useEditor } from '@/hooks/useEditor';
-import { Trash2, Copy, GripVertical, ChevronDown, Plus } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import {  ChevronDown, Plus } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { FONT_OPTIONS, FONT_WEIGHTS } from '@/constants/fonts';
 import {
   Select,
@@ -14,10 +14,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShapeEditor } from './ShapeEditor';
-import { SHAPES } from '@/constants/shapes';
+
+// Add this helper function at the top
+const scrollToElement = (element: HTMLElement | null) => {
+  element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
 
 export function EditorTools() {
   const { image, addTextSet, addShapeSet } = useEditor();
@@ -59,18 +62,13 @@ export function EditorTools() {
       </TabsContent>
       
       <TabsContent value="shapes" className="mt-0">
-        <Select onValueChange={(value) => addShapeSet(value)}>
-          <SelectTrigger className="w-full mb-4 bg-white/5 hover:bg-white/10 border-white/10 text-white">
-            <SelectValue placeholder="Add Shape" />
-          </SelectTrigger>
-          <SelectContent>
-            {SHAPES.map((shape) => (
-              <SelectItem key={shape.value} value={shape.value}>
-                {shape.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <button
+          onClick={() => addShapeSet('square')} // Default to square
+          className="w-full mb-4 p-2 flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 rounded-lg text-white"
+        >
+          <Plus size={16} />
+          Add Shape Layer
+        </button>
         <ShapeEditor />
       </TabsContent>
     </Tabs>
@@ -79,8 +77,18 @@ export function EditorTools() {
 
 // Move existing text editor code to a new component
 function TextEditor() {
-  const { textSets, updateTextSet, removeTextSet, duplicateTextSet } = useEditor();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { textSets, updateTextSet, removeTextSet } = useEditor();
   const [openAccordions, setOpenAccordions] = useState<Record<number, boolean>>({});
+
+  // Auto-scroll to new text layer
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      const lastElement = container.lastElementChild;
+      scrollToElement(lastElement as HTMLElement);
+    }
+  }, [textSets.length]);
 
   // Auto-open new accordions
   useEffect(() => {
@@ -99,7 +107,7 @@ function TextEditor() {
   };
 
   return (
-    <div className="space-y-3">
+    <div ref={containerRef} className="space-y-3">
       {textSets.map((textSet) => (
         <div key={textSet.id} className="group bg-black/20 border border-white/5">
           {/* Accordion Header */}
@@ -107,9 +115,6 @@ function TextEditor() {
             onClick={() => toggleAccordion(textSet.id)}
             className="flex items-center gap-3 p-3 cursor-pointer hover:bg-white/5"
           >
-            <div className="cursor-move text-gray-500">
-              <GripVertical size={16} />
-            </div>
             <div className="flex-1 truncate text-white">{textSet.text || 'Text Layer'}</div>
             <ChevronDown
               size={16}
@@ -122,29 +127,16 @@ function TextEditor() {
           {/* Accordion Content */}
           {openAccordions[textSet.id] && (
             <div className="p-3 pt-0 space-y-4 border-t border-white/5">
-              {/* Quick Actions */}
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={() => duplicateTextSet(textSet.id)}
-                  className="p-1.5 text-xs bg-white/5 text-gray-300 rounded-md hover:bg-white/10"
-                >
-                  <Copy size={14} />
-                </button>
-                <button
-                  onClick={() => removeTextSet(textSet.id)}
-                  className="p-1.5 text-xs bg-red-500/10 text-red-400 rounded-md hover:bg-red-500/20"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-
               {/* Text Input */}
+              <div className='mt-4'>
               <Input
                 value={textSet.text}
                 onChange={(e) => updateTextSet(textSet.id, { text: e.target.value })}
                 className="bg-white/5 border-white/10 text-white"
                 placeholder="Enter text..."
-              />
+                />
+                </div>
+                
 
               {/* Font Controls */}
               <div className="grid grid-cols-2 gap-4">
@@ -210,7 +202,7 @@ function TextEditor() {
                   </div>
                   <Slider
                     min={12}
-                    max={800}
+                    max={1500}
                     step={1}
                     value={[textSet.fontSize]}
                     onValueChange={([value]) => updateTextSet(textSet.id, { fontSize: value })}
@@ -282,6 +274,14 @@ function TextEditor() {
                   />
                 </div>
               </div>
+
+              {/* Delete button at the end */}
+              <button
+                onClick={() => removeTextSet(textSet.id)}
+                className="w-full p-2 bg-red-500/10 text-red-400 rounded-md hover:bg-red-500/20"
+              >
+                Delete Layer
+              </button>
             </div>
           )}
         </div>

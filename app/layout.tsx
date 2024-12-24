@@ -1,5 +1,6 @@
 import './globals.css';
 import { inter } from './fonts';
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata = {
   title: 'UnderlayX - Text and Shapes behind Images',
@@ -12,8 +13,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body>{children}</body>
+    <html lang="en" className={`${inter.variable} bg-[#0A0A0A]`}>
+      <body className="min-h-screen bg-[#0A0A0A]">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

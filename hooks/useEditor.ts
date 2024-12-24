@@ -38,6 +38,8 @@ interface EditorState {
   isProcessing: boolean;
   isConverting: boolean; // Add this new state
   shapeSets: ShapeSet[];
+  exportQuality: 'high' | 'medium' | 'low';
+  isDownloading: boolean; // Add this new state
 }
 
 interface EditorActions {
@@ -47,11 +49,12 @@ interface EditorActions {
   duplicateTextSet: (id: number) => void;
   handleImageUpload: (file: File) => Promise<void>;
   downloadImage: () => Promise<void>;
-  resetEditor: () => void;
+  resetEditor: (clearImage?: boolean) => void;
   addShapeSet: (type: string) => void;
   updateShapeSet: (id: number, updates: Partial<ShapeSet>) => void;
   removeShapeSet: (id: number) => void;
   duplicateShapeSet: (id: number) => void;
+  setExportQuality: (quality: 'high' | 'medium' | 'low') => void;
 }
 
 export const useEditor = create<EditorState & EditorActions>((set, get) => ({
@@ -64,6 +67,8 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   isProcessing: false,
   isConverting: false,
   shapeSets: [],
+  exportQuality: 'high',
+  isDownloading: false,
 
   addTextSet: () => set((state) => ({
     textSets: [...state.textSets, {
@@ -71,7 +76,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       text: 'Edit text',
       fontFamily: 'Inter', // Changed from var(--font-inter)
       fontWeight: '500', // Changed from '400' to '700'
-      fontSize: 150,
+      fontSize: 400,
       color: '#FFFFFF',
       position: { vertical: 50, horizontal: 50 },
       opacity: 1,
@@ -103,9 +108,9 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       type,
       color: '#FFFFFF',
       isFilled: false,
-      strokeWidth: 2,  // Add default stroke width
+      strokeWidth: 5,  // Add default stroke width
       position: { vertical: 50, horizontal: 50 },
-      scale: 100,
+      scale: 1000,
       opacity: 1,
       rotation: 0
     }]
@@ -159,8 +164,10 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
           foreground: processedUrl
         }
       }));
+
     } catch (error) {
       console.error('Error processing image:', error);
+      
     } finally {
       set({ isConverting: false, isProcessing: false });
     }
@@ -168,129 +175,140 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
 
   // Update downloadImage function to include shapes
   downloadImage: async () => {
-    const { image, textSets, shapeSets } = get();
+    const { image, textSets, shapeSets, exportQuality } = get();
     if (!image.background || !image.foreground) return;
 
-    // Load all fonts used in text sets
-    const fontPromises = textSets.map(textSet => 
-      document.fonts.load(`${textSet.fontWeight} 1rem ${textSet.fontFamily}`)
-    );
-    await Promise.all(fontPromises);
+    set({ isDownloading: true });
+    try {
+      // Load all fonts used in text sets
+      const fontPromises = textSets.map(textSet => 
+        document.fonts.load(`${textSet.fontWeight} 1rem ${textSet.fontFamily}`)
+      );
+      await Promise.all(fontPromises);
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    // Load and draw background image
-    const bgImg = new Image();
-    bgImg.crossOrigin = "anonymous";
-    await new Promise((resolve, reject) => {
-      bgImg.onload = resolve;
-      bgImg.onerror = reject;
-      bgImg.src = image.background!;
-    });
+      // Load and draw background image
+      const bgImg = new Image();
+      bgImg.crossOrigin = "anonymous";
+      await new Promise((resolve, reject) => {
+        bgImg.onload = resolve;
+        bgImg.onerror = reject;
+        bgImg.src = image.background!;
+      });
 
-    // Set canvas size to match display size
-    const displayWidth = bgImg.width;
-    const displayHeight = bgImg.height;
-    canvas.width = displayWidth;
-    canvas.height = displayHeight;
+      // Set canvas size to match display size
+      const displayWidth = bgImg.width;
+      const displayHeight = bgImg.height;
+      canvas.width = displayWidth;
+      canvas.height = displayHeight;
 
-    // Draw background
-    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+      // Draw background
+      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-    // Draw shapes before text
-    shapeSets.forEach(shapeSet => {
-      ctx.save();
+      // Draw shapes before text
+      shapeSets.forEach(shapeSet => {
+        ctx.save();
+        
+        const x = (canvas.width * shapeSet.position.horizontal) / 100;
+        const y = (canvas.height * shapeSet.position.vertical) / 100;
+        const scale = shapeSet.scale / 100;
+
+        ctx.translate(x, y);
+        ctx.rotate((shapeSet.rotation * Math.PI) / 180);
+        ctx.scale(scale, scale);
+
+        const path = new Path2D(SHAPES.find(s => s.value === shapeSet.type)?.path);
+        
+        if (shapeSet.isFilled) {
+          ctx.fillStyle = shapeSet.color;
+          ctx.fill(path);
+        } else {
+          ctx.strokeStyle = shapeSet.color;
+          ctx.lineWidth = shapeSet.strokeWidth;  // Use stroke width
+          ctx.stroke(path);
+        }
+        
+        ctx.restore();
+      });
+
+      // Draw text layers with font family and weight
+      textSets.forEach(textSet => {
+        ctx.save();
+        
+        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px ${textSet.fontFamily}`;
+        ctx.fillStyle = textSet.color;
+        ctx.globalAlpha = textSet.opacity;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const x = (canvas.width * textSet.position.horizontal) / 100;
+        const y = (canvas.height * textSet.position.vertical) / 100;
+
+        ctx.translate(x, y);
+        ctx.rotate((textSet.rotation * Math.PI) / 180);
+
+        ctx.fillText(textSet.text, 0, 0);
+        
+        ctx.restore();
+      });
+
+      // Load and draw foreground image
+      const fgImg = new Image();
+      fgImg.crossOrigin = "anonymous";
+      await new Promise((resolve, reject) => {
+        fgImg.onload = resolve;
+        fgImg.onerror = reject;
+        fgImg.src = image.foreground!;
+      });
       
-      const x = (canvas.width * shapeSet.position.horizontal) / 100;
-      const y = (canvas.height * shapeSet.position.vertical) / 100;
-      const scale = shapeSet.scale / 100;
+      ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
 
-      ctx.translate(x, y);
-      ctx.rotate((shapeSet.rotation * Math.PI) / 180);
-      ctx.scale(scale, scale);
+      // Convert to blob and download
+      const qualityValue = exportQuality === 'high' ? 1.0 : 
+                          exportQuality === 'medium' ? 0.8 : 0.6;
 
-      const path = new Path2D(SHAPES.find(s => s.value === shapeSet.type)?.path);
-      
-      if (shapeSet.isFilled) {
-        ctx.fillStyle = shapeSet.color;
-        ctx.fill(path);
-      } else {
-        ctx.strokeStyle = shapeSet.color;
-        ctx.lineWidth = shapeSet.strokeWidth;  // Use stroke width
-        ctx.stroke(path);
-      }
-      
-      ctx.restore();
-    });
-
-    // Draw text layers with font family and weight
-    textSets.forEach(textSet => {
-      ctx.save();
-      
-      ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px ${textSet.fontFamily}`;
-      ctx.fillStyle = textSet.color;
-      ctx.globalAlpha = textSet.opacity;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      const x = (canvas.width * textSet.position.horizontal) / 100;
-      const y = (canvas.height * textSet.position.vertical) / 100;
-
-      ctx.translate(x, y);
-      ctx.rotate((textSet.rotation * Math.PI) / 180);
-
-      ctx.fillText(textSet.text, 0, 0);
-      
-      ctx.restore();
-    });
-
-    // Load and draw foreground image
-    const fgImg = new Image();
-    fgImg.crossOrigin = "anonymous";
-    await new Promise((resolve, reject) => {
-      fgImg.onload = resolve;
-      fgImg.onerror = reject;
-      fgImg.src = image.foreground!;
-    });
-    
-    ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
-
-    // Convert to blob and download
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        console.error('Failed to generate image');
-        return;
-      }
-      
-      const now = new Date();
-      const timestamp = [
-        now.getDate().toString().padStart(2, '0'),
-        (now.getMonth() + 1).toString().padStart(2, '0'),
-        now.getSeconds().toString().padStart(2, '0')
-      ].join('_');
-      
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.download = `UnderlayX_${timestamp}.png`;
-      link.href = url;
-      link.click();
-      
-      // Clean up
-      setTimeout(() => {
-        URL.revokeObjectURL(url);
-      }, 100);
-    }, 'image/png', 1.0);
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          console.error('Failed to generate image');
+          return;
+        }
+        
+        const now = new Date();
+        const timestamp = [
+          now.getDate().toString().padStart(2, '0'),
+          (now.getMonth() + 1).toString().padStart(2, '0'),
+          now.getSeconds().toString().padStart(2, '0')
+        ].join('_');
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = `UnderlayX_${timestamp}.png`;
+        link.href = url;
+        link.click();
+        
+        // Clean up
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 100);
+      }, 'image/png', qualityValue);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+    } finally {
+      set({ isDownloading: false });
+    }
   },
 
-  resetEditor: () => set(() => ({
+  resetEditor: (clearImage = true) => set((state) => ({
     textSets: [],
-    image: {
+    shapeSets: [],
+    image: clearImage ? {
       original: null,
       background: null,
       foreground: null
-    },
-    shapeSets: []
-  }))
+    } : state.image
+  })),
+  setExportQuality: (quality) => set({ exportQuality: quality })
 }));
