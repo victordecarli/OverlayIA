@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEditor } from '@/hooks/useEditor';
 import { Upload } from 'lucide-react';
 
 export function Navbar() {
   const { image, resetEditor } = useEditor();
+  const router = useRouter();
 
   const handleNewUpload = () => {
     resetEditor(); // Reset editor state first
@@ -19,16 +21,15 @@ export function Navbar() {
   return (
     <nav className="border-b border-white/10 bg-black/20 backdrop-blur-md">
       <div className="container mx-auto px-4 h-[80px] flex items-center justify-between">
-        <Link 
-          href="/"
-          onClick={(e) => {
-            e.preventDefault();
+        <button 
+          onClick={() => {
             resetEditor();
+            router.push('/');
           }}
           className="text-2xl font-bold text-white hover:text-gray-200 transition-colors"
         >
           UnderlayX
-        </Link>
+        </button>
         {image.original && (
           <button
             onClick={handleNewUpload}

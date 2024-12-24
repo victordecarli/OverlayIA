@@ -62,9 +62,13 @@ export function ShapeEditor() {
                   <SelectTrigger className="bg-white/5 border-white/10 text-white">
                     <SelectValue placeholder="Select shape" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-zinc-900 border-white/10 text-white">
                     {SHAPES.map((shape) => (
-                      <SelectItem key={shape.value} value={shape.value}>
+                      <SelectItem 
+                        key={shape.value} 
+                        value={shape.value}
+                        className="focus:bg-white/10 focus:text-white"
+                      >
                         {shape.name}
                       </SelectItem>
                     ))}
@@ -80,6 +84,17 @@ export function ShapeEditor() {
                   onCheckedChange={(checked) => 
                     updateShapeSet(shapeSet.id, { isFilled: checked })
                   }
+                />
+              </div>
+
+              {/* Color */}
+              <div>
+                <Label className="block text-sm text-gray-400 mb-1">Color</Label>
+                <input
+                  type="color"
+                  value={shapeSet.color}
+                  onChange={(e) => updateShapeSet(shapeSet.id, { color: e.target.value })}
+                  className="w-full h-9 cursor-pointer rounded-md border border-white/10 bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
                 />
               </div>
 
@@ -159,17 +174,6 @@ export function ShapeEditor() {
                   max={180}
                   value={[shapeSet.rotation]}
                   onValueChange={([value]) => updateShapeSet(shapeSet.id, { rotation: value })}
-                />
-              </div>
-
-              {/* Color */}
-              <div>
-                <Label className="block text-sm text-gray-400 mb-1">Color</Label>
-                <input
-                  type="color"
-                  value={shapeSet.color}
-                  onChange={(e) => updateShapeSet(shapeSet.id, { color: e.target.value })}
-                  className="w-full h-9 cursor-pointer rounded-md border border-white/10 bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
                 />
               </div>
 

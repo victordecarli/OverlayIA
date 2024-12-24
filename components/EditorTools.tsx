@@ -149,11 +149,12 @@ function TextEditor() {
                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
                       <SelectValue placeholder="Select font" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[200px] overflow-y-auto bg-zinc-900 border-white/10 text-white">
                       {FONT_OPTIONS.map((font) => (
                         <SelectItem 
                           key={font.value} 
                           value={font.value}
+                          className="focus:bg-white/10 focus:text-white"
                           style={{ fontFamily: font.value }}
                         >
                           {font.name}
@@ -171,9 +172,13 @@ function TextEditor() {
                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
                       <SelectValue placeholder="Select weight" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-zinc-900 border-white/10 text-white">
                       {FONT_WEIGHTS.map((weight) => (
-                        <SelectItem key={weight.value} value={weight.value}>
+                        <SelectItem 
+                          key={weight.value} 
+                          value={weight.value}
+                          className="focus:bg-white/10 focus:text-white"
+                        >
                           {weight.name}
                         </SelectItem>
                       ))}
