@@ -21,7 +21,10 @@ export function Navbar() {
       <div className="container mx-auto px-4 h-[80px] flex items-center justify-between">
         <Link 
           href="/"
-          onClick={resetEditor}
+          onClick={(e) => {
+            e.preventDefault();
+            resetEditor();
+          }}
           className="text-2xl font-bold text-white hover:text-gray-200 transition-colors"
         >
           UnderlayX
