@@ -42,38 +42,35 @@ export function Canvas() {
   };
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div className="absolute inset-0 flex items-center justify-center p-4">
       {!image.original ? (
         <div 
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600 rounded-lg transition-colors hover:border-gray-400"
+          className="w-full h-full"
         >
-          <div className="text-center p-6">
-            <input
-              id="canvas-upload"
-              type="file"
-              onChange={onFileChange}
-              accept="image/jpeg,image/png,image/webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
-              className="hidden"
-            />
-            <label
-              htmlFor="canvas-upload"
-              className="flex flex-col items-center gap-4 cursor-pointer"
-            >
-              <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center">
+          <input
+            id="canvas-upload"
+            type="file"
+            onChange={onFileChange}
+            accept="image/jpeg,image/png,image.webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
+            className="hidden"
+          />
+          <label
+            htmlFor="canvas-upload"
+            className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600/50 rounded-lg transition-colors hover:border-gray-400/50 cursor-pointer"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gray-800 flex items-center justify-center">
                 <Upload className="w-8 h-8 text-gray-400" />
               </div>
-              <div className="space-y-2">
-                <p className="text-gray-300 text-lg font-medium">Drop your image here</p>
-                <p className="text-gray-500 text-sm">or click to upload</p>
-                <p className="text-gray-600 text-xs">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
-              </div>
-            </label>
-          </div>
+              <p className="mt-4 text-gray-500 text-sm">Drop image here or click to upload</p>
+              <p className="text-gray-600 text-xs">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
+            </div>
+          </label>
         </div>
       ) : (
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full flex items-center justify-center">
           {(isProcessing || isConverting) && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
               <div className="flex flex-col items-center gap-2">
@@ -86,7 +83,7 @@ export function Canvas() {
           )}
           
           {image.original ? (
-            <div className="relative w-full h-full">
+            <div className="relative w-full h-full prevent-save">
               <CanvasPreview />
             </div>
           ) : (
