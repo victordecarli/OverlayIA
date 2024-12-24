@@ -36,8 +36,6 @@ interface ShapeSet {
   rotation: number;
   strokeWidth: number;  // Add this new property
   glow?: GlowEffect;
-  width: number;
-  height: number;
 }
 
 interface EditorState {
@@ -121,10 +119,8 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       color: '#FFFFFF',
       isFilled: false,
       strokeWidth: 5,  // Add default stroke width
-      width: 1000,    // Default width
-      height: 1000,   // Default height
       position: { vertical: 50, horizontal: 50 },
-      scale: 1000,
+      scale: 2000, // Default scale
       opacity: 1,
       rotation: 0
     }]
@@ -240,9 +236,9 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         }
 
         // Scale based on width and height
-        const scaleX = shapeSet.width / 100;
-        const scaleY = shapeSet.height / 100;
-        ctx.scale(scaleX, scaleY);
+        // const scaleX = shapeSet.width / 100;
+        // const scaleY = shapeSet.height / 100;
+        // ctx.scale(scaleX, scaleY);
 
         // Set opacity
         ctx.globalAlpha = shapeSet.opacity;

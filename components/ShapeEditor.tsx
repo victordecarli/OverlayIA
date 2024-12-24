@@ -99,33 +99,18 @@ export function ShapeEditor() {
                 />
               </div>
 
-              {/* Replace Size with Width and Height controls */}
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-sm text-gray-400">Width</Label>
-                    <span className="text-sm text-gray-400">{shapeSet.width}px</span>
-                  </div>
-                  <Slider
-                    min={10}
-                    max={5000}
-                    value={[shapeSet.width]}
-                    onValueChange={([value]) => updateShapeSet(shapeSet.id, { width: value })}
-                  />
+              {/* Replace Width and Height controls with single Size control */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <Label className="text-sm text-gray-400">Size</Label>
+                  <span className="text-sm text-gray-400">{shapeSet.scale}px</span>
                 </div>
-
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-sm text-gray-400">Height</Label>
-                    <span className="text-sm text-gray-400">{shapeSet.height}px</span>
-                  </div>
-                  <Slider
-                    min={10}
-                    max={5000}
-                    value={[shapeSet.height]}
-                    onValueChange={([value]) => updateShapeSet(shapeSet.id, { height: value })}
-                  />
-                </div>
+                <Slider
+                  min={10}
+                  max={5000}
+                  value={[shapeSet.scale]}
+                  onValueChange={([value]) => updateShapeSet(shapeSet.id, { scale: value })}
+                />
               </div>
 
               {/* Stroke Width (only show when not filled) */}

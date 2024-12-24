@@ -81,10 +81,9 @@ export function CanvasPreview() {
         ctx.shadowOffsetY = 0;
       }
 
-      // Scale based on width and height
-      const scaleX = shapeSet.width / 100;
-      const scaleY = shapeSet.height / 100;
-      ctx.scale(scaleX, scaleY);
+      // Update the scaling logic to use single scale value
+      const scale = shapeSet.scale / 100;
+      ctx.scale(scale, scale);
 
       // Set opacity
       ctx.globalAlpha = shapeSet.opacity;

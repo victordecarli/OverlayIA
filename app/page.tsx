@@ -8,12 +8,12 @@ import { useRouter } from 'next/navigation';
 import { AnimatedBackground } from '@/components/AnimatedBackground';
 
 const galleryImages = [
-  { src: '/images/1.jpg', alt: 'Example 1' },
-  { src: '/images/2.jpg', alt: 'Example 2' },
-  { src: '/images/3.jpg', alt: 'Example 3' },
-  { src: '/images/4.jpg', alt: 'Example 4' },
-  { src: '/images/5.jpg', alt: 'Example 5' },
-  { src: '/images/6.jpg', alt: 'Example 6' },
+  { src: '/images/move.png', alt: 'Example 1' },
+  { src: '/images/pose.png', alt: 'Example 2' },
+  { src: '/images/journey.png', alt: 'Example 3' },
+  { src: '/images/joy.png', alt: 'Example 4' },
+  { src: '/images/star.png', alt: 'Example 5' },
+  { src: '/images/car.png', alt: 'Example 6' },
 ];
 
 export default function Home() {
