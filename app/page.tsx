@@ -44,7 +44,7 @@ export default function Home() {
                 UnderlayX AI
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-12">
-                Add shapes and text behind objects in an image, create glowing effects, and customize stunning visuals effortlessly, all with professional-grade quality.
+                Add shapes and text behind elements in an image, create glowing effects, and customize stunning visuals effortlessly, all with professional-grade quality.
               </p>
               <Link 
                 href="/custom-editor" 
