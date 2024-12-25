@@ -118,7 +118,7 @@ export default function Home() {
             </div>
 
             {/* Second Row Images Section */}
-            <div className="mt-4 md:mt-6 px-2 md:px-0">
+            {/* <div className="mt-4 md:mt-6 px-2 md:px-0">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -135,12 +135,6 @@ export default function Home() {
                       className="object-cover hover:scale-105 transition-transform duration-700"
                       sizes="(max-width: 768px) 100vw, 70vw"
                     />
-                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute bottom-0 p-6">
-                        <h3 className="text-white text-2xl font-bold">Epic Journeys</h3>
-                        <p className="text-gray-200">Create storytelling imagery</p>
-                      </div>
-                    </div> */}
                   </div>
                 </motion.div>
 
@@ -159,16 +153,10 @@ export default function Home() {
                       className="object-cover hover:scale-105 transition-transform duration-700"
                       sizes="(max-width: 768px) 100vw, 30vw"
                     />
-                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute bottom-0 p-6">
-                        <h3 className="text-white text-xl font-bold">Perfect Poses</h3>
-                        <p className="text-gray-200">Enhanced studio effects</p>
-                      </div>
-                    </div> */}
                   </div>
                 </motion.div>
               </div>
-            </div>
+            </div> */}
 
             {/* Features Grid Section - Adjusted spacing */}
             <div className="py-16 md:py-24">
