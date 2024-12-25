@@ -62,6 +62,7 @@ interface EditorState {
   isDownloading: boolean;
   imageEnhancements: ImageEnhancements;
   originalFileName: string | null;
+  processingMessage: string;
 }
 
 interface EditorActions {
@@ -78,6 +79,7 @@ interface EditorActions {
   duplicateShapeSet: (id: number) => void;
   setExportQuality: (quality: 'high' | 'medium' | 'low') => void;
   updateImageEnhancements: (enhancements: ImageEnhancements) => void;
+  setProcessingMessage: (message: string) => void;
 }
 
 export const useEditor = create<EditorState & EditorActions>((set, get) => ({
@@ -103,6 +105,8 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     sharpness: 0,
   },
   originalFileName: null,
+  processingMessage: '',
+  setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
     textSets: [...state.textSets, {
@@ -172,17 +176,58 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     if (!file) return;
     
     try {
-      // Save original filename without extension
       const fileName = file.name.replace(/\.[^/.]+$/, "");
       set({ originalFileName: fileName });
 
       if (file.type === 'image/heic' || file.type === 'image/heif') {
-        set({ isConverting: true });
+        set({ 
+          isConverting: true,
+          processingMessage: 'Converting your photo to a compatible format...' 
+        });
         file = await convertHeicToJpeg(file);
       }
 
       set({ isProcessing: true });
+
+      // More friendly loading messages
+      const messages = [
+        'Getting your photo ready...',
+        'Working some magic...',
+        'Making your photo shine...',
+        'Almost ready to create something amazing...',
+        'Just a few more moments...'
+      ];
+
+      let messageIndex = 0;
+      const messageInterval = setInterval(() => {
+        set({ processingMessage: messages[messageIndex] });
+        messageIndex = (messageIndex + 1) % messages.length;
+      }, 3000); // Increased to 3 seconds for better readability
+
+      // Create a smaller version for processing
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      await new Promise((resolve) => {
+        img.onload = resolve;
+        img.src = URL.createObjectURL(file);
+      });
+
+      // Calculate dimensions for 50% quality
+      const width = img.width / 2;
+      const height = img.height / 2;
+      canvas.width = width;
+      canvas.height = height;
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      // Get the reduced quality image
+      const processBlob = await new Promise<Blob>((resolve) => 
+        canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.8)
+      );
+
       const originalUrl = URL.createObjectURL(file);
+      const processUrl = URL.createObjectURL(processBlob);
       
       set(state => ({
         image: {
@@ -192,18 +237,27 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         }
       }));
 
-      const blob = await removeBackground(originalUrl);
-      const processedUrl = URL.createObjectURL(blob);
+      // Use the reduced quality image for processing
+      const processedBlob = await removeBackground(processUrl);
+      const processedUrl = URL.createObjectURL(processedBlob);
       
+      clearInterval(messageInterval);
       set(state => ({
         image: {
           ...state.image,
           foreground: processedUrl
-        }
+        },
+        processingMessage: 'All set! Let\'s create something beautiful!'
       }));
+
+      // Clear the success message after 2 seconds
+      setTimeout(() => {
+        set({ processingMessage: '' });
+      }, 2000);
 
     } catch (error) {
       console.error('Error processing image:', error);
+      set({ processingMessage: 'Oops! Something went wrong. Please try again.' });
       
     } finally {
       set({ isConverting: false, isProcessing: false });
@@ -211,11 +265,18 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   },
 
   downloadImage: async () => {
+    // Start loading state immediately
+    set({ 
+      isDownloading: true,
+      processingMessage: 'Preparing your masterpiece...'
+    });
+
     const { image, textSets, shapeSets, imageEnhancements, exportQuality, originalFileName } = get();
     if (!image.background || !image.foreground) return;
 
-    set({ isDownloading: true });
     try {
+      // Load fonts first with a status update
+      set({ processingMessage: 'Getting everything perfect...' });
       const fontPromises = textSets.map(textSet => 
         document.fonts.load(`${textSet.fontWeight} 1rem ${textSet.fontFamily}`)
       );
@@ -329,34 +390,64 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       const qualityValue = exportQuality === 'high' ? 1.0 : 
                           exportQuality === 'medium' ? 0.8 : 0.6;
 
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          console.error('Failed to generate image');
-          return;
-        }
-        
-        const now = new Date();
-        const baseFileName = originalFileName || 'UnderlayXAI';
-        const timestamp = [
-          now.getDate().toString().padStart(2, '0'),
-          (now.getMonth() + 1).toString().padStart(2, '0'),
-          now.getSeconds().toString().padStart(2, '0')
-        ].join('_');
-        
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.download = `${baseFileName}_${timestamp}.png`;
-        link.href = url;
-        link.click();
-        
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-        }, 100);
-      }, 'image/png', qualityValue);
+      // Update status before blob creation
+      set({ processingMessage: 'Almost done...' });
+
+      // Modified blob creation with proper timing
+      const blobPromise = new Promise<void>((resolve, reject) => {
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            reject(new Error('Failed to generate image'));
+            return;
+          }
+          
+          const now = new Date();
+          const baseFileName = originalFileName || 'UnderlayXAI';
+          const timestamp = [
+            now.getDate().toString().padStart(2, '0'),
+            (now.getMonth() + 1).toString().padStart(2, '0'),
+            now.getSeconds().toString().padStart(2, '0')
+          ].join('_');
+          
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `${baseFileName}_${timestamp}.png`;
+          link.href = url;
+          
+          // Set success message before triggering download
+          set({ processingMessage: 'Downloading your creation...' });
+          
+          // Small delay to ensure the UI updates before download starts
+          await new Promise(resolve => setTimeout(resolve, 100));
+          link.click();
+          
+          // Cleanup
+          setTimeout(() => {
+            URL.revokeObjectURL(url);
+            resolve();
+          }, 100);
+        }, 'image/png', qualityValue);
+      });
+
+      await blobPromise;
+      
+      // Show success message briefly
+      set({ processingMessage: 'Download complete!' });
+      setTimeout(() => {
+        set({ processingMessage: '', isDownloading: false });
+      }, 2000);
+
     } catch (error) {
       console.error('Error downloading image:', error);
-    } finally {
-      set({ isDownloading: false });
+      set({ 
+        processingMessage: 'Oops! Download failed. Please try again.',
+        isDownloading: false 
+      });
+      
+      // Clear error message after 3 seconds
+      setTimeout(() => {
+        set({ processingMessage: '' });
+      }, 3000);
     }
   },
 
