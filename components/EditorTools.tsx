@@ -8,10 +8,10 @@ import { TextEditor } from './TextEditor';
 import { ImageEnhancer } from './ImageEnhancer';
 
 export function EditorTools() {
-  const { addShapeSet, addTextSet } = useEditor();
+  const { addShapeSet, addTextSet, image } = useEditor();
 
   return (
-    <Tabs defaultValue="shapes" className="w-full">
+    <Tabs defaultValue="text" className="w-full">
       <TabsList className="w-full grid grid-cols-3 mb-4 bg-transparent border border-white/10">
         <TabsTrigger 
           value="text" 

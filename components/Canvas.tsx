@@ -1,36 +1,104 @@
 'use client';
 
-import Image from 'next/image';
+// Change the Image import to avoid conflict with native Image constructor
+import NextImage from 'next/image';
 import { useEditor } from '@/hooks/useEditor';
 import { Upload } from 'lucide-react'; // Add this import
 import { CanvasPreview } from './CanvasPreview';
 
+const MAX_IMAGE_SIZE = 1920; // Maximum dimension for images
+
+const optimizeImage = async (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    // Use native HTML Image constructor
+    const img = new window.Image();
+    const url = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      
+      // Check if optimization is needed
+      if (img.width <= MAX_IMAGE_SIZE && img.height <= MAX_IMAGE_SIZE) {
+        resolve(file);
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Calculate new dimensions
+      let width = img.width;
+      let height = img.height;
+      
+      if (width > height && width > MAX_IMAGE_SIZE) {
+        height = Math.round((height * MAX_IMAGE_SIZE) / width);
+        width = MAX_IMAGE_SIZE;
+      } else if (height > MAX_IMAGE_SIZE) {
+        width = Math.round((width * MAX_IMAGE_SIZE) / height);
+        height = MAX_IMAGE_SIZE;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      
+      ctx?.drawImage(img, 0, 0, width, height);
+      
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+          } else {
+            reject(new Error('Failed to optimize image'));
+          }
+        },
+        'image/jpeg',
+        0.9
+      );
+    };
+
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = url;
+  });
+};
+
 export function Canvas() {
   const { image, textSets, isProcessing, isConverting, handleImageUpload } = useEditor();
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image.heic', 'image.heif'];
       const fileType = file.type.toLowerCase();
       
       if (validTypes.includes(fileType) || file.name.toLowerCase().match(/\.(heic|heif)$/)) {
-        handleImageUpload(file);
+        try {
+          const optimizedFile = await optimizeImage(file);
+          handleImageUpload(optimizedFile);
+        } catch (error) {
+          console.error('Error optimizing image:', error);
+          alert('Error processing image. Please try again.');
+        }
       } else {
         alert('Please upload a valid image file (JPG, PNG, WEBP, HEIC, or HEIF)');
       }
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image.heic', 'image.heif'];
     const fileType = file.type.toLowerCase();
 
     if (validTypes.includes(fileType) || file.name.toLowerCase().match(/\.(heic|heif)$/)) {
-      handleImageUpload(file);
+      try {
+        const optimizedFile = await optimizeImage(file);
+        handleImageUpload(optimizedFile);
+      } catch (error) {
+        console.error('Error optimizing image:', error);
+        alert('Error processing image. Please try again.');
+      }
     } else {
       alert('Please upload a valid image file (JPG, PNG, WEBP, HEIC, or HEIF)');
     }
