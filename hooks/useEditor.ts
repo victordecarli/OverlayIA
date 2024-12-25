@@ -144,7 +144,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       isFilled: false,
       strokeWidth: 5,
       position: { vertical: 50, horizontal: 50 },
-      scale: 200, // Changed initial scale to be 50
+      scale: 500, // Changed initial scale to be 50
       opacity: 1,
       rotation: 0
     }]
@@ -257,7 +257,11 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         // Use the same scale calculation as CanvasPreview
         const baseSize = Math.min(canvas.width, canvas.height);
         const scale = (baseSize * (shapeSet.scale / 100)) / 1000;
+        
+        // Add center-based scaling
+        ctx.translate(-0.5, -0.5);
         ctx.scale(scale, scale);
+        ctx.translate(0.5, 0.5);
 
         if (shapeSet.glow?.enabled) {
           ctx.shadowColor = shapeSet.glow.color;
@@ -359,6 +363,16 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   resetEditor: (clearImage = true) => set((state) => ({
     textSets: [],
     shapeSets: [],
+    imageEnhancements: {
+      brightness: 100,
+      contrast: 100,
+      saturation: 100,
+      fade: 0,
+      exposure: 0,
+      highlights: 0,
+      shadows: 0,
+      sharpness: 0,
+    },
     image: clearImage ? {
       original: null,
       background: null,

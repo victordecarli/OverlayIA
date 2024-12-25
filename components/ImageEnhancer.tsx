@@ -25,7 +25,7 @@ export function ImageEnhancer() {
     { name: 'Brightness', key: 'brightness', min: 0, max: 200 },
     { name: 'Contrast', key: 'contrast', min: 0, max: 200 },
     { name: 'Saturation', key: 'saturation', min: 0, max: 200 },
-    { name: 'Fade', key: 'fade', min: 0, max: 100 },
+    // { name: 'Fade', key: 'fade', min: 0, max: 100 },
     { name: 'Exposure', key: 'exposure', min: -100, max: 100 },
     { name: 'Highlights', key: 'highlights', min: -100, max: 100 },
     { name: 'Shadows', key: 'shadows', min: -100, max: 100 },
@@ -33,21 +33,25 @@ export function ImageEnhancer() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 lg:space-y-6"> {/* Reduced spacing on mobile */}
       {enhancementControls.map(control => (
-        <div key={control.key} className="space-y-2">
+        <div key={control.key} className="space-y-1 lg:space-y-2"> {/* Reduced spacing on mobile */}
           <div className="flex justify-between items-center">
-            <Label className="text-sm text-gray-400">{control.name}</Label>
-            <span className="text-sm text-gray-400">
-              {imageEnhancements[control.key as keyof typeof imageEnhancements]}
+            <Label className="text-xs lg:text-sm text-gray-400">{control.name}</Label>
+            <span className="text-xs lg:text-sm text-gray-400">
+              {Math.round(imageEnhancements[control.key as keyof typeof imageEnhancements])}
             </span>
           </div>
           <Slider
             min={control.min}
             max={control.max}
+            step={0.1} // Added finer control
             value={[imageEnhancements[control.key as keyof typeof imageEnhancements]]}
-            onValueChange={([value]) => handleChange(control.key, value)}
-            className="w-full"
+            onValueChange={([value]) => {
+              const roundedValue = Math.round(value * 10) / 10;
+              handleChange(control.key, roundedValue);
+            }}
+            className="w-full touch-none" // Added touch-none for better mobile handling
           />
         </div>
       ))}

@@ -136,7 +136,7 @@ export function ShapeEditor() {
                   </div>
                   <Slider
                     min={1}
-                    max={1000}  // Adjusted max value for better control
+                    max={2000}  // Adjusted max value for better control
                     value={[shapeSet.scale]}
                     onValueChange={([value]) => debouncedUpdateShape(shapeSet.id, { scale: value })}
                   />

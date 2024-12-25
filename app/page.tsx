@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
+import { Footer } from '@/components/Footer';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,287 +17,339 @@ export default function Home() {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
   return (
-    <div className="min-h-screen">
-      {/* First Viewport Section */}
-      <div className="min-h-screen">
-        <div className="container mx-auto px-4 py-8 md:py-6 md:h-screen md:flex md:flex-col">
-          {/* Hero Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8 md:mb-6"
-          >
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-              UnderlayX AI
-            </h1>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-6">
-              Create stunning visuals with text and shapes behind your images.
-              Professional-grade effects for your creative projects.
-            </p>
-            <Link 
-              href="/custom-editor" 
-              onClick={() => setIsLoading(true)}
-              className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-white hover:bg-gray-100 disabled:bg-gray-200 text-black rounded-lg text-lg md:text-xl font-semibold transition-colors"
-            >
-              {isLoading ? (
-                <>
-                  <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                  Loading...
-                </>
-              ) : (
-                'Start Creating'
-              )}
-            </Link>
-          </motion.div>
+    <div className="min-h-screen relative flex flex-col">
+      {/* Animated Gradient Background */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 bg-[#0A0A0A]" />
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20 animate-gradient-slow" />
+          <div className="absolute inset-0 bg-gradient-to-tl from-indigo-900/20 via-transparent to-purple-900/20 animate-gradient-slow-delay" />
+        </div>
+        {/* <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" /> */}
+      </div>
 
-          {/* First Row Images */}
-          <div className="flex flex-col gap-2 md:gap-6 max-w-7xl mx-auto md:flex-grow">
+      {/* Content Container */}
+      <div className="relative z-10 flex-grow">
+        {/* First Viewport Section */}
+        <div className="min-h-screen flex flex-col justify-center">
+          <div className="container mx-auto px-4 py-16 md:py-24">
+            {/* Hero Section */}
             <motion.div 
-              style={{ y }}
-              className="flex flex-col md:flex-row gap-2 md:gap-6 md:h-[calc(100vh-280px)]"
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full md:w-[70%] aspect-video md:h-full relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 rounded-xl overflow-hidden">
-                  <Image
-                    src="/images/journey.png"
-                    alt="Landscape example"
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-700"
-                    sizes="(max-width: 768px) 100vw, 70vw"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute bottom-0 p-6">
-                      <h3 className="text-white text-2xl font-bold">Transform Landscapes</h3>
-                      <p className="text-gray-200">Add depth to your scenic shots</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full md:w-[30%] aspect-[3/4] md:h-full relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 rounded-xl overflow-hidden">
-                  <Image
-                    src="/images/star.png"
-                    alt="Portrait example"
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-700"
-                    sizes="(max-width: 768px) 100vw, 30vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute bottom-0 p-6">
-                      <h3 className="text-white text-xl font-bold">Perfect Portraits</h3>
-                      <p className="text-gray-200">Enhanced studio effects</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-
-      {/* Features Section with Background */}
-      <div className="relative z-10 bg-black">
-        <div className="container mx-auto px-4">
-          <div className="py-12 md:py-24">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="group p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition-colors bg-black/20 backdrop-blur-sm"
-              >
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors">
-                  For Content Creators
-                </h3>
-                <h4 className="text-lg text-gray-300 font-semibold mb-3">
-                  Effortlessly Create Stunning Visuals
-                </h4>
-                <p className="text-gray-400 leading-relaxed">
-                  Add shapes, text, and glow effects behind objects in your images to make captivating YouTube thumbnails, Instagram posts, and more. No design skills needed!
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="group p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition-colors bg-black/20 backdrop-blur-sm"
-              >
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
-                  For Marketers
-                </h3>
-                <h4 className="text-lg text-gray-300 font-semibold mb-3">
-                  Boost Your Campaigns with Eye-Catching Graphics
-                </h4>
-                <p className="text-gray-400 leading-relaxed">
-                  Design high-quality visuals with custom fonts, colors, and styles to make your ads, banners, and promotional materials stand out instantly.
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="group p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition-colors bg-black/20 backdrop-blur-sm"
-              >
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-green-400 transition-colors">
-                  For Photographers
-                </h3>
-                <h4 className="text-lg text-gray-300 font-semibold mb-3">
-                  Enhance Your Photos with Creative Effects
-                </h4>
-                <p className="text-gray-400 leading-relaxed">
-                  Transform ordinary images into extraordinary works of art by placing text and shapes behind objects seamlessly using AI.
-                </p>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Business & Social Section */}
-      <div className="min-h-screen md:h-screen flex items-center bg-black/30">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:h-[calc(100vh-120px)]">
-            {/* Text Boxes */}
-            <div className="w-full md:w-[70%] flex flex-col gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="group p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition-colors bg-black/20 backdrop-blur-sm h-[calc(50%-8px)]"
-              >
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-yellow-400 transition-colors">
-                  For Businesses
-                </h3>
-                <h4 className="text-lg text-gray-300 font-semibold mb-3">
-                  Create Professional-Grade Graphics in Minutes
-                </h4>
-                <p className="text-gray-400 leading-relaxed">
-                  Save time and money by designing logos, presentations, and promotional content with high-quality downloads and customizable tools.
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="group p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition-colors bg-black/20 backdrop-blur-sm h-[calc(50%-8px)]"
-              >
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-pink-400 transition-colors">
-                  For Social Media Enthusiasts
-                </h3>
-                <h4 className="text-lg text-gray-300 font-semibold mb-3">
-                  Stand Out on Every Platform
-                </h4>
-                <p className="text-gray-400 leading-relaxed">
-                  Design engaging content for Instagram, TikTok, Facebook, and more by effortlessly adding creative effects to your photos.
-                </p>
-              </motion.div>
-            </div>
-
-            {/* Pose Image */}
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="w-full md:w-[30%] aspect-[3/4] md:h-full relative overflow-hidden group"
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-center max-w-4xl mx-auto mb-16 md:mb-24"
             >
-              <div className="absolute inset-0 rounded-xl overflow-hidden">
-                <Image
-                  src="/images/pose.png"
-                  alt="Star example"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-700"
-                  sizes="(max-width: 768px) 100vw, 30vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-0 p-6">
-                    <h3 className="text-white text-xl font-bold">Stellar Effects</h3>
-                    <p className="text-gray-200">Add magical elements</p>
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-8">
+                UnderlayX AI
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 mb-12">
+                Add shapes and text behind objects in an image, create glowing effects, and customize stunning visuals effortlessly, all with professional-grade quality.
+              </p>
+              <Link 
+                href="/custom-editor" 
+                onClick={() => setIsLoading(true)}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 disabled:bg-gray-200 text-black rounded-lg text-xl font-semibold transition-all hover:scale-105"
+              >
+                {isLoading ? (
+                  <>
+                    <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                    Loading...
+                  </>
+                ) : (
+                  "Create Now - It's Free"
+                )}
+              </Link>
+            </motion.div>
+
+            {/* Featured Images - First Row */}
+            <div className="px-2 md:px-0">
+              <motion.div 
+                style={{ y }}
+                className="flex flex-col md:flex-row gap-4 md:gap-6"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="w-full md:w-[70%] aspect-video relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 rounded-xl overflow-hidden">
+                    <Image
+                      src="/images/journey.png"
+                      alt="Landscape example"
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 70vw"
+                      priority
+                    />
+                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute bottom-0 p-6">
+                        <h3 className="text-white text-2xl font-bold">Transform Landscapes</h3>
+                        <p className="text-gray-200">Add depth to your scenic shots</p>
+                      </div>
+                    </div> */}
                   </div>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+                  className="w-full md:w-[30%] aspect-[3/4] relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 rounded-xl overflow-hidden">
+                    <Image
+                      src="/images/star.png"
+                      alt="Portrait example"
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 30vw"
+                    />
+                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute bottom-0 p-6">
+                        <h3 className="text-white text-xl font-bold">Perfect Portraits</h3>
+                        <p className="text-gray-200">Enhanced studio effects</p>
+                      </div>
+                    </div> */}
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
+
+            {/* Second Row Images Section */}
+            <div className="mt-4 md:mt-6 px-2 md:px-0">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="w-full md:w-[70%] aspect-[16/9] relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 rounded-xl overflow-hidden">
+                    <Image
+                      src="/images/move.png"
+                      alt="Journey example"
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 70vw"
+                    />
+                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute bottom-0 p-6">
+                        <h3 className="text-white text-2xl font-bold">Epic Journeys</h3>
+                        <p className="text-gray-200">Create storytelling imagery</p>
+                      </div>
+                    </div> */}
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+                  className="w-full md:w-[30%] aspect-[3/4] relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 rounded-xl overflow-hidden">
+                    <Image
+                      src="/images/pose.png"
+                      alt="Portrait example"
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 30vw"
+                    />
+                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute bottom-0 p-6">
+                        <h3 className="text-white text-xl font-bold">Perfect Poses</h3>
+                        <p className="text-gray-200">Enhanced studio effects</p>
+                      </div>
+                    </div> */}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Features Grid Section - Adjusted spacing */}
+            <div className="py-16 md:py-24">
+              <div className="container mx-auto px-4">
+                <motion.h2 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-3xl md:text-5xl font-bold text-white text-center mb-12"
+                >
+                  Powerful Features
+                </motion.h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[
+                    {
+                      title: "Add Shapes Behind Objects",
+                      description: "Effortlessly place shapes to create depth and make your images stand out.",
+                      color: "purple"
+                    },
+                    {
+                      title: "Place Text Behind Objects",
+                      description: "Use AI to position text perfectly behind objects for a professional finish.",
+                      color: "blue"
+                    },
+                    {
+                      title: "Create Stunning Glow Effects",
+                      description: "Add glowing highlights to your images to make them visually striking.",
+                      color: "yellow"
+                    },
+                    {
+                      title: "Customize Design Elements",
+                      description: "Personalize every detail with a wide range of font styles, colors, and design options.",
+                      color: "pink"
+                    },
+                    {
+                      title: "High-Quality Downloads",
+                      description: "Save your creations in premium quality, ready for any use.",
+                      color: "green"
+                    },
+                    {
+                      title: "YouTube Thumbnails",
+                      description: "Design thumbnails that grab attention and drive clicks effortlessly.",
+                      color: "red"
+                    },
+                    {
+                      title: "Social Media Posts",
+                      description: "Craft engaging posts for Instagram, TikTok, Facebook, and beyond in seconds.",
+                      color: "indigo"
+                    },
+                    {
+                      title: "Professional Marketing",
+                      description: "Build standout visuals for campaigns, promotions, and creative projects.",
+                      color: "orange"
+                    },
+                    {
+                      title: "Enhanced Photography",
+                      description: "Elevate your photos with professional-grade effects and enhancements.",
+                      color: "cyan"
+                    }
+                  ].map((feature, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`group p-6 rounded-2xl border border-gray-800 relative bg-black/20 backdrop-blur-sm 
+                        hover:bg-black/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_30px_-5px] 
+                        hover:shadow-${feature.color}-500/20 overflow-hidden`}
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-r from-${feature.color}-500/10 via-transparent to-transparent 
+                        opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                      <div className="relative z-10">
+                        <h3 className={`text-xl font-bold text-white mb-3 group-hover:text-${feature.color}-400 
+                          transition-colors duration-300`}>
+                          {feature.title}
+                        </h3>
+                        <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+                          {feature.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
+            </div>
 
-      {/* Artists & Students Section */}
-      <div className="min-h-screen md:h-screen flex items-center bg-black/40">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:h-[calc(100vh-120px)]">
-            {/* Move Image */}
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full md:w-[70%] aspect-[16/9] md:h-full relative overflow-hidden group"
-            >
-              <div className="absolute inset-0 rounded-xl overflow-hidden">
-                <Image
-                  src="/images/move.png"
-                  alt="Journey example"
-                  fill
-                  className="object-contain md:object-cover object-center hover:scale-105 transition-transform duration-700"
-                  sizes="(max-width: 768px) 100vw, 70vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-0 p-6">
-                    <h3 className="text-white text-2xl font-bold">Epic Journeys</h3>
-                    <p className="text-gray-200">Create storytelling imagery</p>
-                  </div>
+            {/* Showcase Section - Adjusted spacing */}
+            <div className="py-16 md:py-24 bg-black/20">
+              <div className="container mx-auto px-4">
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-3xl md:text-5xl font-bold text-white text-center mb-12"
+                >
+                  For Every Creator
+                </motion.h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-2 md:px-0">
+                  {[
+                    {
+                      title: "Content Creators",
+                      subtitle: "Effortlessly Create Stunning Visuals",
+                      description: "Add shapes, text, and glow effects behind objects in your images to make captivating YouTube thumbnails, Instagram posts, and more.",
+                      color: "purple"
+                    },
+                    {
+                      title: "Marketers",
+                      subtitle: "Boost Your Campaigns",
+                      description: "Design high-quality visuals with custom fonts, colors, and styles to make your ads, banners, and promotional materials stand out.",
+                      color: "blue"
+                    },
+                    {
+                      title: "Photographers",
+                      subtitle: "Enhance Your Photos",
+                      description: "Transform ordinary images into extraordinary works of art by placing text and shapes behind objects seamlessly.",
+                      color: "green"
+                    },
+                    {
+                      title: "Digital Artists",
+                      subtitle: "Unleash Your Creativity",
+                      description: "Experiment with colors, fonts, and effects to bring your artistic vision to life with AI-powered tools.",
+                      color: "pink"
+                    },
+                    {
+                      title: "Social Media",
+                      subtitle: "Stand Out on Every Platform",
+                      description: "Design engaging content for Instagram, TikTok, Facebook, and beyond in seconds.",
+                      color: "yellow"
+                    },
+                    {
+                      title: "Students & Educators",
+                      subtitle: "Simplify Creative Projects",
+                      description: "Easily design posters, presentations, and visual aids for school or teaching projects.",
+                      color: "orange"
+                    }
+                  ].map((card, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ 
+                        duration: 0.7,
+                        delay: index * 0.15,
+                        ease: [0.21, 0.47, 0.32, 0.98]
+                      }}
+                      className={`group p-8 rounded-2xl border border-gray-800 relative bg-black/20 backdrop-blur-sm 
+                        hover:bg-black/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_40px_-5px] 
+                        hover:shadow-${card.color}-500/30 overflow-hidden`}
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-br from-${card.color}-500/10 via-transparent to-transparent 
+                        opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                      <div className="relative z-10">
+                        <h3 className={`text-2xl font-bold text-white mb-2 group-hover:text-${card.color}-400 
+                          transition-colors duration-300`}>
+                          {card.title}
+                        </h3>
+                        <h4 className="text-lg text-gray-300 font-semibold mb-4 group-hover:text-gray-200 
+                          transition-colors duration-300">
+                          {card.subtitle}
+                        </h4>
+                        <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 
+                          transition-colors duration-300">
+                          {card.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-            </motion.div>
-
-            {/* Text Boxes */}
-            <div className="w-full md:w-[30%] flex flex-col gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="group p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition-colors bg-black/20 backdrop-blur-sm h-[calc(50%-8px)]"
-              >
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">
-                  For Digital Artists
-                </h3>
-                <h4 className="text-lg text-gray-300 font-semibold mb-3">
-                  Unleash Your Creativity with AI-Powered Tools
-                </h4>
-                <p className="text-gray-400 leading-relaxed">
-                  Experiment with colors, fonts, and effects to bring your artistic vision to life, all while running entirely on your device.
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="group p-6 md:p-8 rounded-2xl border border-gray-800 hover:border-gray-600 transition-colors bg-black/20 backdrop-blur-sm h-[calc(50%-8px)]"
-              >
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-orange-400 transition-colors">
-                  For Students & Educators
-                </h3>
-                <h4 className="text-lg text-gray-300 font-semibold mb-3">
-                  Simplify Creative Projects
-                </h4>
-                <p className="text-gray-400 leading-relaxed">
-                  Easily design posters, presentations, and visual aids for school or teaching projects with innovative tools powered by AI.
-                </p>
-              </motion.div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Second Viewport Section */}
-      
+        {/* Updated Footer positioning */}
+        <div className="relative z-10">
+          <Footer />
+        </div>
+      </div>
     </div>
   );
 }
