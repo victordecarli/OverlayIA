@@ -111,10 +111,10 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   addTextSet: () => set((state) => ({
     textSets: [...state.textSets, {
       id: Date.now(),
-      text: 'edit text',
+      text: 'edit',
       fontFamily: 'Inter',
-      fontWeight: '800',
-      fontSize: 600,
+      fontWeight: '700',
+      fontSize: 300,
       color: '#FFFFFF',
       position: { vertical: 50, horizontal: 50 },
       opacity: 1,
@@ -204,30 +204,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         messageIndex = (messageIndex + 1) % messages.length;
       }, 3000); // Increased to 3 seconds for better readability
 
-      // Create a smaller version for processing
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-
-      await new Promise((resolve) => {
-        img.onload = resolve;
-        img.src = URL.createObjectURL(file);
-      });
-
-      // Calculate dimensions for 50% quality
-      const width = img.width / 2;
-      const height = img.height / 2;
-      canvas.width = width;
-      canvas.height = height;
-      ctx?.drawImage(img, 0, 0, width, height);
-
-      // Get the reduced quality image
-      const processBlob = await new Promise<Blob>((resolve) => 
-        canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.8)
-      );
-
       const originalUrl = URL.createObjectURL(file);
-      const processUrl = URL.createObjectURL(processBlob);
       
       set(state => ({
         image: {
@@ -237,8 +214,8 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         }
       }));
 
-      // Use the reduced quality image for processing
-      const processedBlob = await removeBackground(processUrl);
+      // Process at original quality
+      const processedBlob = await removeBackground(originalUrl);
       const processedUrl = URL.createObjectURL(processedBlob);
       
       clearInterval(messageInterval);
@@ -286,14 +263,16 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
+      // Load the original background image at full quality
       const bgImg = new Image();
       bgImg.crossOrigin = "anonymous";
       await new Promise((resolve, reject) => {
         bgImg.onload = resolve;
         bgImg.onerror = reject;
-        bgImg.src = image.background!;
+        bgImg.src = image.original!; // Use original image instead of background
       });
 
+      // Maintain original dimensions
       canvas.width = bgImg.width;
       canvas.height = bgImg.height;
 
@@ -387,13 +366,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       
       ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
 
-      const qualityValue = exportQuality === 'high' ? 1.0 : 
-                          exportQuality === 'medium' ? 0.8 : 0.6;
-
-      // Update status before blob creation
-      set({ processingMessage: 'Almost done...' });
-
-      // Modified blob creation with proper timing
+      // Always use maximum quality (1.0) regardless of exportQuality setting for PNG
       const blobPromise = new Promise<void>((resolve, reject) => {
         canvas.toBlob(async (blob) => {
           if (!blob) {
@@ -414,27 +387,35 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
           link.download = `${baseFileName}_${timestamp}.png`;
           link.href = url;
           
-          // Set success message before triggering download
           set({ processingMessage: 'Downloading your creation...' });
           
-          // Small delay to ensure the UI updates before download starts
-          await new Promise(resolve => setTimeout(resolve, 100));
+          // Create a promise that resolves when the download starts
+          const downloadPromise = new Promise<void>((downloadResolve) => {
+            link.onclick = () => {
+              setTimeout(() => {
+                URL.revokeObjectURL(url);
+                downloadResolve();
+              }, 1000); // Give enough time for the download to start
+            };
+          });
+
           link.click();
-          
-          // Cleanup
-          setTimeout(() => {
-            URL.revokeObjectURL(url);
-            resolve();
-          }, 100);
-        }, 'image/png', qualityValue);
+          await downloadPromise;
+          resolve();
+        }, 'image/png', 1.0);
       });
 
       await blobPromise;
       
-      // Show success message briefly
-      set({ processingMessage: 'Download complete!' });
+      // Immediately clear the downloading state and show success message
+      set({ 
+        isDownloading: false,
+        processingMessage: 'Download complete!' 
+      });
+
+      // Clear the success message after 2 seconds
       setTimeout(() => {
-        set({ processingMessage: '', isDownloading: false });
+        set({ processingMessage: '' });
       }, 2000);
 
     } catch (error) {

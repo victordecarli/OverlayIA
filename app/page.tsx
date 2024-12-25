@@ -79,7 +79,7 @@ export default function Home() {
                       src="/images/journey.png"
                       alt="Landscape example"
                       fill
-                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      className="object-cover"
                       sizes="(max-width: 768px) 100vw, 70vw"
                       priority
                     />
@@ -103,7 +103,7 @@ export default function Home() {
                       src="/images/star.png"
                       alt="Portrait example"
                       fill
-                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      className="object-cover"
                       sizes="(max-width: 768px) 100vw, 30vw"
                     />
                     {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -113,50 +113,32 @@ export default function Home() {
                       </div>
                     </div> */}
                   </div>
-                </motion.div>
+                </motion.div> 
               </motion.div>
             </div>
 
-            {/* Second Row Images Section */}
-            {/* <div className="mt-4 md:mt-6 px-2 md:px-0">
+            {/* Portrait Images Row */}
+            <div className="mt-4 md:mt-6 px-2 md:px-0">
               <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="w-full md:w-[70%] aspect-[16/9] relative overflow-hidden group"
-                >
-                  <div className="absolute inset-0 rounded-xl overflow-hidden">
+                {['pose', 'joy', 'ride'].map((imageName, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.1 }}
+                    className="w-full md:w-1/3 aspect-[3/4] relative overflow-hidden rounded-xl"
+                  >
                     <Image
-                      src="/images/move.png"
-                      alt="Journey example"
+                      src={`/images/${imageName}.png`}
+                      alt={`${imageName} example`}
                       fill
-                      className="object-cover hover:scale-105 transition-transform duration-700"
-                      sizes="(max-width: 768px) 100vw, 70vw"
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-                  className="w-full md:w-[30%] aspect-[3/4] relative overflow-hidden group"
-                >
-                  <div className="absolute inset-0 rounded-xl overflow-hidden">
-                    <Image
-                      src="/images/pose.png"
-                      alt="Portrait example"
-                      fill
-                      className="object-cover hover:scale-105 transition-transform duration-700"
-                      sizes="(max-width: 768px) 100vw, 30vw"
-                    />
-                  </div>
-                </motion.div>
+                  </motion.div>
+                ))}
               </div>
-            </div> */}
+            </div>
 
             {/* Features Grid Section - Adjusted spacing */}
             <div className="py-16 md:py-24">
@@ -295,16 +277,8 @@ export default function Home() {
                       color: "orange"
                     }
                   ].map((card, index) => (
-                    <motion.div
+                    <div
                       key={index}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, amount: 0.3 }}
-                      transition={{ 
-                        duration: 0.7,
-                        delay: index * 0.15,
-                        ease: [0.21, 0.47, 0.32, 0.98]
-                      }}
                       className={`group p-8 rounded-2xl border border-gray-800 relative bg-black/20 backdrop-blur-sm 
                         hover:bg-black/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_40px_-5px] 
                         hover:shadow-${card.color}-500/30 overflow-hidden`}
@@ -325,7 +299,7 @@ export default function Home() {
                           {card.description}
                         </p>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </div>
