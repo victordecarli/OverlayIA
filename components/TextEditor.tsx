@@ -151,7 +151,7 @@ export function TextEditor() {
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
                   <Label className="text-sm text-gray-400">Text Size</Label>
-                  <span className="text-sm text-gray-400">{textSet.fontSize}px</span>
+                  {/* <span className="text-sm text-gray-400">{textSet.fontSize}px</span> */}
                 </div>
                 <Slider
                   min={12}
