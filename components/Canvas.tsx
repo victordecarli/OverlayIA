@@ -62,7 +62,7 @@ const optimizeImage = async (file: File): Promise<File> => {
 };
 
 export function Canvas() {
-  const { image, textSets, isProcessing, isConverting, handleImageUpload } = useEditor();
+  const { image, textSets, isProcessing, isConverting, handleImageUpload, processingMessage } = useEditor();
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
@@ -88,7 +88,7 @@ export function Canvas() {
     e.preventDefault();
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image.heic', 'image.heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heif'];
     const fileType = file.type.toLowerCase();
 
     if (validTypes.includes(fileType) || file.name.toLowerCase().match(/\.(heic|heif)$/)) {
@@ -146,7 +146,7 @@ export function Canvas() {
               <div className="flex flex-col items-center gap-2">
                 <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
                 <p className="text-white text-sm">
-                  {isConverting ? 'Converting image format...' : 'Processing image...'}
+                  {processingMessage || 'Processing...'}
                 </p>
               </div>
             </div>

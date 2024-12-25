@@ -125,9 +125,11 @@ export function CanvasPreview() {
         ctx.restore();
       });
 
-      // Draw foreground
+      // Draw foreground with correct dimensions - FIX HERE
       if (fgImageRef.current) {
-        ctx.drawImage(fgImageRef.current, 0, 0);
+        ctx.filter = 'none'; // Reset filter before drawing foreground
+        ctx.globalAlpha = 1; // Reset opacity
+        ctx.drawImage(fgImageRef.current, 0, 0, canvas.width, canvas.height);
       }
     });
   }, [textSets, shapeSets, filterString]);
