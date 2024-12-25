@@ -359,6 +359,16 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   resetEditor: (clearImage = true) => set((state) => ({
     textSets: [],
     shapeSets: [],
+    imageEnhancements: {
+      brightness: 100,
+      contrast: 100,
+      saturation: 100,
+      fade: 0,
+      exposure: 0,
+      highlights: 0,
+      shadows: 0,
+      sharpness: 0,
+    },
     image: clearImage ? {
       original: null,
       background: null,

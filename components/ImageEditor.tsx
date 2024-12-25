@@ -3,7 +3,7 @@
 import { EditorTools } from './EditorTools';
 import { Canvas } from './Canvas';
 import { useEditor } from '@/hooks/useEditor';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RotateCcw, Download } from 'lucide-react';
 
 export function ImageEditor() {
   const { image, isProcessing, isDownloading, downloadImage, resetEditor } = useEditor();
@@ -19,15 +19,18 @@ export function ImageEditor() {
     <button
       onClick={downloadImage}
       disabled={isDownloading}
-      className="flex-1 px-4 py-2.5 bg-white text-black rounded-lg hover:bg-gray-100 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+      className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-white text-black rounded-lg hover:bg-gray-100 transition-colors font-medium disabled:opacity-50 text-xs lg:text-sm flex items-center justify-center gap-1.5"
     >
       {isDownloading ? (
-        <span className="flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Downloading...
-        </span>
+        <>
+          <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 animate-spin" />
+          <span>Downloading...</span>
+        </>
       ) : (
-        'Download Image'
+        <>
+          <Download className="h-3 w-3 lg:h-4 lg:w-4" />
+          <span>Download</span>
+        </>
       )}
     </button>
   );
@@ -46,9 +49,10 @@ export function ImageEditor() {
               <button
                 onClick={() => resetEditor(false)} // false to keep the image
                 disabled={isDownloading}
-                className="flex-1 px-4 py-2.5 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors font-medium disabled:opacity-50"
+                className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors font-medium disabled:opacity-50 text-xs lg:text-sm flex items-center justify-center gap-1.5"
               >
-                Reset Edits
+                <RotateCcw className="w-3 h-3 lg:w-4 lg:h-4" />
+                <span>Reset</span>
               </button>
               <DownloadButton />
             </div>
@@ -79,9 +83,10 @@ export function ImageEditor() {
                 <button
                   onClick={() => resetEditor(false)} // false to keep the image
                   disabled={isDownloading}
-                  className="flex-1 px-4 py-2.5 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors font-medium disabled:opacity-50"
+                  className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors font-medium disabled:opacity-50 text-xs lg:text-sm flex items-center justify-center gap-1.5"
                 >
-                  Reset Edits
+                  <RotateCcw className="w-3 h-3 lg:w-4 lg:h-4" />
+                  <span>Reset</span>
                 </button>
                 <DownloadButton />
               </div>

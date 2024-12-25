@@ -1,7 +1,7 @@
 'use client';
 
 import { useEditor } from '@/hooks/useEditor';
-import { Plus } from 'lucide-react';
+import { Plus, Type, Shapes, Sliders } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShapeEditor } from './ShapeEditor';
 import { TextEditor } from './TextEditor';
@@ -17,19 +17,22 @@ export function EditorTools() {
           value="text" 
           className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-gray-400 hover:text-white/80"
         >
-          Text
+          <Type className="w-3 h-3 lg:w-4 lg:h-4 mr-1.5" />
+          <span className="text-xs lg:text-sm">Text</span>
         </TabsTrigger>
         <TabsTrigger 
           value="shapes" 
           className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-gray-400 hover:text-white/80"
         >
-          Shapes
+          <Shapes className="w-3 h-3 lg:w-4 lg:h-4 mr-1.5" />
+          <span className="text-xs lg:text-sm">Shapes</span>
         </TabsTrigger>
         <TabsTrigger 
           value="enhance" 
           className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-gray-400 hover:text-white/80"
         >
-          Enhance
+          <Sliders className="w-3 h-3 lg:w-4 lg:h-4 mr-1.5" />
+          <span className="text-xs lg:text-sm">Enhance</span>
         </TabsTrigger>
       </TabsList>
 
