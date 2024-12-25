@@ -257,7 +257,11 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         // Use the same scale calculation as CanvasPreview
         const baseSize = Math.min(canvas.width, canvas.height);
         const scale = (baseSize * (shapeSet.scale / 100)) / 1000;
+        
+        // Add center-based scaling
+        ctx.translate(-0.5, -0.5);
         ctx.scale(scale, scale);
+        ctx.translate(0.5, 0.5);
 
         if (shapeSet.glow?.enabled) {
           ctx.shadowColor = shapeSet.glow.color;

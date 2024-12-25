@@ -51,13 +51,20 @@ export function CanvasPreview() {
         const x = (canvas.width * shapeSet.position.horizontal) / 100;
         const y = (canvas.height * shapeSet.position.vertical) / 100;
         
+        // Move to position
         ctx.translate(x, y);
+        
+        // Apply rotation
         ctx.rotate((shapeSet.rotation * Math.PI) / 180);
 
-        // Use the same scale calculation as download function
+        // Calculate scale
         const baseSize = Math.min(canvas.width, canvas.height);
         const scale = (baseSize * (shapeSet.scale / 100)) / 1000;
-        ctx.scale(scale, scale);
+        
+        // Move to center, scale, then move back
+        ctx.translate(-0.5, -0.5);  // Move to center of shape path
+        ctx.scale(scale, scale);    // Apply scaling
+        ctx.translate(0.5, 0.5);    // Move back
 
         // Add glow effect if enabled
         if (shapeSet.glow?.enabled) {

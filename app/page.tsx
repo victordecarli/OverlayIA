@@ -57,7 +57,7 @@ export default function Home() {
                     Loading...
                   </>
                 ) : (
-                  'Start Creating'
+                  "Create Now - It's Free"
                 )}
               </Link>
             </motion.div>
@@ -83,12 +83,12 @@ export default function Home() {
                       sizes="(max-width: 768px) 100vw, 70vw"
                       priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="absolute bottom-0 p-6">
                         <h3 className="text-white text-2xl font-bold">Transform Landscapes</h3>
                         <p className="text-gray-200">Add depth to your scenic shots</p>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </motion.div>
                 
@@ -106,27 +106,82 @@ export default function Home() {
                       className="object-cover hover:scale-105 transition-transform duration-700"
                       sizes="(max-width: 768px) 100vw, 30vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="absolute bottom-0 p-6">
                         <h3 className="text-white text-xl font-bold">Perfect Portraits</h3>
                         <p className="text-gray-200">Enhanced studio effects</p>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </motion.div>
               </motion.div>
             </div>
+
+            {/* Second Row Images Section - Moved from middle section */}
+            <div className="mt-4 md:mt-6 px-2 md:px-0">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                {/* Move Image (Landscape) */}
+                <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className="w-full md:w-[70%] aspect-[16/9] relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 rounded-xl overflow-hidden">
+                    <Image
+                      src="/images/move.png"
+                      alt="Journey example"
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 70vw"
+                    />
+                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute bottom-0 p-6">
+                        <h3 className="text-white text-2xl font-bold">Epic Journeys</h3>
+                        <p className="text-gray-200">Create storytelling imagery</p>
+                      </div>
+                    </div> */}
+                  </div>
+                </motion.div>
+
+                {/* Pose Image (Portrait) */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                  className="w-full md:w-[30%] aspect-[3/4] relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 rounded-xl overflow-hidden">
+                    <Image
+                      src="/images/pose.png"
+                      alt="Portrait example"
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 30vw"
+                    />
+                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute bottom-0 p-6">
+                        <h3 className="text-white text-xl font-bold">Perfect Poses</h3>
+                        <p className="text-gray-200">Enhanced studio effects</p>
+                      </div>
+                    </div> */}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Features Grid Section */}
-        <div className="py-24 md:py-32">
+        {/* Features Grid Section - Adjusted spacing */}
+        <div className="py-16 md:py-24">
           <div className="container mx-auto px-4">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-3xl md:text-5xl font-bold text-white text-center mb-16"
+              className="text-3xl md:text-5xl font-bold text-white text-center mb-12"
             >
               Powerful Features
             </motion.h2>
@@ -205,71 +260,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Middle Images Section */}
-        <div className="py-24 md:py-32 bg-black/10">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-              {/* Move Image (Landscape) */}
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="w-full md:w-[70%] aspect-[16/9] relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 rounded-xl overflow-hidden">
-                  <Image
-                    src="/images/move.png"
-                    alt="Journey example"
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-700"
-                    sizes="(max-width: 768px) 100vw, 70vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute bottom-0 p-6">
-                      <h3 className="text-white text-2xl font-bold">Epic Journeys</h3>
-                      <p className="text-gray-200">Create storytelling imagery</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Pose Image (Portrait) */}
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-                className="w-full md:w-[30%] aspect-[3/4] relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 rounded-xl overflow-hidden">
-                  <Image
-                    src="/images/pose.png"
-                    alt="Portrait example"
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-700"
-                    sizes="(max-width: 768px) 100vw, 30vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute bottom-0 p-6">
-                      <h3 className="text-white text-xl font-bold">Perfect Poses</h3>
-                      <p className="text-gray-200">Enhanced studio effects</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-
-        {/* Showcase Section */}
-        <div className="py-24 md:py-32 bg-black/20">
+        {/* Showcase Section - Adjusted spacing */}
+        <div className="py-16 md:py-24 bg-black/20">
           <div className="container mx-auto px-4">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-3xl md:text-5xl font-bold text-white text-center mb-16"
+              className="text-3xl md:text-5xl font-bold text-white text-center mb-12"
             >
               For Every Creator
             </motion.h2>
