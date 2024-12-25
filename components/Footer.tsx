@@ -25,9 +25,22 @@ export function Footer() {
               Terms
             </Link>
           </div>
-          <p className="text-gray-400 text-sm text-center md:text-right">
-            UnderlayX AI. © {new Date().getFullYear()} All Rights Reserved.
-          </p>
+          <div className="flex flex-col items-center md:items-end gap-2">
+            <p className="text-gray-400 text-sm">
+              Created by{' '}
+              <a 
+                href="https://x.com/Vineer5" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors hover:underline"
+              >
+                @Vineer
+              </a>
+            </p>
+            <p className="text-gray-400 text-sm">
+              UnderlayX AI. © {new Date().getFullYear()} All Rights Reserved.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
