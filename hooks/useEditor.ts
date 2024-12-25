@@ -144,7 +144,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       isFilled: false,
       strokeWidth: 5,
       position: { vertical: 50, horizontal: 50 },
-      scale: 200, // Changed initial scale to be 50
+      scale: 500, // Changed initial scale to be 50
       opacity: 1,
       rotation: 0
     }]

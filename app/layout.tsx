@@ -5,8 +5,11 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata = {
-  title: 'UnderlayX AI - Text and Shapes behind Images',
-  description: 'Create unique designs by adding text and shapes behind your images',
+  title: 'UnderlayX AI: Creativity Made Effortless',
+  description: 'Bring your ideas to life with UnderlayX AI—add text and shapes behind objects, create glowing effects, and customize stunning visuals effortlessly, all with professional-grade quality.',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -15,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} bg-[#0A0A0A]`}>
-      <body className="min-h-screen bg-[#0A0A0A]">
+    <html lang="en" className="bg-[#0A0A0A]">
+      <body className={`${inter.className} bg-[#0A0A0A] min-h-screen`}>
         {children}
         <Toaster />
         <Analytics />
