@@ -57,7 +57,7 @@ export default function Home() {
                     Loading...
                   </>
                 ) : (
-                  "Create Now - It's Free"
+                  "Create Now"
                 )}
               </Link>
             </motion.div>
