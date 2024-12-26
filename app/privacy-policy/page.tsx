@@ -12,7 +12,7 @@ export default function Privacy() {
         <div className="max-w-3xl mx-auto prose prose-invert">
           <div className="bg-black/20 backdrop-blur-sm p-8 rounded-xl border border-gray-800">
             <p className="text-gray-300 leading-relaxed">
-              We value your privacy. UnderlayX AI operates entirely on the client side, ensuring that your data and images stay private. We do not collect or store any personal data. The app uses Google Analytics for general usage tracking, which helps us improve your experience. No data is shared with third parties.
+              We value your privacy. UnderlayX operates entirely on the client side, ensuring that your data and images stay private. We do not collect or store any personal data. The app uses Google Analytics for general usage tracking, which helps us improve your experience. No data is shared with third parties.
             </p>
           </div>
         </div>

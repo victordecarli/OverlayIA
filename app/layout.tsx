@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata = {
-  title: 'UnderlayX AI: Creativity Made Effortless',
+  title: 'UnderlayX: Creativity Made Effortless',
   description: 'Bring your ideas to life with UnderlayX AI—add text and shapes behind objects, create glowing effects, and customize stunning visuals effortlessly, all with professional-grade quality.',
   icons: {
     icon: '/favicon.ico',

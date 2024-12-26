@@ -111,10 +111,10 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   addTextSet: () => set((state) => ({
     textSets: [...state.textSets, {
       id: Date.now(),
-      text: 'edit',
+      text: 'new text',
       fontFamily: 'Inter',
-      fontWeight: '700',
-      fontSize: 300,
+      fontWeight: '800',
+      fontSize: 350,
       color: '#FFFFFF',
       position: { vertical: 50, horizontal: 50 },
       opacity: 1,

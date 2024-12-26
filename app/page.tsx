@@ -41,7 +41,7 @@ export default function Home() {
               className="text-center max-w-4xl mx-auto mb-16 md:mb-24"
             >
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-8">
-                UnderlayX AI
+                UnderlayX
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-12">
                 Add shapes and text behind elements in an image, create glowing effects, and customize stunning visuals effortlessly, all with professional-grade quality.

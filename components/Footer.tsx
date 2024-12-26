@@ -38,7 +38,7 @@ export function Footer() {
               </a>
             </p>
             <p className="text-gray-400 text-sm">
-              UnderlayX AI. © {new Date().getFullYear()} All Rights Reserved.
+              UnderlayX. © {new Date().getFullYear()} All Rights Reserved.
             </p>
           </div>
         </div>
