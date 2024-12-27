@@ -4,16 +4,16 @@ import { Header } from '@/components/Header';
 export default function FAQ() {
   const faqs = [
     {
-      question: "Do I need to create an account to use UnderlayX AI?",
+      question: "Do I need to create an account to use UnderlayX?",
       answer: "No, you can start editing immediately. We don't require any personal information."
     },
     {
-      question: "Does UnderlayX AI store my images?",
+      question: "Does UnderlayX store my images?",
       answer: "No, everything runs client-side. Your images are never uploaded or stored on our servers."
     },
     {
-      question: "Is there a cost to use UnderlayX AI?",
-      answer: "UnderlayX AI is free to use, with premium options coming soon."
+      question: "Is there a cost to use UnderlayX?",
+      answer: "UnderlayX is free to use, with premium options coming soon."
     },
     {
       question: "Can I download my edited images in high quality?",

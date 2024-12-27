@@ -8,7 +8,7 @@ export function Header() {
           href="/"
           className="text-2xl font-bold text-white hover:text-gray-200 transition-colors"
         >
-          UnderlayX AI
+          UnderlayX
         </Link>
       </div>
     </header>

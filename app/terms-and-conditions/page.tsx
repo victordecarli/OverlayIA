@@ -5,7 +5,6 @@ export default function Terms() {
   const terms = [
     "All images and edits are processed on your local device.",
     "We do not store or share your data.",
-    "You are responsible for the content you create using our platform."
   ];
 
   return (

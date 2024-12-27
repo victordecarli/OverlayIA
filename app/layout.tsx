@@ -3,9 +3,10 @@ import { inter } from './fonts';
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata = {
-  title: 'UnderlayX AI: Creativity Made Effortless',
+  title: 'UnderlayX: Creativity Made Effortless',
   description: 'Bring your ideas to life with UnderlayX AI—add text and shapes behind objects, create glowing effects, and customize stunning visuals effortlessly, all with professional-grade quality.',
   icons: {
     icon: '/favicon.ico',
@@ -18,12 +19,20 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="bg-[#0A0A0A]">
+    <html lang="en" suppressHydrationWarning>
+      <head />
       <body className={`${inter.className} bg-[#0A0A0A] min-h-screen`}>
-        {children}
-        <Toaster />
-        <Analytics />
-        <SpeedInsights />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+          <Analytics />
+          <SpeedInsights />
+        </ThemeProvider>
       </body>
     </html>
   );
