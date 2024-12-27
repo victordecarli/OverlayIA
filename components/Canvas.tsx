@@ -67,7 +67,7 @@ export function Canvas() {
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
       console.log(fileType, fileName);
@@ -92,7 +92,7 @@ export function Canvas() {
     e.preventDefault();
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heif'];
     const fileType = file.type.toLowerCase();
     const fileName = file.name.toLowerCase();
 
@@ -124,7 +124,7 @@ export function Canvas() {
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           className="w-full h-full"
-        >
+          >
           <input
             id="canvas-upload"
             type="file"
@@ -136,12 +136,13 @@ export function Canvas() {
             htmlFor="canvas-upload"
             className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600/50 rounded-xl transition-all hover:border-gray-400/50 hover:bg-white/[0.02] cursor-pointer"
           >
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-700">
-                <Upload className="w-8 h-8 text-gray-400" />
+            <div className="text-center space-y-6">
+              <h3 className="text-xl font-medium text-white/90">Upload an image to get started</h3>
+              <div className="w-20 h-20 mx-auto rounded-2xl bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-700 shadow-xl">
+                <Upload className="w-10 h-10 text-gray-400" />
               </div>
               <div className="space-y-2">
-                <p className="text-gray-400 font-medium">Drop image here or click to upload</p>
+                <p className="text-gray-400 font-medium">Click here or drag & drop to upload</p>
                 <p className="text-gray-500 text-sm">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
               </div>
             </div>
