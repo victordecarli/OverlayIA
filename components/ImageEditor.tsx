@@ -4,10 +4,20 @@ import { EditorTools } from './EditorTools';
 import { Canvas } from './Canvas';
 import { useEditor } from '@/hooks/useEditor';
 import { Loader2, RotateCcw, Download, Upload } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function ImageEditor() {
-  const { image, isProcessing, isDownloading, downloadImage, resetEditor } = useEditor();
-  const showTools = image.original && !isProcessing;
+  const { 
+    image, 
+    isProcessing, 
+    isDownloading, 
+    downloadImage, 
+    resetEditor,
+    isConverting 
+  } = useEditor();
+
+  // Add check for fully processed image
+  const isImageReady = image.original && image.foreground && !isProcessing && !isConverting;
 
   // Prevent right-click on canvas
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -18,7 +28,7 @@ export function ImageEditor() {
   const DownloadButton = () => (
     <button
       onClick={downloadImage}
-      disabled={isDownloading}
+      disabled={!isImageReady || isDownloading}
       className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors font-medium disabled:opacity-50 text-xs lg:text-sm flex items-center justify-center gap-2"
     >
       {isDownloading ? (
@@ -44,17 +54,23 @@ export function ImageEditor() {
           <div className="relative bg-white dark:bg-black/20 rounded-xl border border-gray-100 dark:border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.05)] dark:shadow-[0_0_15px_rgba(0,0,0,0.2)] overflow-hidden flex-1" onContextMenu={handleContextMenu}>
             <Canvas />
           </div>
-          <div className="flex gap-3 mt-4">
-            <button
-              onClick={() => resetEditor(false)}
-              disabled={isDownloading}
-              className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Reset</span>
-            </button>
-            <DownloadButton />
-          </div>
+          {/* Only show buttons when image is ready */}
+          {image.original && (
+            <div className={cn(
+              "flex gap-3 mt-4",
+              !isImageReady && "opacity-50 pointer-events-none"
+            )}>
+              <button
+                onClick={() => resetEditor(false)}
+                disabled={!isImageReady || isDownloading}
+                className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Reset</span>
+              </button>
+              <DownloadButton />
+            </div>
+          )}
         </div>
         
         <div className="flex-1 mt-2 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-xl shadow-lg overflow-hidden">
@@ -75,17 +91,23 @@ export function ImageEditor() {
                 <Canvas />
               </div>
             </div>
-            <div className="flex gap-3 py-2">
-              <button
-                onClick={() => resetEditor(false)}
-                disabled={isDownloading}
-                className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>Reset</span>
-              </button>
-              <DownloadButton />
-            </div>
+            {/* Only show buttons when image is ready */}
+            {image.original && (
+              <div className={cn(
+                "flex gap-3 py-2",
+                !isImageReady && "opacity-50 pointer-events-none"
+              )}>
+                <button
+                  onClick={() => resetEditor(false)}
+                  disabled={!isImageReady || isDownloading}
+                  className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Reset</span>
+                </button>
+                <DownloadButton />
+              </div>
+            )}
           </div>
         </div>
 
