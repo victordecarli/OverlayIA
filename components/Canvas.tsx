@@ -1,10 +1,10 @@
 'use client';
 
-// Change the Image import to avoid conflict with native Image constructor
 import NextImage from 'next/image';
 import { useEditor } from '@/hooks/useEditor';
-import { Upload } from 'lucide-react'; // Add this import
+import { Upload } from 'lucide-react';
 import { CanvasPreview } from './CanvasPreview';
+import { convertHeicToJpeg } from '@/lib/image-utils';
 
 const MAX_IMAGE_SIZE = 1920; // Maximum dimension for images
 
@@ -67,15 +67,19 @@ export function Canvas() {
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image.heic', 'image.heif'];
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
       const fileType = file.type.toLowerCase();
-      
-      if (validTypes.includes(fileType) || file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+      const fileName = file.name.toLowerCase();
+      console.log(fileType, fileName);
+      if (validTypes.includes(fileType) || fileName.match(/\.(heic|heif)$/)) {
         try {
-          const optimizedFile = await optimizeImage(file);
+          // First convert HEIC/HEIF if necessary
+          const convertedFile = await convertHeicToJpeg(file);
+          // Then optimize the converted file
+          const optimizedFile = await optimizeImage(convertedFile);
           handleImageUpload(optimizedFile);
         } catch (error) {
-          console.error('Error optimizing image:', error);
+          console.error('Error processing image:', error);
           alert('Error processing image. Please try again.');
         }
       } else {
@@ -88,15 +92,19 @@ export function Canvas() {
     e.preventDefault();
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
     const fileType = file.type.toLowerCase();
+    const fileName = file.name.toLowerCase();
 
-    if (validTypes.includes(fileType) || file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+    if (validTypes.includes(fileType) || fileName.match(/\.(heic|heif)$/)) {
       try {
-        const optimizedFile = await optimizeImage(file);
+        // First convert HEIC/HEIF if necessary
+        const convertedFile = await convertHeicToJpeg(file);
+        // Then optimize the converted file
+        const optimizedFile = await optimizeImage(convertedFile);
         handleImageUpload(optimizedFile);
       } catch (error) {
-        console.error('Error optimizing image:', error);
+        console.error('Error processing image:', error);
         alert('Error processing image. Please try again.');
       }
     } else {
