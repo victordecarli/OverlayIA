@@ -113,7 +113,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       id: Date.now(),
       text: 'new text',
       fontFamily: 'Inter',
-      fontWeight: '800',
+      fontWeight: '700',
       fontSize: 350,
       color: '#FFFFFF',
       position: { vertical: 50, horizontal: 50 },
