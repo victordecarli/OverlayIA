@@ -70,7 +70,7 @@ interface EditorActions {
   updateTextSet: (id: number, updates: Partial<TextSet>) => void;
   removeTextSet: (id: number) => void;
   duplicateTextSet: (id: number) => void;
-  handleImageUpload: (file: File) => Promise<void>;
+  handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean }) => Promise<void>;
   downloadImage: () => Promise<void>;
   resetEditor: (clearImage?: boolean) => void;
   addShapeSet: (type: string) => void;
@@ -172,9 +172,29 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     };
   }),
 
-  handleImageUpload: async (file: File) => {
-    if (!file) return;
-    
+  handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean }) => {
+    // Set states if provided
+    if (state?.isConverting !== undefined) set({ isConverting: state.isConverting });
+    if (state?.isProcessing !== undefined) set({ isProcessing: state.isProcessing });
+
+    if (file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+      set({ isConverting: true });
+      set(state => ({
+        image: {
+          ...state.image,
+          original: URL.createObjectURL(file)
+        }
+      }));
+    } else {
+      set({ isProcessing: true });
+      set(state => ({
+        image: {
+          ...state.image,
+          original: URL.createObjectURL(file)
+        }
+      }));
+    }
+
     try {
       const fileName = file.name.replace(/\.[^/.]+$/, "");
       set({ originalFileName: fileName });

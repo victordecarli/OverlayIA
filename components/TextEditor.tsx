@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { GlowEffect } from '@/types/editor';
 import { useDebounce } from '@/hooks/useDebounce';
+import { ColorInput } from './ColorInput';
 
 // Helper function for smooth scrolling
 const scrollToElement = (element: HTMLElement | null) => {
@@ -71,25 +72,25 @@ export function TextEditor() {
       {textSets.map((textSet) => (
         <div 
           key={textSet.id} 
-          className="bg-black/40 border border-white/10 rounded-lg shadow-lg shadow-black/20 backdrop-blur-sm p-4 space-y-4"
+          className="bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg shadow-md dark:shadow-lg dark:shadow-black/20 p-4 space-y-4"
         >
           {/* Text Input */}
           <Input
             value={textSet.text}
             onChange={(e) => updateTextSet(textSet.id, { text: e.target.value })}
-            className="bg-white/5 border-white/10 text-white"
+            className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
             placeholder="Enter text..."
           />
           
           {/* Font Controls */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="block text-sm text-gray-400 mb-1">Font Family</Label>
+              <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Font Family</Label>
               <Select
                 value={textSet.fontFamily}
                 onValueChange={(value) => updateTextSet(textSet.id, { fontFamily: value })}
               >
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
                   <SelectValue placeholder="Select font" />
                 </SelectTrigger>
                 <SelectContent className="max-h-[200px] overflow-y-auto bg-zinc-900 border-white/10 text-white">
@@ -108,12 +109,12 @@ export function TextEditor() {
             </div>
 
             <div>
-              <Label className="block text-sm text-gray-400 mb-1">Font Weight</Label>
+              <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Font Weight</Label>
               <Select
                 value={textSet.fontWeight}
                 onValueChange={(value) => updateTextSet(textSet.id, { fontWeight: value })}
               >
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
                   <SelectValue placeholder="Select weight" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-white/10 text-white">
@@ -134,7 +135,7 @@ export function TextEditor() {
           {/* Text Size */}
           <div className="space-y-1">
             <div className="flex justify-between items-center">
-              <Label className="text-sm text-gray-400">Text Size</Label>
+              <Label className="text-sm text-gray-600 dark:text-gray-400">Text Size</Label>
               {/* <span className="text-sm text-gray-400">{textSet.fontSize}px</span> */}
             </div>
             <Slider
@@ -147,20 +148,24 @@ export function TextEditor() {
 
           {/* Color */}
           <div>
-            <Label className="block text-sm text-gray-400 mb-1">Color</Label>
-            <input
+            <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Color</Label>
+            {/* <input
               type="color"
               value={textSet.color}
               onChange={(e) => updateTextSet(textSet.id, { color: e.target.value })}
-              className="w-full h-9 cursor-pointer rounded-md border border-white/10 bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
+              className="w-full h-9 cursor-pointer rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
+            /> */}
+            <ColorInput
+              value={textSet.color} // or shapeSet.color
+              onChange={(value) => updateTextSet(textSet.id, { color: value })} // or updateShapeSet
             />
           </div>
 
           {/* Opacity */}
           <div className="space-y-1">
             <div className="flex justify-between items-center">
-              <Label className="text-sm text-gray-400">Opacity</Label>
-              <span className="text-sm text-gray-400">{Math.round(textSet.opacity * 100)}%</span>
+              <Label className="text-sm text-gray-600 dark:text-gray-400">Opacity</Label>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{Math.round(textSet.opacity * 100)}%</span>
             </div>
             <Slider
               min={0}
@@ -175,8 +180,8 @@ export function TextEditor() {
           <div className="space-y-4">
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-gray-400">Horizontal Position</Label>
-                <span className="text-sm text-gray-400">{textSet.position.horizontal}%</span>
+                <Label className="text-sm text-gray-600 dark:text-gray-400">Horizontal Position</Label>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{textSet.position.horizontal}%</span>
               </div>
               <Slider
                 min={0}
@@ -188,8 +193,8 @@ export function TextEditor() {
 
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-gray-400">Vertical Position</Label>
-                <span className="text-sm text-gray-400">{textSet.position.vertical}%</span>
+                <Label className="text-sm text-gray-600 dark:text-gray-400">Vertical Position</Label>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{textSet.position.vertical}%</span>
               </div>
               <Slider
                 min={0}
@@ -203,8 +208,8 @@ export function TextEditor() {
           {/* Rotation */}
           <div className="space-y-1">
             <div className="flex justify-between items-center">
-              <Label className="text-sm text-gray-400">Rotation</Label>
-              <span className="text-sm text-gray-400">{textSet.rotation}°</span>
+              <Label className="text-sm text-gray-600 dark:text-gray-400">Rotation</Label>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{textSet.rotation}°</span>
             </div>
             <Slider
               min={-180}
@@ -217,7 +222,7 @@ export function TextEditor() {
           {/* Glow Effect Controls */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label className="text-sm text-gray-400">Enable Glow</Label>
+              <Label className="text-sm text-gray-600 dark:text-gray-400">Enable Glow</Label>
               <Switch
                 checked={textSet.glow?.enabled ?? false}
                 onCheckedChange={(checked) => {
@@ -234,8 +239,8 @@ export function TextEditor() {
             {textSet.glow?.enabled && (
               <>
                 <div>
-                  <Label className="block text-sm text-gray-400 mb-1">Glow Color</Label>
-                  <input
+                  <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Glow Color</Label>
+                  {/* <input
                     type="color"
                     value={textSet.glow.color}
                     onChange={(e) => {
@@ -245,14 +250,25 @@ export function TextEditor() {
                       };
                       updateTextSet(textSet.id, { glow: newGlow });
                     }}
-                    className="w-full h-9 cursor-pointer rounded-md border border-white/10 bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
-                  />
+                    className="w-full h-9 cursor-pointer rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
+                  /> */}
+
+              <ColorInput
+                value={textSet.glow.color} 
+                onChange={(value) => {
+                  const newGlow: GlowEffect = {
+                    ...textSet.glow!, 
+                    color: value
+                  };
+                  updateTextSet(textSet.id, { glow: newGlow }); // or updateShapeSet
+                }}
+                />
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <Label className="text-sm text-gray-400">Glow Intensity</Label>
-                    <span className="text-sm text-gray-400">{textSet.glow.intensity}</span>
+                    <Label className="text-sm text-gray-600 dark:text-gray-400">Glow Intensity</Label>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{textSet.glow.intensity}</span>
                   </div>
                   <Slider
                     min={0}
@@ -274,7 +290,7 @@ export function TextEditor() {
           {/* Delete button */}
           <button
             onClick={() => removeTextSet(textSet.id)}
-            className="w-full p-2 bg-red-500/10 text-red-400 rounded-md hover:bg-red-500/20"
+            className="w-full p-2 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20"
           >
             Delete Layer
           </button>

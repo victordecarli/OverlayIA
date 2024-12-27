@@ -62,7 +62,7 @@ const optimizeImage = async (file: File): Promise<File> => {
 };
 
 export function Canvas() {
-  const { image, textSets, isProcessing, isConverting, handleImageUpload, processingMessage } = useEditor();
+  const { image, isProcessing, isConverting, handleImageUpload, processingMessage } = useEditor();
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
@@ -70,14 +70,20 @@ export function Canvas() {
       const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
-      console.log(fileType, fileName);
+
       if (validTypes.includes(fileType) || fileName.match(/\.(heic|heif)$/)) {
         try {
-          // First convert HEIC/HEIF if necessary
-          const convertedFile = await convertHeicToJpeg(file);
-          // Then optimize the converted file
-          const optimizedFile = await optimizeImage(convertedFile);
-          handleImageUpload(optimizedFile);
+          if (fileName.match(/\.(heic|heif)$/)) {
+            handleImageUpload(file, { isConverting: true });
+            const convertedFile = await convertHeicToJpeg(file);
+            handleImageUpload(convertedFile, { isConverting: false, isProcessing: true });
+            const optimizedFile = await optimizeImage(convertedFile);
+            handleImageUpload(optimizedFile, { isProcessing: false });
+          } else {
+            handleImageUpload(file, { isProcessing: true });
+            const optimizedFile = await optimizeImage(file);
+            handleImageUpload(optimizedFile, { isProcessing: false });
+          }
         } catch (error) {
           console.error('Error processing image:', error);
           alert('Error processing image. Please try again.');
@@ -98,11 +104,10 @@ export function Canvas() {
 
     if (validTypes.includes(fileType) || fileName.match(/\.(heic|heif)$/)) {
       try {
-        // First convert HEIC/HEIF if necessary
+        handleImageUpload(file, { isConverting: true });
         const convertedFile = await convertHeicToJpeg(file);
-        // Then optimize the converted file
         const optimizedFile = await optimizeImage(convertedFile);
-        handleImageUpload(optimizedFile);
+        handleImageUpload(optimizedFile, { isConverting: false });
       } catch (error) {
         console.error('Error processing image:', error);
         alert('Error processing image. Please try again.');
@@ -115,6 +120,16 @@ export function Canvas() {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+  };
+
+  const getLoadingMessage = () => {
+    if (isConverting) {
+      return 'Converting HEIC to JPEG format...';
+    }
+    if (isProcessing) {
+      return processingMessage || 'processing...';
+    }
+    return 'Loading image...';
   };
 
   return (
@@ -134,11 +149,11 @@ export function Canvas() {
           />
           <label
             htmlFor="canvas-upload"
-            className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-600/50 rounded-xl transition-all hover:border-gray-400/50 hover:bg-white/[0.02] cursor-pointer"
+            className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl transition-all bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer"
           >
             <div className="text-center space-y-6">
-              <h3 className="text-xl font-medium text-white/90">Upload an image to get started</h3>
-              <div className="w-20 h-20 mx-auto rounded-2xl bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-700 shadow-xl">
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">Upload an image to get started</h3>
+              <div className="w-20 h-20 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-xl">
                 <Upload className="w-10 h-10 text-gray-400" />
               </div>
               <div className="space-y-2">
@@ -154,9 +169,7 @@ export function Canvas() {
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
-                <p className="text-white text-sm">
-                  {processingMessage || 'Processing...'}
-                </p>
+                <p className="text-white text-sm">{getLoadingMessage()}</p>
               </div>
             </div>
           )}

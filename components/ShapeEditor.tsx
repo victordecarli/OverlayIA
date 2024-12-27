@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { GlowEffect } from '@/types/editor';
 import { useDebounce } from '@/hooks/useDebounce';
+import { ColorInput } from './ColorInput';
 
 export function ShapeEditor() {
   const { shapeSets, updateShapeSet, removeShapeSet } = useEditor();
@@ -64,16 +65,16 @@ export function ShapeEditor() {
           <div 
             key={shapeSet.id} 
             ref={el => { shapeRefs.current[shapeSet.id] = el; }}
-            className="bg-black/40 border border-white/10 rounded-lg shadow-lg shadow-black/20 backdrop-blur-sm p-4 space-y-4"
+            className="bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg shadow-md dark:shadow-lg dark:shadow-black/20 p-4 space-y-4"
           >
             {/* Shape Type Selection */}
             <div className="mt-4">
-              <Label className="block text-sm text-gray-400 mb-1">Shape Type</Label>
+              <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Shape Type</Label>
               <Select
                 value={shapeSet.type}
                 onValueChange={(value) => updateShapeSet(shapeSet.id, { type: value })}
               >
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
                   <SelectValue placeholder="Select shape" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-white/10 text-white">
@@ -92,7 +93,7 @@ export function ShapeEditor() {
 
             {/* Fill Toggle */}
             <div className="flex items-center justify-between mb-4">
-              <Label className="text-sm text-gray-400">Fill Shape</Label>
+              <Label className="text-sm text-gray-600 dark:text-gray-400">Fill Shape</Label>
               <Switch
                 checked={shapeSet.isFilled}
                 onCheckedChange={(checked) => 
@@ -103,20 +104,25 @@ export function ShapeEditor() {
 
             {/* Color */}
             <div>
-              <Label className="block text-sm text-gray-400 mb-1">Color</Label>
-              <input
+              <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Color</Label>
+              {/* <input
                 type="color"
                 value={shapeSet.color}
                 onChange={(e) => updateShapeSet(shapeSet.id, { color: e.target.value })}
-                className="w-full h-9 cursor-pointer rounded-md border border-white/10 bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
+                className="w-full h-9 cursor-pointer rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
+              /> */}
+
+              <ColorInput
+                value={shapeSet.color} 
+                onChange={(value) => updateShapeSet(shapeSet.id, { color: value })} 
               />
             </div>
 
             {/* Replace Width and Height controls with single Size control */}
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-gray-400">Size</Label>
-                <span className="text-sm text-gray-400">{shapeSet.scale}%</span>
+                <Label className="text-sm text-gray-600 dark:text-gray-400">Size</Label>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{shapeSet.scale}%</span>
               </div>
               <Slider
                 min={1}
@@ -130,8 +136,8 @@ export function ShapeEditor() {
             {!shapeSet.isFilled && (
               <div className="space-y-1 mb-4">
                 <div className="flex justify-between items-center">
-                  <Label className="text-sm text-gray-400">Stroke Width</Label>
-                  <span className="text-sm text-gray-400">{shapeSet.strokeWidth || 2}px</span>
+                  <Label className="text-sm text-gray-600 dark:text-gray-400">Stroke Width</Label>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{shapeSet.strokeWidth || 2}px</span>
                 </div>
                 <Slider
                   min={0.1}
@@ -146,8 +152,8 @@ export function ShapeEditor() {
             {/* Position X */}
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-gray-400">Horizontal Position</Label>
-                <span className="text-sm text-gray-400">{shapeSet.position.horizontal}%</span>
+                <Label className="text-sm text-gray-600 dark:text-gray-400">Horizontal Position</Label>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{shapeSet.position.horizontal}%</span>
               </div>
               <Slider
                 min={0}
@@ -161,8 +167,8 @@ export function ShapeEditor() {
             {/* Position Y */}
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <Label className="text-sm text-gray-400">Vertical Position</Label>
-                <span className="text-sm text-gray-400">{shapeSet.position.vertical}%</span>
+                <Label className="text-sm text-gray-600 dark:text-gray-400">Vertical Position</Label>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{shapeSet.position.vertical}%</span>
               </div>
               <Slider
                 min={0}
@@ -177,7 +183,7 @@ export function ShapeEditor() {
             {/* Glow Effect Controls */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-gray-400">Enable Glow</Label>
+                <Label className="text-sm text-gray-600 dark:text-gray-400">Enable Glow</Label>
                 <Switch
                   checked={shapeSet.glow?.enabled ?? false}
                   onCheckedChange={(checked) => {
@@ -194,8 +200,8 @@ export function ShapeEditor() {
               {/* Rotation */}
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <Label className="text-sm text-gray-400">Rotation</Label>
-                  <span className="text-sm text-gray-400">{shapeSet.rotation}°</span>
+                  <Label className="text-sm text-gray-600 dark:text-gray-400">Rotation</Label>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{shapeSet.rotation}°</span>
                 </div>
                 <Slider
                   min={-180}
@@ -208,8 +214,8 @@ export function ShapeEditor() {
               {shapeSet.glow?.enabled && (
                 <>
                   <div>
-                    <Label className="block text-sm text-gray-400 mb-1">Glow Color</Label>
-                    <input
+                    <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Glow Color</Label>
+                    {/* <input
                       type="color"
                       value={shapeSet.glow.color}
                       onChange={(e) => {
@@ -219,14 +225,25 @@ export function ShapeEditor() {
                         };
                         updateShapeSet(shapeSet.id, { glow: newGlow });
                       }}
-                      className="w-full h-9 cursor-pointer rounded-md border border-white/10 bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
-                    />
+                      className="w-full h-9 cursor-pointer rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
+                    /> */}
+
+                  <ColorInput
+                    value={shapeSet.glow.color} 
+                    onChange={(value) => {
+                      const newGlow: GlowEffect = {
+                        ...shapeSet.glow!, 
+                        color: value
+                      };
+                      updateShapeSet(shapeSet.id, { glow: newGlow }); // or updateShapeSet
+                    }}
+                  />
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex justify-between items-center">
-                      <Label className="text-sm text-gray-400">Glow Intensity</Label>
-                      <span className="text-sm text-gray-400">{shapeSet.glow.intensity}</span>
+                      <Label className="text-sm text-gray-600 dark:text-gray-400">Glow Intensity</Label>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">{shapeSet.glow.intensity}</span>
                     </div>
                     <Slider
                       min={0}
