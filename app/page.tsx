@@ -30,9 +30,21 @@ export default function Home() {
 
       {/* Content Container */}
       <div className="relative z-10 flex-grow">
+        {/* Ad Banner */}
+        <div className="w-full bg-black/30 border-b border-gray-800">
+          <a 
+            href="https://visualcovermaker.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block py-3 text-center text-gray-300 hover:text-white transition-colors duration-300"
+          >
+            Turn plain images into beautiful song covers with customizable overlays. Check out <b>VC Maker!</b>
+          </a>
+        </div>
+
         {/* First Viewport Section */}
         <div className="min-h-screen flex flex-col justify-center">
-          <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="container mx-auto px-4 py-6 md:py-12">
             {/* Hero Section */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -60,6 +72,19 @@ export default function Home() {
                   "Create Now"
                 )}
               </Link>
+
+              {/* Product Hunt Badges */}
+              <div className="flex flex-row justify-center items-center gap-2 mt-8 overflow-x-auto w-full pb-2 -mx-4 px-4">
+                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+                </a>
+                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+                </a>
+                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+                </a>
+              </div>
             </motion.div>
 
             {/* Featured Images - First Row */}
