@@ -60,6 +60,19 @@ export default function Home() {
                   "Create Now"
                 )}
               </Link>
+
+              {/* Product Hunt Badges */}
+              <div className="flex flex-row justify-center items-center gap-2 mt-8 overflow-x-auto w-full pb-2 -mx-4 px-4">
+                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+                </a>
+                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+                </a>
+                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+                </a>
+              </div>
             </motion.div>
 
             {/* Featured Images - First Row */}
