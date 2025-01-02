@@ -30,9 +30,21 @@ export default function Home() {
 
       {/* Content Container */}
       <div className="relative z-10 flex-grow">
+        {/* Ad Banner */}
+        <div className="w-full bg-black/30 border-b border-gray-800">
+          <a 
+            href="https://visualcovermaker.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block py-3 text-center text-gray-300 hover:text-white transition-colors duration-300"
+          >
+            Turn plain images into beautiful song covers with customizable overlays. Check out <b>VC Maker!</b>
+          </a>
+        </div>
+
         {/* First Viewport Section */}
         <div className="min-h-screen flex flex-col justify-center">
-          <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="container mx-auto px-4 py-6 md:py-12">
             {/* Hero Section */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
