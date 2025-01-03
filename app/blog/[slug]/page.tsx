@@ -1,18 +1,22 @@
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import { BlogPost as BlogPostComponent } from '@/components/BlogPost';
-import { getBlogPost } from '@/lib/blog';
+import { blogPosts } from '@/lib/blog';
 
-type Props = {
-  params: Promise<{ slug: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+// Make generateStaticParams async
+export async function generateStaticParams() {
+  return Object.keys(blogPosts).map((slug) => ({
+    slug,
+  }));
 }
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const slug = (await params).slug;
-  const post = await getBlogPost(slug);
+type Props = {
+  params: Promise<{ slug: string }> | { slug: string }
+}
+
+// Make generateMetadata async and await params
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const post = blogPosts[resolvedParams.slug];
 
   return {
     title: `${post.title} | UnderlayX Blog`,
@@ -21,9 +25,7 @@ export async function generateMetadata(
       title: post.title,
       description: post.description,
       type: 'article',
-      publishedTime: post.date,
-      authors: ['UnderlayX Team'],
-      tags: post.tags
+      publishedTime: post.date
     },
     twitter: {
       card: 'summary_large_image',
@@ -33,9 +35,9 @@ export async function generateMetadata(
   };
 }
 
+// Make page component async and await params
 export default async function BlogPost({ params }: Props) {
-  const slug = (await params).slug;
-  const post = await getBlogPost(slug);
-  
+  const resolvedParams = await params;
+  const post = blogPosts[resolvedParams.slug];
   return <BlogPostComponent post={post} />;
 }

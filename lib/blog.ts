@@ -58,12 +58,12 @@ export const blogPosts = {
     description: 'Essential tips and tricks to enhance your photo designs using UnderlayX.',
     content: `
       <article>
-        <p>Creating stunning designs doesn't have to be complicated. Here are some essential tips:</p>
+        <p>Creating stunning designs doesn't have to be complicated. Here are some essential tips:</p><br>
         <ul>
-          <li>Stick to one or two fonts for a clean look</li>
-          <li>Use shapes sparingly to avoid clutter</li>
-          <li>Add glowing effects to highlight important details</li>
-          <li>Experiment with color contrasts for text and shapes</li>
+          <li>1. Stick to one or two fonts for a clean look</li>
+          <li>2. Use shapes sparingly to avoid clutter</li>
+          <li>3. Add glowing effects to highlight important details</li>
+          <li>4. Experiment with color contrasts for text and shapes</li>
         </ul>
         <p>With UnderlayX, these design tips are easy to apply!</p>
       </article>
@@ -84,10 +84,20 @@ export const blogPosts = {
   }
 };
 
-export function getAllBlogPosts() {
-  return Object.values(blogPosts);
+export async function getBlogPost(slug: string) {
+  const post = blogPosts[slug];
+  if (!post) {
+    throw new Error(`Blog post ${slug} not found`);
+  }
+  return post;
 }
 
-export async function getBlogPost(slug: string) {
-  return blogPosts[slug];
+export function getAllBlogPosts() {
+  return Object.values(blogPosts).sort((a, b) => {
+    if (a.date < b.date) {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
 }
