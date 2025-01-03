@@ -60,10 +60,10 @@ export const blogPosts = {
       <article>
         <p>Creating stunning designs doesn't have to be complicated. Here are some essential tips:</p><br>
         <ul>
-          <li>1. Stick to one or two fonts for a clean look</li>
-          <li>2. Use shapes sparingly to avoid clutter</li>
-          <li>3. Add glowing effects to highlight important details</li>
-          <li>4. Experiment with color contrasts for text and shapes</li>
+          <li>Stick to one or two fonts for a clean look</li>
+          <li>Use shapes sparingly to avoid clutter</li>
+          <li>Add glowing effects to highlight important details</li>
+          <li>Experiment with color contrasts for text and shapes</li>
         </ul>
         <p>With UnderlayX, these design tips are easy to apply!</p>
       </article>
