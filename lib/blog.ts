@@ -6,7 +6,7 @@ export const blogPosts = {
     content: `
       <p>Ever wanted to create the effect of text appearing behind the subject in your photos? With UnderlayX, it's incredibly simple. Upload your image, add your desired text, and watch the tool automatically position it behind the main subject. Whether you're crafting social media posts or enhancing a personal project, this feature adds depth and creativity to your designs.</p>
     `,
-    date: '2024-02-20',
+    date: '2025-01-03',
     category: 'Tutorial'
   },
   'glowing-text-effects': {
@@ -16,7 +16,7 @@ export const blogPosts = {
     content: `
       <p>Adding a glowing effect to text can make your designs pop! UnderlayX lets you customize text styles, including adding vibrant color effects and shadows. Pair this with the behind-the-subject placement, and you'll have a design that stands out in any crowd. Try it now and elevate your creativity.</p>
     `,
-    date: '2024-02-19',
+    date: '2025-01-03',
     category: 'Design Tips'
   },
   'shapes-transform-designs': {
@@ -26,7 +26,7 @@ export const blogPosts = {
     content: `
       <p>Shapes aren't just for fun—they're a powerful design element. Use UnderlayX to add geometric patterns, abstract symbols, or even subtle accents behind your subject. Customize the size, color, and position for endless possibilities. Your photos will look more professional and polished in just minutes.</p>
     `,
-    date: '2024-02-18',
+    date: '2025-01-03',
     category: 'Design Tips'
   },
 
@@ -37,7 +37,7 @@ export const blogPosts = {
     content: `
       <p>Sometimes, less is more. UnderlayX empowers you to create minimalist designs by placing subtle text or shapes behind your subject. It's a simple touch that can make a big impact. Minimalist designs are not only trendy but also versatile across platforms and purposes.</p>
     `,
-    date: '2024-02-17',
+    date: '2025-01-03',
     category: 'Design Theory'
   },
 
@@ -48,7 +48,7 @@ export const blogPosts = {
     content: `
       <p>Layered effects, like text or shapes behind subjects, add depth and sophistication to any image. With UnderlayX, achieving this effect is easy. Just upload your photo, choose your design elements, and let the tool handle the rest. Perfect for creatives, marketers, and anyone who loves impactful visuals.</p>
     `,
-    date: '2024-02-16',
+    date: '2025-01-03',
     category: 'Tutorial'
   },
 
@@ -68,7 +68,7 @@ export const blogPosts = {
         <p>With UnderlayX, these design tips are easy to apply!</p>
       </article>
     `,
-    date: '2024-02-15',
+    date: '2025-01-03',
     category: 'Design Tips'
   },
 
@@ -79,7 +79,7 @@ export const blogPosts = {
     content: `
       <p>The text-behind-subject effect creates a seamless and professional look that's trending across social media. This effect draws attention to your subject while adding context or a creative twist. UnderlayX makes this trend accessible for everyone—no advanced editing skills required!</p>
     `,
-    date: '2024-02-14',
+    date: '2025-01-03',
     category: 'Trends'
   }
 };
