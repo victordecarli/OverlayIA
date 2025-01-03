@@ -1,6 +1,7 @@
 import { Header } from './Header';
 import { Footer } from './Footer';
 import Link from 'next/link';
+import sanitizeHtml from 'sanitize-html';
 
 interface BlogPostProps {
   post: {
@@ -12,6 +13,11 @@ interface BlogPostProps {
 }
 
 export function BlogPost({ post }: BlogPostProps) {
+  const sanitizedContent = sanitizeHtml(post.content, {
+    allowedTags: [ 'p', 'ul', 'li', 'br', 'article' ],
+    allowedAttributes: {}
+  });
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0A0A0A]">
       <Header />
@@ -24,7 +30,7 @@ export function BlogPost({ post }: BlogPostProps) {
           </header>
           <div 
             className="prose prose-invert prose-lg max-w-none mb-16"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           />
           <div className="mt-16 p-8 rounded-2xl bg-gradient-to-br from-purple-900/30 to-blue-900/30 border border-purple-500/20">
             <h2 className="text-2xl font-bold text-white mb-4">Ready to Create Your Own Stunning Designs?</h2>
