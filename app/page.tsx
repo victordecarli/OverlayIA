@@ -67,7 +67,7 @@ export default function Home() {
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-8">
                 UnderlayX
               </h1>
-              <p className="text-xl md:text-2xl text-gray-300 mb-12">
+              <p className="text-lg md:text-xl text-gray-300 mb-12">
                 The ultimate free tool to place text behind images, create glowing effects, and add shapes behind objects. Perfect for content creators, social media, and professional design. No login required - start creating now!
               </p>
               <Link 
@@ -86,7 +86,7 @@ export default function Home() {
               </Link>
 
               {/* Product Hunt Badges */}
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 px-4">
+              <div className="hidden sm:flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 px-4">
                 <a 
                   href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" 
                   target="_blank" 
