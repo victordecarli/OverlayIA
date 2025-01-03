@@ -9,15 +9,19 @@ import { Footer } from '@/components/Footer';
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
+  
+  // Add layoutEffect: false to prevent hydration warning
   const { scrollYProgress } = useScroll({
     target: scrollRef,
-    offset: ["start start", "end start"]
+    offset: ["start start", "end start"],
+    layoutEffect: false // Add this line
   });
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
   return (
-    <div className="min-h-screen relative flex flex-col">
+    // Add position-relative to both parent and scroll container
+    <div className="min-h-screen relative flex flex-col" style={{ position: 'relative' }}>
       {/* Animated Gradient Background */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         <div className="absolute inset-0 bg-[#0A0A0A]" />
@@ -28,8 +32,16 @@ export default function Home() {
         {/* <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" /> */}
       </div>
 
-      {/* Content Container */}
-      <div className="relative z-10 flex-grow">
+      {/* Content Container - Ensure both className and style have positioning */}
+      <div 
+        ref={scrollRef}
+        className="relative z-10 flex-grow" 
+        style={{ 
+          position: 'relative',
+          transform: 'translate3d(0, 0, 0)',  // Create a new stacking context with hardware acceleration
+          willChange: 'transform'  // Hint to browser about upcoming transforms
+        }}
+      >
         {/* Ad Banner */}
         <div className="w-full bg-black/30 border-b border-gray-800">
           <a 
@@ -49,14 +61,14 @@ export default function Home() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: "easeOut", reducedMotion: "user" }}
               className="text-center max-w-4xl mx-auto mb-16 md:mb-24"
             >
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-8">
                 UnderlayX
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-12">
-                Add shapes and text behind elements in an image, create glowing effects, and customize stunning visuals effortlessly, all with professional-grade quality.
+                The ultimate free tool to place text behind images, create glowing effects, and add shapes behind objects. Perfect for content creators, social media, and professional design. No login required - start creating now!
               </p>
               <Link 
                 href="/custom-editor" 
@@ -74,17 +86,45 @@ export default function Home() {
               </Link>
 
               {/* Product Hunt Badges */}
-              <div className="flex flex-row justify-center items-center gap-2 mt-8 overflow-x-auto w-full pb-2 -mx-4 px-4">
-                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
-                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 px-4">
+                <a 
+                  href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-full sm:w-auto"
+                >
+                  <img 
+                    src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44" 
+                    alt="UnderlayX - Product Hunt" 
+                    className="w-full max-w-[250px] h-auto mx-auto"
+                  />
                 </a>
-                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
-                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+                <a 
+                  href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-full sm:w-auto"
+                >
+                  <img 
+                    src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily" 
+                    alt="UnderlayX - Product Hunt" 
+                    className="w-full max-w-[250px] h-auto mx-auto"
+                  />
                 </a>
-                <a href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
-                  <img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164" alt="UnderlayX - Product Hunt" className="w-[180px] sm:w-[250px] h-auto" />
+                <a 
+                  href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-full sm:w-auto"
+                >
+                  <img 
+                    src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164" 
+                    alt="UnderlayX - Product Hunt" 
+                    className="w-full max-w-[250px] h-auto mx-auto"
+                  />
                 </a>
               </div>
+
             </motion.div>
 
             {/* Featured Images - First Row */}
@@ -96,7 +136,7 @@ export default function Home() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  transition={{ duration: 0.5, ease: "easeOut", reducedMotion: "user" }}
                   className="w-full md:w-[70%] aspect-video relative overflow-hidden group"
                 >
                   <div className="absolute inset-0 rounded-xl overflow-hidden">
@@ -107,6 +147,8 @@ export default function Home() {
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 70vw"
                       priority
+                      loading="eager"
+                      quality={75}
                     />
                     {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="absolute bottom-0 p-6">
@@ -120,7 +162,7 @@ export default function Home() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+                  transition={{ duration: 0.5, ease: "easeOut", reducedMotion: "user", delay: 0.1 }}
                   className="w-full md:w-[30%] aspect-[3/4] relative overflow-hidden group"
                 >
                   <div className="absolute inset-0 rounded-xl overflow-hidden">
@@ -130,6 +172,9 @@ export default function Home() {
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 30vw"
+                      priority
+                      loading="eager"
+                      quality={75}
                     />
                     {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="absolute bottom-0 p-6">
@@ -150,7 +195,7 @@ export default function Home() {
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.1 }}
+                    transition={{ duration: 0.5, ease: "easeOut", reducedMotion: "user", delay: index * 0.1 }}
                     className="w-full md:w-1/3 aspect-[3/4] relative overflow-hidden rounded-xl"
                   >
                     <Image
@@ -159,6 +204,8 @@ export default function Home() {
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 33vw"
+                      loading="lazy"
+                      quality={75}
                     />
                   </motion.div>
                 ))}
@@ -172,9 +219,10 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
+                  transition={{ reducedMotion: "user" }}
                   className="text-3xl md:text-5xl font-bold text-white text-center mb-12"
                 >
-                  Powerful Features
+                  Create Stunning Text Behind Images & More
                 </motion.h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -229,10 +277,19 @@ export default function Home() {
                       key={index}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
+                      transition={{ delay: index * 0.1, reducedMotion: "user" }}
                       className={`group p-6 rounded-2xl border border-gray-800 relative bg-black/20 backdrop-blur-sm 
-                        hover:bg-black/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_30px_-5px] 
-                        hover:shadow-${feature.color}-500/20 overflow-hidden`}
+                        hover:bg-black/40 transition-all duration-500 hover:-translate-y-1 
+                        ${feature.color === 'purple' && 'hover:shadow-[0_0_30px_-5px_rgba(147,51,234,0.3)]'}
+                        ${feature.color === 'blue' && 'hover:shadow-[0_0_30px_-5px_rgba(59,130,246,0.3)]'}
+                        ${feature.color === 'yellow' && 'hover:shadow-[0_0_30px_-5px_rgba(234,179,8,0.3)]'}
+                        ${feature.color === 'pink' && 'hover:shadow-[0_0_30px_-5px_rgba(236,72,153,0.3)]'}
+                        ${feature.color === 'green' && 'hover:shadow-[0_0_30px_-5px_rgba(34,197,94,0.3)]'}
+                        ${feature.color === 'red' && 'hover:shadow-[0_0_30px_-5px_rgba(239,68,68,0.3)]'}
+                        ${feature.color === 'indigo' && 'hover:shadow-[0_0_30px_-5px_rgba(99,102,241,0.3)]'}
+                        ${feature.color === 'orange' && 'hover:shadow-[0_0_30px_-5px_rgba(249,115,22,0.3)]'}
+                        ${feature.color === 'cyan' && 'hover:shadow-[0_0_30px_-5px_rgba(6,182,212,0.3)]'}
+                        overflow-hidden`}
                     >
                       <div className={`absolute inset-0 bg-gradient-to-r from-${feature.color}-500/10 via-transparent to-transparent 
                         opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -258,6 +315,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
+                  transition={{ reducedMotion: "user" }}
                   className="text-3xl md:text-5xl font-bold text-white text-center mb-12"
                 >
                   For Every Creator
@@ -305,8 +363,14 @@ export default function Home() {
                     <div
                       key={index}
                       className={`group p-8 rounded-2xl border border-gray-800 relative bg-black/20 backdrop-blur-sm 
-                        hover:bg-black/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_40px_-5px] 
-                        hover:shadow-${card.color}-500/30 overflow-hidden`}
+                        hover:bg-black/40 transition-all duration-500 hover:-translate-y-2 
+                        ${card.color === 'purple' && 'hover:shadow-[0_0_40px_-5px_rgba(147,51,234,0.3)]'}
+                        ${card.color === 'blue' && 'hover:shadow-[0_0_40px_-5px_rgba(59,130,246,0.3)]'}
+                        ${card.color === 'green' && 'hover:shadow-[0_0_40px_-5px_rgba(34,197,94,0.3)]'}
+                        ${card.color === 'pink' && 'hover:shadow-[0_0_40px_-5px_rgba(236,72,153,0.3)]'}
+                        ${card.color === 'yellow' && 'hover:shadow-[0_0_40px_-5px_rgba(234,179,8,0.3)]'}
+                        ${card.color === 'orange' && 'hover:shadow-[0_0_40px_-5px_rgba(249,115,22,0.3)]'}
+                        overflow-hidden`}
                     >
                       <div className={`absolute inset-0 bg-gradient-to-br from-${card.color}-500/10 via-transparent to-transparent 
                         opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
