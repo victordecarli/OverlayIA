@@ -29,7 +29,7 @@ export function Footer() {
             <p className="text-gray-400 text-sm">
               Created by{' '}
               <a 
-                href="https://x.com/Vineer5" 
+                href="https://www.linkedin.com/in/vineerpasam/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-300 hover:text-white transition-colors hover:underline"

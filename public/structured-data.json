@@ -1,0 +1,21 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "UnderlayX",
+  "description": "Free online tool to add text behind images, create glowing effects, and place shapes behind objects. Perfect for content creators and designers.",
+  "url": "https://www.underlayx.com",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Add text behind images",
+    "Place shapes behind objects",
+    "Create glowing text effects",
+    "High-quality downloads",
+    "No login required"
+  ]
+}
