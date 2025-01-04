@@ -180,6 +180,20 @@ export function ShapeEditor() {
               />
             </div>
 
+            {/* Rotation */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <Label className="text-sm text-gray-600 dark:text-gray-400">Rotation</Label>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{shapeSet.rotation}°</span>
+              </div>
+              <Slider
+                min={-180}
+                max={180}
+                value={[shapeSet.rotation]}
+                onValueChange={([value]) => updateShapeSet(shapeSet.id, { rotation: value })}
+              />
+            </div>
+
             {/* Glow Effect Controls */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -194,20 +208,6 @@ export function ShapeEditor() {
                     };
                     updateShapeSet(shapeSet.id, { glow: newGlow });
                   }}
-                />
-              </div>
-
-              {/* Rotation */}
-              <div className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <Label className="text-sm text-gray-600 dark:text-gray-400">Rotation</Label>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{shapeSet.rotation}°</span>
-                </div>
-                <Slider
-                  min={-180}
-                  max={180}
-                  value={[shapeSet.rotation]}
-                  onValueChange={([value]) => updateShapeSet(shapeSet.id, { rotation: value })}
                 />
               </div>
 

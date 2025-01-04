@@ -1,10 +1,49 @@
 export const blogPosts = {
+  'shapes-behind-images': {
+    slug: 'shapes-behind-images',
+    title: 'How to Place Shapes Behind Your Image\'s Subject',
+    description: 'Learn how to enhance your photos with creative shapes using UnderlayX\'s intuitive tools.',
+    content: `
+      <img src="/shape.png" alt="A black and white image shows a silhouette of a person with arms outstretched in front of a heart-shaped outline, against a misty background." className="w-full rounded-lg mb-8" />
+      <p>Want to make your photos pop with creative shapes?</p>
+      <p>With UnderlayX, adding shapes to your images is as easy as it gets. Whether you're designing social media posts, creating professional graphics, or just exploring your creativity, our shape tool lets you add a unique flair to your photos in seconds.</p>
+      <p>Here's how it works:</p>
+      <ul>
+        <li>Upload your image: Start by selecting the photo you want to enhance.</li>
+        <li>Choose your shape: Pick from a wide variety of customizable shapes—circles, rectangles, arrows, stars, and more.</li>
+        <li>Customize your design: Adjust the size, color, and transparency of the shape to perfectly match your image's vibe.</li>
+        <li>Position with precision: Drag and drop the shape anywhere on your image, or layer it to create depth and perspective.</li>
+        <li>Refine your masterpiece: Use our smart tools to ensure the shape seamlessly integrates into your photo.</li>
+      </ul>
+      <img src="/shape-tutorial.png" alt="A black and white image shows a silhouette of a person with arms outstretched in front of a heart-shaped outline, against a misty background." className="w-full rounded-lg mb-8" />
+      <p>With UnderlayX, you can:</p>
+      <ul>
+        <li>Experiment with different shapes to create standout visuals.</li>
+        <li>Combine shapes with text for even more impact.</li>
+        <li>Save your creations in high quality, ready to download and share.</li>
+      </ul>
+      <p>Whether you're highlighting important details, framing key elements, or adding a playful touch to your photos, UnderlayX makes it simple to bring your ideas to life.</p>
+    `,
+    date: '2025-01-03',
+    category: 'Tutorial'
+  },
   'text-behind-images': {
     slug: 'text-behind-images',
     title: 'How to Add Text Behind Your Image\'s Subject',
     description: 'Learn how to create stunning designs by placing text behind image subjects with UnderlayX.',
     content: `
-      <p>Ever wanted to create the effect of text appearing behind the subject in your photos? With UnderlayX, it's incredibly simple. Upload your image, add your desired text, and watch the tool automatically position it behind the main subject. Whether you're crafting social media posts or enhancing a personal project, this feature adds depth and creativity to your designs.</p>
+      <img src="/move.png" alt="A silhouette of a person riding a bicycle" className="w-full rounded-lg mb-8" />
+      <p>Ever wanted to create the stunning effect of text appearing seamlessly behind the subject in your photos?</p>
+      <p>With UnderlayX, it's not just possible—it's effortless. Upload your image, type your desired text, and watch the tool work its magic as it intelligently places the text behind the main subject. It's perfect for crafting eye-catching social media posts, unique presentations, or adding a creative touch to personal projects.</p>
+      <p>But we don't stop there. UnderlayX also allows you to:</p>
+      <ul>
+      <li>Customize your text with various fonts, colors, and styles.</li>
+      <li>Add shapes and elements for an extra layer of visual appeal.</li>
+      <li>Preview and refine your designs instantly.</li>
+      <li>Download high-quality images ready to share or use anywhere.</li>
+      </ul>
+      <img src="/hand.png" alt="A silhouette of a person riding a bicycle" className="w-full rounded-lg mb-8" />
+      <p>Whether you're a designer, a content creator, or just someone who loves unique visuals, UnderlayX empowers you to create like never before. It's not just a tool; it's your gateway to creativity.</p>
     `,
     date: '2025-01-03',
     category: 'Tutorial'
