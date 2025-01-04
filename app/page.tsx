@@ -141,7 +141,7 @@ export default function Home() {
                 >
                   <div className="absolute inset-0 rounded-xl overflow-hidden">
                     <Image
-                      src="/images/journey.png"
+                      src="/journey.png"
                       alt="Landscape example"
                       fill
                       className="object-cover"
@@ -167,7 +167,7 @@ export default function Home() {
                 >
                   <div className="absolute inset-0 rounded-xl overflow-hidden">
                     <Image
-                      src="/images/star.png"
+                      src="/star.png"
                       alt="Portrait example"
                       fill
                       className="object-cover"
@@ -199,7 +199,7 @@ export default function Home() {
                     className="w-full md:w-1/3 aspect-[3/4] relative overflow-hidden rounded-xl"
                   >
                     <Image
-                      src={`/images/${imageName}.png`}
+                      src={`/${imageName}.png`}
                       alt={`${imageName} example`}
                       fill
                       className="object-cover"

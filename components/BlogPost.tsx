@@ -14,8 +14,10 @@ interface BlogPostProps {
 
 export function BlogPost({ post }: BlogPostProps) {
   const sanitizedContent = sanitizeHtml(post.content, {
-    allowedTags: [ 'p', 'ul', 'li', 'br', 'article' ],
-    allowedAttributes: {}
+    allowedTags: [ 'p', 'ul', 'li', 'br', 'article', 'img' ],
+    allowedAttributes: {
+      'img': [ 'src', 'alt', 'className' ]
+    }
   });
 
   return (
