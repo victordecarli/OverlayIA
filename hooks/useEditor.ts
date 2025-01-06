@@ -63,6 +63,7 @@ interface EditorState {
   imageEnhancements: ImageEnhancements;
   originalFileName: string | null;
   processingMessage: string;
+  loadedFonts: Set<string>;
 }
 
 interface EditorActions {
@@ -106,6 +107,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   },
   originalFileName: null,
   processingMessage: '',
+  loadedFonts: new Set(),
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -122,11 +124,51 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     }]
   })),
 
-  updateTextSet: (id, updates) => set((state) => ({
-    textSets: state.textSets.map(set => 
-      set.id === id ? { ...set, ...updates } : set
-    )
-  })),
+  updateTextSet: async (id, updates) => {
+    const state = get();
+    
+    try {
+      // If there's a font update, load it first
+      if (updates.fontFamily) {
+        const weightsToLoad = ['400', '700'];
+        const fontLoadPromises = weightsToLoad.map(weight => 
+          document.fonts.load(`${weight} 16px "${updates.fontFamily}"`)
+        );
+
+        // Wait for all font weights to load
+        await Promise.all(fontLoadPromises);
+
+        // Fix the type error by ensuring fontFamily is not undefined and creating a new Set properly
+        if (updates.fontFamily) {
+          const newLoadedFonts = new Set(state.loadedFonts);
+          newLoadedFonts.add(updates.fontFamily);
+          
+          set({
+            loadedFonts: newLoadedFonts
+          });
+        }
+      }
+
+      // Update the text set after font is loaded (or immediately if no font change)
+      set(state => ({
+        textSets: state.textSets.map(set => 
+          set.id === id 
+            ? { ...set, ...updates }
+            : set
+        )
+      }));
+    } catch (error) {
+      console.warn(`Failed to update text set (ID: ${id}):`, error);
+      // Still update other properties even if font loading fails
+      set(state => ({
+        textSets: state.textSets.map(set => 
+          set.id === id 
+            ? { ...set, ...updates }
+            : set
+        )
+      }));
+    }
+  },
 
   removeTextSet: (id) => set((state) => ({
     textSets: state.textSets.filter(set => set.id !== id)
@@ -275,7 +317,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       // Load fonts first with a status update
       set({ processingMessage: 'Getting everything perfect...' });
       const fontPromises = textSets.map(textSet => 
-        document.fonts.load(`${textSet.fontWeight} 1rem ${textSet.fontFamily}`)
+        document.fonts.load(`${textSet.fontWeight} 1rem "${textSet.fontFamily}"`)
       );
       await Promise.all(fontPromises);
 
@@ -352,7 +394,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       textSets.forEach(textSet => {
         ctx.save();
         
-        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px ${textSet.fontFamily}`;
+        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
         ctx.fillStyle = textSet.color;
         ctx.globalAlpha = textSet.opacity;
         ctx.textAlign = 'center';

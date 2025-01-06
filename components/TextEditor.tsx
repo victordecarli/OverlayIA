@@ -28,6 +28,7 @@ export function TextEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { textSets, updateTextSet, removeTextSet } = useEditor();
   const [openAccordions, setOpenAccordions] = useState<Record<number, boolean>>({});
+  const [fontSearch, setFontSearch] = useState('');
 
   const debouncedUpdateText = useDebounce((id: number, updates: any) => {
     updateTextSet(id, updates);
@@ -93,17 +94,45 @@ export function TextEditor() {
                 <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
                   <SelectValue placeholder="Select font" />
                 </SelectTrigger>
-                <SelectContent className="max-h-[200px] overflow-y-auto bg-zinc-900 border-white/10 text-white">
-                  {FONT_OPTIONS.map((font) => (
-                    <SelectItem 
-                      key={font.value} 
-                      value={font.value}
-                      className="focus:bg-white/10 focus:text-white"
-                      style={{ fontFamily: font.value }}
-                    >
-                      {font.name}
-                    </SelectItem>
-                  ))}
+                <SelectContent 
+                  className="max-h-[400px] overflow-y-auto bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white w-[280px]"
+                >
+                  {/* <div className="sticky top-0 z-50 bg-white dark:bg-zinc-900 p-2 border-b border-gray-200 dark:border-white/10">
+                    <Input
+                      type="text"
+                      placeholder="Search fonts..."
+                      value={fontSearch}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                      onKeyDown={(e) => {
+                        e.stopPropagation();
+                      }}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setFontSearch(e.target.value);
+                      }}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-white/10 rounded text-gray-900 dark:text-white text-sm"
+                    />
+                  </div> */}
+                  <div className="pt-2">
+                    {FONT_OPTIONS
+                      .filter(font => 
+                        font.name.toLowerCase().includes(fontSearch.toLowerCase())
+                      )
+                      .map((font) => (
+                        <SelectItem 
+                          key={font.value} 
+                          value={font.value}
+                          className="focus:bg-gray-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white h-10 text-gray-900 dark:text-white data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-white/10"
+                          style={{ fontFamily: font.value }}
+                        >
+                          {font.name}
+                        </SelectItem>
+                      ))}
+                  </div>
                 </SelectContent>
               </Select>
             </div>
@@ -117,12 +146,12 @@ export function TextEditor() {
                 <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
                   <SelectValue placeholder="Select weight" />
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                <SelectContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
                   {FONT_WEIGHTS.map((weight) => (
                     <SelectItem 
                       key={weight.value} 
                       value={weight.value}
-                      className="focus:bg-white/10 focus:text-white"
+                      className="focus:bg-gray-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-white/10"
                     >
                       {weight.name}
                     </SelectItem>
