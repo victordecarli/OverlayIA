@@ -99,30 +99,37 @@ export function CanvasPreview() {
       textSets.forEach(textSet => {
         ctx.save();
         
-        // Create proper font string for rendering
-        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px ${textSet.fontFamily}`;
-        ctx.fillStyle = textSet.color;
-        ctx.globalAlpha = textSet.opacity;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        const x = (canvas.width * textSet.position.horizontal) / 100;
-        const y = (canvas.height * textSet.position.vertical) / 100;
-
-        ctx.translate(x, y);
-        ctx.rotate((textSet.rotation * Math.PI) / 180);
-
-        // Add glow effect if enabled
-        if (textSet.glow?.enabled && textSet.glow.color && textSet.glow.intensity > 0) {
-          ctx.shadowColor = textSet.glow.color;
-          ctx.shadowBlur = textSet.glow.intensity;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 0;
+        try {
+          // Create proper font string
+          const fontString = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
+          
+          // Set the font
+          ctx.font = fontString;
+          ctx.fillStyle = textSet.color;
+          ctx.globalAlpha = textSet.opacity;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+  
+          const x = (canvas.width * textSet.position.horizontal) / 100;
+          const y = (canvas.height * textSet.position.vertical) / 100;
+  
+          ctx.translate(x, y);
+          ctx.rotate((textSet.rotation * Math.PI) / 180);
+  
+          // Add glow effect if enabled
+          if (textSet.glow?.enabled && textSet.glow.color && textSet.glow.intensity > 0) {
+            ctx.shadowColor = textSet.glow.color;
+            ctx.shadowBlur = textSet.glow.intensity;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+          }
+  
+          ctx.fillText(textSet.text, 0, 0);
+        } catch (error) {
+          console.warn(`Failed to render text: ${textSet.text}`, error);
+        } finally {
+          ctx.restore();
         }
-
-        ctx.fillText(textSet.text, 0, 0);
-        
-        ctx.restore();
       });
 
       // Draw foreground with correct dimensions - FIX HERE

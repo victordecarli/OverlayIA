@@ -33,8 +33,8 @@ export function ImageEditor() {
     >
       {isDownloading ? (
         <>
-          <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 animate-spin" />
-          <span>Downloading...</span>
+          {/* <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 animate-spin" /> */}
+          <span>Download</span>
         </>
       ) : (
         <>

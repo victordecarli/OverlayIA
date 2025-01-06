@@ -6,7 +6,7 @@ import { Upload } from 'lucide-react';
 import { CanvasPreview } from './CanvasPreview';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { ConfirmDialog } from './ConfirmDialog';
-import { useState, useRef } from 'react'; // Add useRef
+import { useState, useRef, useCallback, useEffect } from 'react'; // Add useRef, useCallback, useEffect
 
 const MAX_IMAGE_SIZE = 1920; // Maximum dimension for images
 
@@ -64,10 +64,20 @@ const optimizeImage = async (file: File): Promise<File> => {
 };
 
 export function Canvas() {
-  const { image, isProcessing, isConverting, handleImageUpload, processingMessage } = useEditor();
+  const { image, isProcessing, isConverting, handleImageUpload, processingMessage, textSets } = useEditor();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null); // Add this ref
+
+  // Add this function inside the Canvas component
+  const preloadFonts = useCallback(async (fontFamily: string) => {
+    try {
+      await document.fonts.load(`400 16px "${fontFamily}"`);
+      await document.fonts.load(`700 16px "${fontFamily}"`);
+    } catch (error) {
+      console.warn(`Failed to preload font: ${fontFamily}`, error);
+    }
+  }, []);
 
   const handleFileProcess = async (file: File) => {
     const fileName = file.name.toLowerCase();
@@ -154,6 +164,19 @@ export function Canvas() {
     }
     return 'Loading image...';
   };
+
+  // Inside useEffect where you handle text changes
+  useEffect(() => {
+    const loadFonts = async () => {
+      const fontPromises = textSets.map(textSet => 
+        preloadFonts(textSet.fontFamily)
+      );
+      await Promise.all(fontPromises);
+      // Remove render() call
+    };
+    
+    loadFonts();
+  }, [textSets, preloadFonts]);
 
   return (
     <>
