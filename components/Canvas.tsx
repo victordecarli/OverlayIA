@@ -54,7 +54,7 @@ const optimizeImage = async (file: File): Promise<File> => {
           }
         },
         'image/jpeg',
-        0.6
+        0.2
       );
     };
 
