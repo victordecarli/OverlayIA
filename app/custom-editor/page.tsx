@@ -1,3 +1,5 @@
+export { metadata } from './metadata';
+
 'use client';
 
 import { Navbar } from '@/components/Navbar';
