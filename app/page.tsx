@@ -84,7 +84,7 @@ export default function Home() {
                 className="text-center max-w-5xl mx-auto mb-16 md:mb-24"
               >
                 <h1 className="text-2xl md:text-5xl font-bold text-white mb-8">
-                Add anything behind images with ease
+                Add text and shapes behind images easily
                 </h1>
                 <p className="text-md md:text-lg text-gray-300 mb-12">
                   The ultimate free tool to place text behind images, create glowing effects, and add shapes behind objects.
