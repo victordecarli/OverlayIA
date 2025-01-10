@@ -49,6 +49,14 @@ interface ImageEnhancements {
   sharpness: number;
 }
 
+interface ClonedForeground {
+  id: number;
+  position: {
+    x: number;
+    y: number;
+  };
+}
+
 interface EditorState {
   image: {
     original: string | null;
@@ -71,6 +79,7 @@ interface EditorState {
     x: number;
     y: number;
   };
+  clonedForegrounds: ClonedForeground[];
 }
 
 interface EditorActions {
@@ -92,6 +101,9 @@ interface EditorActions {
   resetBackground: () => void;
   changeBackground: () => Promise<void>;
   updateForegroundPosition: (position: { x: number; y: number }) => void;
+  addClonedForeground: () => void;
+  removeClonedForeground: (id: number) => void;
+  updateClonedForegroundPosition: (id: number, position: { x: number; y: number }) => void;
 }
 
 // Add helper functions outside of the store
@@ -143,6 +155,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     x: 0,
     y: 0
   },
+  clonedForegrounds: [],
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -430,6 +443,26 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         } else {
           ctx.drawImage(fgImg, x, y, newWidth, newHeight);
         }
+
+        // Draw cloned foregrounds
+        for (const clone of get().clonedForegrounds) {
+          const fgImg = await loadImage(image.foreground);
+          const scale = Math.min(
+            canvas.width / fgImg.width,
+            canvas.height / fgImg.height
+          );
+          
+          const newWidth = fgImg.width * scale;
+          const newHeight = fgImg.height * scale;
+          
+          const x = (canvas.width - newWidth) / 2;
+          const y = (canvas.height - newHeight) / 2;
+
+          const offsetX = (canvas.width * clone.position.x) / 100;
+          const offsetY = (canvas.height * clone.position.y) / 100;
+          
+          ctx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
+        }
       }
 
       // Create blob and download
@@ -479,6 +512,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       shadows: 0,
       sharpness: 0,
     },
+    clonedForegrounds: [], // Clear clones on reset
     image: clearImage ? {
       original: null,
       background: null,
@@ -557,4 +591,29 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   updateForegroundPosition: ({ x, y }) => {
     set({ foregroundPosition: { x, y } });
   },
+
+  addClonedForeground: () => {
+    const { image } = get();
+    if (!image.foreground) return;
+
+    set((state) => ({
+      clonedForegrounds: [
+        ...state.clonedForegrounds,
+        {
+          id: Date.now(),
+          position: { x: 0, y: 0 }
+        }
+      ]
+    }));
+  },
+
+  removeClonedForeground: (id) => set((state) => ({
+    clonedForegrounds: state.clonedForegrounds.filter(clone => clone.id !== id)
+  })),
+
+  updateClonedForegroundPosition: (id, position) => set((state) => ({
+    clonedForegrounds: state.clonedForegrounds.map(clone =>
+      clone.id === id ? { ...clone, position } : clone
+    )
+  })),
 }));

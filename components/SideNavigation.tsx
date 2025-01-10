@@ -1,6 +1,6 @@
 'use client';
 
-import { Type, Shapes, Plus, ImageIcon, Image } from 'lucide-react';
+import { Type, Shapes, Plus, ImageIcon, Image, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { TextEditor } from './TextEditor';
@@ -8,14 +8,15 @@ import { ShapeEditor } from './ShapeEditor';
 import { RemoveBackgroundEditor } from './RemoveBackgroundEditor';
 import { useEditor } from '@/hooks/useEditor';
 import { ChangeBackgroundEditor } from './ChangeBackgroundEditor';
+import { CloneImageEditor } from './CloneImageEditor';
 
 interface SideNavigationProps {
   mobile?: boolean;
-  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only';
+  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only';
 }
 
 export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
-  const [activeTab, setActiveTab] = useState<'text' | 'shapes' | 'remove-background' | 'change-background' | null>(null);
+  const [activeTab, setActiveTab] = useState<'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | null>(null);
   const { image, isProcessing, isConverting, addTextSet, addShapeSet } = useEditor();
   const canAddLayers = !!image.original && !!image.background && !isProcessing && !isConverting;
 
@@ -23,6 +24,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   const showShapesButton = mode === 'full' || mode === 'shapes-only';
   const showRemoveBackground = mode === 'full' || mode === 'remove-background-only';
   const showChangeBackground = mode === 'full' || mode === 'change-background-only';
+  const showCloneImage = mode === 'full' || mode === 'clone-image-only';
 
   // Add effect to handle body class for mobile slide up
   useEffect(() => {
@@ -38,9 +40,10 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   useEffect(() => {
     if (mode === 'remove-background-only') {
       setActiveTab('remove-background');
-    }
-    if (mode === 'change-background-only') {
+    } else if (mode === 'change-background-only') {
       setActiveTab('change-background');
+    } else if (mode === 'clone-image-only') {
+      setActiveTab('clone-image');
     }
   }, [mode]);
 
@@ -67,6 +70,29 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
           mobile ? "text-[10px]" : "text-xs",
           "font-medium"
         )}>Change BG</span>
+      </button>
+    )
+  );
+
+  // Add clone image button
+  const cloneImageButton = (
+    showCloneImage && (
+      <button
+        onClick={() => setActiveTab(activeTab === 'clone-image' ? null : 'clone-image')}
+        className={cn(
+          mobile ? "flex-1 p-2" : "p-3",
+          "rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+          activeTab === 'clone-image'
+            ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+            : "text-gray-500 dark:text-gray-400"
+        )}
+        disabled={!canAddLayers}
+      >
+        <Copy className={mobile ? "w-4 h-4" : "w-5 h-5"} />
+        <span className={cn(
+          mobile ? "text-[10px]" : "text-xs",
+          "font-medium"
+        )}>Clone Image</span>
       </button>
     )
   );
@@ -123,6 +149,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               </button>
             )}
             {changeBackgroundButton}
+            {cloneImageButton}
           </div>
         </div>
 
@@ -139,7 +166,12 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                    <Plus className="w-4 h-4" />
                    <span>Add {activeTab === 'text' ? 'Text' : 'Shape'}</span>
                  </button>
-                ) : (<h3 className="text-lg font-semibold">Remove Background</h3>)
+                ) : (
+                <h3 className="text-lg font-semibold">
+                  {activeTab === 'remove-background' ? 'Remove Background' : ''}
+                  {activeTab === 'change-background' ? 'Change Background' : ''}
+                  {activeTab === 'clone-image' ? 'Clone Image' : ''}
+                </h3>)
               }
                
               {/* Add close button */}
@@ -157,6 +189,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               {activeTab === 'shapes' && <ShapeEditor />}
               {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
               {activeTab === 'change-background' && <ChangeBackgroundEditor />}
+              {activeTab === 'clone-image' && <CloneImageEditor />}
             </div>
           </div>
         )}
@@ -224,6 +257,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
             </button>
           )}
           {changeBackgroundButton}
+          {cloneImageButton}
         </div>
 
         {/* Editor Content with border */}
@@ -241,7 +275,9 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               </button>
              ) : (
                 <h3 className="text-lg font-semibold">
-                  {activeTab === 'remove-background' ? 'Remove Background' : 'Change Background'}
+                  {activeTab === 'remove-background' ? 'Remove Background' : 
+                   activeTab === 'change-background' ? 'Change Background' : 
+                   'Clone Image'}
                 </h3>
               )}
             </div>
@@ -250,6 +286,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               {activeTab === 'shapes' && <ShapeEditor />}
               {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
               {activeTab === 'change-background' && <ChangeBackgroundEditor />}
+              {activeTab === 'clone-image' && <CloneImageEditor />}
             </div>
           </div>
         )}

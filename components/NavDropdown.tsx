@@ -88,6 +88,18 @@ export function NavDropdown() {
               <span className="text-xs text-gray-300">Easily change the background of your image</span>
             </div>
           </Link>
+
+          <Link 
+            href="/clone-image"
+            className="flex w-full items-center gap-3 p-4 hover:bg-white/10 text-white transition-colors"
+            onClick={() => setIsOpen(false)}
+          >
+            <ImageDown className="w-5 h-5" />
+            <div className="flex flex-col text-left">
+              <span className="font-medium">Clone Image</span>
+              <span className="text-xs text-gray-300">Effortlessly clone and position objects in your image</span>
+            </div>
+          </Link>
         </div>
       )}
     </div>

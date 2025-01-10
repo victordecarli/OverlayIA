@@ -5,7 +5,7 @@ import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
 
 export function CanvasPreview() {
-  const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground, foregroundPosition, hasChangedBackground } = useEditor();
+  const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground, foregroundPosition, hasChangedBackground, clonedForegrounds } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
   const fgImageRef = useRef<HTMLImageElement | null>(null);
@@ -140,7 +140,7 @@ export function CanvasPreview() {
         }
       });
 
-      // Draw foreground image LAST and ONCE with positioning
+      // Draw original foreground
       if (fgImageRef.current) {
         ctx.filter = 'none';
         ctx.globalAlpha = 1;
@@ -163,9 +163,28 @@ export function CanvasPreview() {
         } else {
           ctx.drawImage(fgImageRef.current, x, y, newWidth, newHeight);
         }
+
+        // Draw cloned foregrounds
+        clonedForegrounds.forEach(clone => {
+          const scale = Math.min(
+            canvas.width / fgImageRef.current!.width,
+            canvas.height / fgImageRef.current!.height
+          );
+          
+          const newWidth = fgImageRef.current!.width * scale;
+          const newHeight = fgImageRef.current!.height * scale;
+          
+          const x = (canvas.width - newWidth) / 2;
+          const y = (canvas.height - newHeight) / 2;
+          
+          const offsetX = (canvas.width * clone.position.x) / 100;
+          const offsetY = (canvas.height * clone.position.y) / 100;
+
+          ctx.drawImage(fgImageRef.current!, x + offsetX, y + offsetY, newWidth, newHeight);
+        });
       }
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds]);
 
   // Cleanup animation frame on unmount
   useEffect(() => {
@@ -217,7 +236,7 @@ export function CanvasPreview() {
   // Re-render on text, shape, imageEnhancements, and foregroundPosition changes
   useEffect(() => {
     render();
-  }, [textSets, shapeSets, imageEnhancements, foregroundPosition, hasChangedBackground]);
+  }, [textSets, shapeSets, imageEnhancements, foregroundPosition, clonedForegrounds, hasChangedBackground]);
 
   return (
     <div className="relative w-full h-full">
