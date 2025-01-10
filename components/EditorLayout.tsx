@@ -5,13 +5,15 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { Upload, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Canvas } from '@/components/Canvas';
+import { useIsMobile } from '@/hooks/useIsMobile'; // Add this hook
 
 interface EditorLayoutProps {
-  SideNavComponent: React.ComponentType;
+  SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
 }
 
 export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   const { resetEditor, downloadImage, isDownloading } = useEditor();
+  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
@@ -43,7 +45,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
 
       <div className="pt-16 flex h-[calc(100vh-4rem)]">
         <div className="hidden lg:block border-r border-gray-200 dark:border-white/10">
-          <SideNavComponent />
+          <SideNavComponent mobile={isMobile} />
         </div>
 
         <main className={cn(
@@ -53,7 +55,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
           "lg:pl-[320px]"
         )}>
           <div className="lg:hidden mb-2">
-            <SideNavComponent />
+            <SideNavComponent mobile={isMobile} />
           </div>
 
           <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
