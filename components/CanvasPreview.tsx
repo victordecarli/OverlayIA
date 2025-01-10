@@ -193,9 +193,12 @@ export function CanvasPreview() {
   }, [textSets, shapeSets, imageEnhancements]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full h-full object-contain"
-    />
+    <div className="relative w-full h-full">
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full object-contain"
+      />
+      {/* Remove background and foreground image elements - we'll draw everything on canvas */}
+    </div>
   );
 }
