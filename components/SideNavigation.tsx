@@ -9,12 +9,16 @@ import { useEditor } from '@/hooks/useEditor';
 
 interface SideNavigationProps {
   mobile?: boolean;
+  mode?: 'full' | 'text-only' | 'shapes-only';
 }
 
-export function SideNavigation({ mobile = false }: SideNavigationProps) {
+export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
   const [activeTab, setActiveTab] = useState<'text' | 'shapes' | null>(null);
   const { image, isProcessing, isConverting, addTextSet, addShapeSet } = useEditor();
   const canAddLayers = !!image.original && !!image.background && !isProcessing && !isConverting;
+
+  const showTextButton = mode === 'full' || mode === 'text-only';
+  const showShapesButton = mode === 'full' || mode === 'shapes-only';
 
   // Add effect to handle body class for mobile slide up
   useEffect(() => {
@@ -32,32 +36,36 @@ export function SideNavigation({ mobile = false }: SideNavigationProps) {
         {/* Fixed Bottom Navigation Bar - Reduced height */}
         <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50">
           <div className="flex gap-2 max-w-md mx-auto">
-            <button
-              onClick={() => setActiveTab(activeTab === 'text' ? null : 'text')}
-              className={cn(
-                "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-                activeTab === 'text' 
-                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-gray-400"
-              )}
-              disabled={!canAddLayers}
-            >
-              <Type className="w-4 h-4" />
-              <span className="text-[10px] font-medium">Text</span>
-            </button>
-            <button
-              onClick={() => setActiveTab(activeTab === 'shapes' ? null : 'shapes')}
-              className={cn(
-                "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-                activeTab === 'shapes'
-                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-gray-400"
-              )}
-              disabled={!canAddLayers}
-            >
-              <Shapes className="w-4 h-4" />
-              <span className="text-[10px] font-medium">Shapes</span>
-            </button>
+            {showTextButton && (
+              <button
+                onClick={() => setActiveTab(activeTab === 'text' ? null : 'text')}
+                className={cn(
+                  "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+                  activeTab === 'text' 
+                    ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+                    : "text-gray-500 dark:text-gray-400"
+                )}
+                disabled={!canAddLayers}
+              >
+                <Type className="w-4 h-4" />
+                <span className="text-[10px] font-medium">Text</span>
+              </button>
+            )}
+            {showShapesButton && (
+              <button
+                onClick={() => setActiveTab(activeTab === 'shapes' ? null : 'shapes')}
+                className={cn(
+                  "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+                  activeTab === 'shapes'
+                    ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+                    : "text-gray-500 dark:text-gray-400"
+                )}
+                disabled={!canAddLayers}
+              >
+                <Shapes className="w-4 h-4" />
+                <span className="text-[10px] font-medium">Shapes</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -103,36 +111,40 @@ export function SideNavigation({ mobile = false }: SideNavigationProps) {
       <div className="flex h-full bg-white dark:bg-zinc-950">
         {/* Navigation Buttons with border */}
         <div className="w-[60px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2">
-          <button
-            onClick={() => {
-              setActiveTab(activeTab === 'text' ? null : 'text');
-            }}
-            className={cn(
-              "p-3 rounded-lg flex flex-col items-center gap-2 transition-colors",
-              activeTab === 'text'
-                ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            )}
-            disabled={!canAddLayers}
-          >
-            <Type className="w-5 h-5" />
-            <span className="text-xs font-medium">Text</span>
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab(activeTab === 'shapes' ? null : 'shapes');
-            }}
-            className={cn(
-              "p-3 rounded-lg flex flex-col items-center gap-2 transition-colors",
-              activeTab === 'shapes'
-                ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            )}
-            disabled={!canAddLayers}
-          >
-            <Shapes className="w-5 h-5" />
-            <span className="text-xs font-medium">Shapes</span>
-          </button>
+          {showTextButton && (
+            <button
+              onClick={() => {
+                setActiveTab(activeTab === 'text' ? null : 'text');
+              }}
+              className={cn(
+                "p-3 rounded-lg flex flex-col items-center gap-2 transition-colors",
+                activeTab === 'text'
+                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              )}
+              disabled={!canAddLayers}
+            >
+              <Type className="w-5 h-5" />
+              <span className="text-xs font-medium">Text</span>
+            </button>
+          )}
+          {showShapesButton && (
+            <button
+              onClick={() => {
+                setActiveTab(activeTab === 'shapes' ? null : 'shapes');
+              }}
+              className={cn(
+                "p-3 rounded-lg flex flex-col items-center gap-2 transition-colors",
+                activeTab === 'shapes'
+                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              )}
+              disabled={!canAddLayers}
+            >
+              <Shapes className="w-5 h-5" />
+              <span className="text-xs font-medium">Shapes</span>
+            </button>
+          )}
         </div>
 
         {/* Editor Content with border */}

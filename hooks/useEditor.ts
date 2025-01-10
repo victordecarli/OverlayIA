@@ -437,7 +437,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
           }
           
           const now = new Date();
-          const baseFileName = originalFileName || 'UnderlayXAI';
+          const baseFileName = originalFileName || 'UnderlayX';
           const timestamp = [
             now.getDate().toString().padStart(2, '0'),
             (now.getMonth() + 1).toString().padStart(2, '0'),
@@ -446,7 +446,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
           
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
-          link.download = `${baseFileName}_${timestamp}.png`;
+          link.download = `${baseFileName}.png`;
           link.href = url;
           
           set({ processingMessage: 'Downloading your creation...' });
