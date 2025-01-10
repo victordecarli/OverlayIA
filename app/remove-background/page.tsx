@@ -2,9 +2,8 @@
 
 import { useEditor } from '@/hooks/useEditor';
 import { useEffect } from 'react';
-import { Canvas } from '@/components/Canvas';
-import { RemoveBackgroundNavigation } from '@/components/RemoveBackgroundNavigation';
 import { EditorLayout } from '@/components/EditorLayout';
+import { RemoveBackgroundNavigation } from '@/components/RemoveBackgroundNavigation';
 
 export default function RemoveBackgroundPage() {
   const { resetEditor } = useEditor();

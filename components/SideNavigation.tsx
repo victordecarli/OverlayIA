@@ -5,13 +5,12 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { TextEditor } from './TextEditor';
 import { ShapeEditor } from './ShapeEditor';
-import { useEditor } from '@/hooks/useEditor';
-import { RemoveBackgroundNavigation } from './RemoveBackgroundNavigation';
 import { RemoveBackgroundEditor } from './RemoveBackgroundEditor';
+import { useEditor } from '@/hooks/useEditor';
 
 interface SideNavigationProps {
   mobile?: boolean;
-  mode?: 'full' | 'text-only' | 'shapes-only';
+  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only';
 }
 
 export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
@@ -21,6 +20,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
 
   const showTextButton = mode === 'full' || mode === 'text-only';
   const showShapesButton = mode === 'full' || mode === 'shapes-only';
+  const showRemoveBackground = mode === 'full' || mode === 'remove-background-only';
 
   // Add effect to handle body class for mobile slide up
   useEffect(() => {
@@ -31,6 +31,13 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     }
     return () => document.body.classList.remove('editor-panel-open');
   }, [mobile, activeTab]);
+
+  // If we're in remove-background-only mode, set it as initial active tab
+  useEffect(() => {
+    if (mode === 'remove-background-only') {
+      setActiveTab('remove-background');
+    }
+  }, [mode]);
 
   // Helper function to determine if we should show the "Add" button
   const shouldShowAddButton = (activeTab: string) => {
@@ -73,7 +80,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                 <span className="text-[10px] font-medium">Shapes</span>
               </button>
             )}
-            {mode === 'full' && (
+            {showRemoveBackground && (
               <button
                 onClick={() => setActiveTab(activeTab === 'remove-background' ? null : 'remove-background')}
                 className={cn(
@@ -172,7 +179,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               <span className="text-xs font-medium">Shapes</span>
             </button>
           )}
-          {mode === 'full' && (
+          {showRemoveBackground && (
             <button
               onClick={() => setActiveTab(activeTab === 'remove-background' ? null : 'remove-background')}
               className={cn(
