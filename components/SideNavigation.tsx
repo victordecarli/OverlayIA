@@ -29,41 +29,41 @@ export function SideNavigation({ mobile = false }: SideNavigationProps) {
   if (mobile) {
     return (
       <>
-        {/* Fixed Bottom Navigation Bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-2 z-50">
+        {/* Fixed Bottom Navigation Bar - Reduced height */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50">
           <div className="flex gap-2 max-w-md mx-auto">
             <button
               onClick={() => setActiveTab(activeTab === 'text' ? null : 'text')}
               className={cn(
-                "flex-1 p-3 rounded-lg flex flex-col items-center gap-1 transition-colors",
+                "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
                 activeTab === 'text' 
                   ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
                   : "text-gray-500 dark:text-gray-400"
               )}
               disabled={!canAddLayers}
             >
-              <Type className="w-5 h-5" />
-              <span className="text-xs font-medium">Text</span>
+              <Type className="w-4 h-4" />
+              <span className="text-[10px] font-medium">Text</span>
             </button>
             <button
               onClick={() => setActiveTab(activeTab === 'shapes' ? null : 'shapes')}
               className={cn(
-                "flex-1 p-3 rounded-lg flex flex-col items-center gap-1 transition-colors",
+                "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
                 activeTab === 'shapes'
                   ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
                   : "text-gray-500 dark:text-gray-400"
               )}
               disabled={!canAddLayers}
             >
-              <Shapes className="w-5 h-5" />
-              <span className="text-xs font-medium">Shapes</span>
+              <Shapes className="w-4 h-4" />
+              <span className="text-[10px] font-medium">Shapes</span>
             </button>
           </div>
         </div>
 
         {/* Mobile Slide-up Editor Panel */}
         {activeTab && (
-          <div className="fixed inset-x-0 bottom-[72px] bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 rounded-t-xl z-40 h-[35vh] flex flex-col shadow-2xl">
+          <div className="fixed inset-x-0 bottom-[56px] bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 rounded-t-xl z-40 h-[35vh] flex flex-col shadow-2xl">
             <div className="sticky top-0 bg-white dark:bg-zinc-950 p-3 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
               <button
                 onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
