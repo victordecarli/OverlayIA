@@ -1,26 +1,28 @@
 'use client';
 
-import { Type, Shapes, Plus, ImageIcon } from 'lucide-react';
+import { Type, Shapes, Plus, ImageIcon, Image } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { TextEditor } from './TextEditor';
 import { ShapeEditor } from './ShapeEditor';
 import { RemoveBackgroundEditor } from './RemoveBackgroundEditor';
 import { useEditor } from '@/hooks/useEditor';
+import { ChangeBackgroundEditor } from './ChangeBackgroundEditor';
 
 interface SideNavigationProps {
   mobile?: boolean;
-  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only';
+  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only';
 }
 
 export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
-  const [activeTab, setActiveTab] = useState<'text' | 'shapes' | 'remove-background' | null>(null);
+  const [activeTab, setActiveTab] = useState<'text' | 'shapes' | 'remove-background' | 'change-background' | null>(null);
   const { image, isProcessing, isConverting, addTextSet, addShapeSet } = useEditor();
   const canAddLayers = !!image.original && !!image.background && !isProcessing && !isConverting;
 
   const showTextButton = mode === 'full' || mode === 'text-only';
   const showShapesButton = mode === 'full' || mode === 'shapes-only';
   const showRemoveBackground = mode === 'full' || mode === 'remove-background-only';
+  const showChangeBackground = mode === 'full' || mode === 'change-background-only';
 
   // Add effect to handle body class for mobile slide up
   useEffect(() => {
@@ -37,12 +39,37 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     if (mode === 'remove-background-only') {
       setActiveTab('remove-background');
     }
+    if (mode === 'change-background-only') {
+      setActiveTab('change-background');
+    }
   }, [mode]);
 
   // Helper function to determine if we should show the "Add" button
   const shouldShowAddButton = (activeTab: string) => {
     return activeTab !== 'remove-background' && canAddLayers;
   };
+
+  const changeBackgroundButton = (
+    showChangeBackground && (
+      <button
+        onClick={() => setActiveTab(activeTab === 'change-background' ? null : 'change-background')}
+        className={cn(
+          mobile ? "flex-1 p-2" : "p-3",
+          "rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+          activeTab === 'change-background'
+            ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+            : "text-gray-500 dark:text-gray-400"
+        )}
+        disabled={!canAddLayers}
+      >
+        <Image className={mobile ? "w-4 h-4" : "w-5 h-5"} />
+        <span className={cn(
+          mobile ? "text-[10px]" : "text-xs",
+          "font-medium"
+        )}>Change BG</span>
+      </button>
+    )
+  );
 
   if (mobile) {
     return (
@@ -95,6 +122,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                 <span className="text-[10px] font-medium">Remove BG</span>
               </button>
             )}
+            {changeBackgroundButton}
           </div>
         </div>
 
@@ -128,6 +156,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               {activeTab === 'text' && <TextEditor />}
               {activeTab === 'shapes' && <ShapeEditor />}
               {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
+              {activeTab === 'change-background' && <ChangeBackgroundEditor />}
             </div>
           </div>
         )}
@@ -194,6 +223,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               <span className="text-xs font-medium">Remove BG</span>
             </button>
           )}
+          {changeBackgroundButton}
         </div>
 
         {/* Editor Content with border */}
@@ -209,17 +239,17 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                 <Plus className="w-4 h-4" />
                 <span>Add {activeTab === 'text' ? 'Text' : 'Shape'}</span>
               </button>
-             ) : 
-             (
-                <h3 className="text-lg font-semibold">Remove Background</h3>
-              )
-             }
-
+             ) : (
+                <h3 className="text-lg font-semibold">
+                  {activeTab === 'remove-background' ? 'Remove Background' : 'Change Background'}
+                </h3>
+              )}
             </div>
             <div className="flex-1 overflow-y-auto p-4 h-full">
               {activeTab === 'text' && <TextEditor />}
               {activeTab === 'shapes' && <ShapeEditor />}
               {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
+              {activeTab === 'change-background' && <ChangeBackgroundEditor />}
             </div>
           </div>
         )}

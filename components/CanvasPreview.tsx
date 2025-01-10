@@ -5,7 +5,7 @@ import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
 
 export function CanvasPreview() {
-  const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground } = useEditor();
+  const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground, foregroundPosition, hasChangedBackground } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
   const fgImageRef = useRef<HTMLImageElement | null>(null);
@@ -38,12 +38,11 @@ export function CanvasPreview() {
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Apply image enhancements
-      ctx.filter = filterString;
-
-      // Draw background
+      // Draw background only if not transparent
       if (!hasTransparentBackground) {
+        ctx.filter = filterString;
         ctx.drawImage(bgImageRef.current!, 0, 0);
+        ctx.filter = 'none';
       } else {
         // Create checkerboard pattern for transparency
         const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
@@ -141,14 +140,32 @@ export function CanvasPreview() {
         }
       });
 
-      // Draw foreground with correct dimensions - FIX HERE
+      // Draw foreground image LAST and ONCE with positioning
       if (fgImageRef.current) {
-        ctx.filter = 'none'; // Reset filter before drawing foreground
-        ctx.globalAlpha = 1; // Reset opacity
-        ctx.drawImage(fgImageRef.current, 0, 0, canvas.width, canvas.height);
+        ctx.filter = 'none';
+        ctx.globalAlpha = 1;
+
+        const scale = Math.min(
+          canvas.width / fgImageRef.current.width,
+          canvas.height / fgImageRef.current.height
+        );
+        
+        const newWidth = fgImageRef.current.width * scale;
+        const newHeight = fgImageRef.current.height * scale;
+        
+        const x = (canvas.width - newWidth) / 2;
+        const y = (canvas.height - newHeight) / 2;
+
+        if (hasTransparentBackground || hasChangedBackground) {
+          const offsetX = (canvas.width * foregroundPosition.x) / 100;
+          const offsetY = (canvas.height * foregroundPosition.y) / 100;
+          ctx.drawImage(fgImageRef.current, x + offsetX, y + offsetY, newWidth, newHeight);
+        } else {
+          ctx.drawImage(fgImageRef.current, x, y, newWidth, newHeight);
+        }
       }
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition]);
 
   // Cleanup animation frame on unmount
   useEffect(() => {
@@ -180,7 +197,7 @@ export function CanvasPreview() {
         render();
       };
     }
-  }, [image.background, image.foreground, hasTransparentBackground]);
+  }, [image.background, image.foreground, hasTransparentBackground, foregroundPosition]);
 
   useEffect(() => {
     // Load all fonts used in text sets
@@ -197,18 +214,17 @@ export function CanvasPreview() {
     loadFonts();
   }, [textSets]);
 
-  // Re-render on text or shape changes
+  // Re-render on text, shape, imageEnhancements, and foregroundPosition changes
   useEffect(() => {
     render();
-  }, [textSets, shapeSets, imageEnhancements]);
+  }, [textSets, shapeSets, imageEnhancements, foregroundPosition, hasChangedBackground]);
 
   return (
     <div className="relative w-full h-full">
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full object-contain"
+        className="absolute inset-0 w-full h-full object-contain z-10"
       />
-      {/* Remove background and foreground image elements - we'll draw everything on canvas */}
     </div>
   );
 }

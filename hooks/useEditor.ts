@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { removeBackground } from '@imgly/background-removal';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
+import { uploadFile } from '@/lib/upload';  // Add this import
 
 interface GlowEffect {
   enabled: boolean;
@@ -65,6 +66,11 @@ interface EditorState {
   processingMessage: string;
   loadedFonts: Set<string>;
   hasTransparentBackground: boolean;
+  hasChangedBackground: boolean;
+  foregroundPosition: {
+    x: number;
+    y: number;
+  };
 }
 
 interface EditorActions {
@@ -84,6 +90,8 @@ interface EditorActions {
   setProcessingMessage: (message: string) => void;
   removeBackground: () => Promise<void>;
   resetBackground: () => void;
+  changeBackground: () => Promise<void>;
+  updateForegroundPosition: (position: { x: number; y: number }) => void;
 }
 
 // Add helper functions outside of the store
@@ -130,6 +138,11 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   processingMessage: '',
   loadedFonts: new Set(),
   hasTransparentBackground: false,
+  hasChangedBackground: false,
+  foregroundPosition: {
+    x: 0,
+    y: 0
+  },
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -291,7 +304,17 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       processingMessage: 'Preparing your masterpiece...'
     });
 
-    const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground, originalFileName } = get();
+    const { 
+      image, 
+      textSets, 
+      shapeSets, 
+      imageEnhancements, 
+      hasTransparentBackground,
+      hasChangedBackground,
+      foregroundPosition,
+      originalFileName 
+    } = get();
+
     if (!image.original || (!hasTransparentBackground && !image.background) || (hasTransparentBackground && !image.foreground)) return;
 
     try {
@@ -299,23 +322,18 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Failed to get canvas context');
 
-      // Load the correct source image based on transparency state
-      const sourceImage = await loadImage(hasTransparentBackground ? image.foreground! : image.background!);
-      canvas.width = sourceImage.width;
-      canvas.height = sourceImage.height;
+      // 1. Draw background first
+      const backgroundImage = await loadImage(image.background || image.original);
+      canvas.width = backgroundImage.width;
+      canvas.height = backgroundImage.height;
 
-      // If transparent background, draw checkerboard pattern (optional for debugging)
-      if (hasTransparentBackground) {
-        // Clear the canvas to ensure transparency
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // Draw the foreground image
-        ctx.drawImage(sourceImage, 0, 0);
-      } else {
-        // Draw background with filters
+      if (!hasTransparentBackground) {
         ctx.filter = filterString(imageEnhancements);
-        ctx.drawImage(sourceImage, 0, 0);
+        ctx.drawImage(backgroundImage, 0, 0);
+        ctx.filter = 'none';
       }
 
+      // 2. Draw shapes and text
       // Draw shapes
       shapeSets.forEach(shapeSet => {
         ctx.save();
@@ -387,12 +405,31 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ctx.restore();
       });
 
-      // If not transparent, draw the foreground image last
-      if (!hasTransparentBackground && image.foreground) {
+      // 3. Draw foreground LAST and ONCE
+      if (image.foreground) {
         const fgImg = await loadImage(image.foreground);
         ctx.filter = 'none';
         ctx.globalAlpha = 1;
-        ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
+
+        const scale = Math.min(
+          canvas.width / fgImg.width,
+          canvas.height / fgImg.height
+        );
+        
+        const newWidth = fgImg.width * scale;
+        const newHeight = fgImg.height * scale;
+        
+        const x = (canvas.width - newWidth) / 2;
+        const y = (canvas.height - newHeight) / 2;
+
+        // Apply offset if background is changed or transparent
+        if (hasTransparentBackground || hasChangedBackground) {
+          const offsetX = (canvas.width * foregroundPosition.x) / 100;
+          const offsetY = (canvas.height * foregroundPosition.y) / 100;
+          ctx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
+        } else {
+          ctx.drawImage(fgImg, x, y, newWidth, newHeight);
+        }
       }
 
       // Create blob and download
@@ -477,7 +514,47 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ...state.image,
         background: image.original
       },
-      hasTransparentBackground: false
+      hasTransparentBackground: false,
+      hasChangedBackground: false,
+      foregroundPosition: { x: 0, y: 0 }
     }));
-  }
+  },
+
+  changeBackground: async () => {
+    try {
+      set({ isProcessing: true });
+      const file = await uploadFile();
+      if (!file) {
+        return;
+      }
+
+      // Create URL for the file first
+      const backgroundUrl = URL.createObjectURL(file);
+      
+      // Load image to ensure it's valid
+      await loadImage(backgroundUrl);
+
+      set(state => ({
+        image: {
+          ...state.image,
+          background: backgroundUrl
+        },
+        hasChangedBackground: true,
+        processingMessage: 'Background changed successfully!'
+      }));
+
+      setTimeout(() => set({ processingMessage: '' }), 2000);
+    } catch (error) {
+      console.error('Error changing background:', error);
+      set({ 
+        processingMessage: 'Failed to change background. Please try again.',
+      });
+    } finally {
+      set({ isProcessing: false });
+    }
+  },
+
+  updateForegroundPosition: ({ x, y }) => {
+    set({ foregroundPosition: { x, y } });
+  },
 }));
