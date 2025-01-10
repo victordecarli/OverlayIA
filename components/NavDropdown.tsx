@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Type, Shapes } from 'lucide-react';
+import { ChevronDown, Type, Shapes, ImageDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function NavDropdown() {
@@ -40,7 +40,7 @@ export function NavDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-64 bg-black backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-xl">
+        <div className="absolute top-full right-0 mt-2 w-72 bg-black backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-xl">
           <Link 
             href="/text-behind-image"
             className="flex w-full items-center gap-3 p-4 hover:bg-white/10 text-white transition-colors"
@@ -62,6 +62,18 @@ export function NavDropdown() {
             <div className="flex flex-col text-left">
               <span className="font-medium">Shapes Behind Image</span>
               <span className="text-xs text-gray-300">Add shapes behind your images</span>
+            </div>
+          </Link>
+
+          <Link 
+            href="/remove-background"
+            className="flex w-full items-center gap-3 p-4 hover:bg-white/10 text-white transition-colors"
+            onClick={() => setIsOpen(false)}
+          >
+            <ImageDown className="w-5 h-5" />
+            <div className="flex flex-col text-left">
+              <span className="font-medium">Remove Image Background</span>
+              <span className="text-xs text-gray-300">Remove the background from your image.</span>
             </div>
           </Link>
         </div>

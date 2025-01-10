@@ -5,7 +5,7 @@ import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
 
 export function CanvasPreview() {
-  const { image, textSets, shapeSets, imageEnhancements } = useEditor();
+  const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
   const fgImageRef = useRef<HTMLImageElement | null>(null);
@@ -42,7 +42,16 @@ export function CanvasPreview() {
       ctx.filter = filterString;
 
       // Draw background
-      ctx.drawImage(bgImageRef.current!, 0, 0);
+      if (!hasTransparentBackground) {
+        ctx.drawImage(bgImageRef.current!, 0, 0);
+      } else {
+        // Create checkerboard pattern for transparency
+        const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
+        if (pattern) {
+          ctx.fillStyle = pattern;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+      }
 
       // Draw shapes with consistent scaling
       shapeSets.forEach(shapeSet => {
@@ -139,7 +148,7 @@ export function CanvasPreview() {
         ctx.drawImage(fgImageRef.current, 0, 0, canvas.width, canvas.height);
       }
     });
-  }, [textSets, shapeSets, filterString]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground]);
 
   // Cleanup animation frame on unmount
   useEffect(() => {
@@ -151,18 +160,19 @@ export function CanvasPreview() {
   }, []);
 
   useEffect(() => {
-    if (!image.background) return;
+    if (!hasTransparentBackground && !image.background) return;
+    if (hasTransparentBackground && !image.foreground) return;
 
-    // Load background image
-    const bgImg = new Image();
-    bgImg.src = image.background;
-    bgImg.onload = () => {
-      bgImageRef.current = bgImg;
+    // Load appropriate image based on transparency state
+    const img = new Image();
+    img.src = hasTransparentBackground ? image.foreground! : image.background!;
+    img.onload = () => {
+      bgImageRef.current = img;
       render();
     };
 
-    // Load foreground image if exists
-    if (image.foreground) {
+    // Load foreground image if not in transparent mode
+    if (!hasTransparentBackground && image.foreground) {
       const fgImg = new Image();
       fgImg.src = image.foreground;
       fgImg.onload = () => {
@@ -170,7 +180,7 @@ export function CanvasPreview() {
         render();
       };
     }
-  }, [image.background, image.foreground]);
+  }, [image.background, image.foreground, hasTransparentBackground]);
 
   useEffect(() => {
     // Load all fonts used in text sets
@@ -201,4 +211,21 @@ export function CanvasPreview() {
       {/* Remove background and foreground image elements - we'll draw everything on canvas */}
     </div>
   );
+}
+
+// Add helper function for transparency visualization
+function createCheckerboardPattern() {
+  const size = 16;
+  const canvas = document.createElement('canvas');
+  canvas.width = size * 2;
+  canvas.height = size * 2;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size * 2, size * 2);
+  ctx.fillStyle = '#e5e5e5';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillRect(size, size, size, size);
+
+  return canvas;
 }
