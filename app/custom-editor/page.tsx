@@ -26,22 +26,22 @@ export default function EditorPage() {
           >
             UnderlayX
           </a>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => resetEditor(true)}
-              className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors flex items-center gap-2"
+              className="p-2 sm:px-4 sm:py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors flex items-center gap-2"
               title="Upload New Image"
             >
               <Upload className="w-4 h-4" />
-              <span className="text-sm">Upload</span>
+              <span className="hidden sm:inline text-sm">Upload</span>
             </button>
             <button
               onClick={downloadImage}
               disabled={isDownloading}
-              className="px-4 py-2 rounded-lg bg-gray-900 hover:bg-gray-800 dark:bg-white/10 dark:hover:bg-white/20 text-white transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 sm:px-4 sm:py-2 rounded-lg bg-gray-900 hover:bg-gray-800 dark:bg-white/10 dark:hover:bg-white/20 text-white transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-4 h-4" />
-              <span className="text-sm">Download</span>
+              <span className="hidden sm:inline text-sm">Download</span>
             </button>
             <ThemeToggle />
           </div>
