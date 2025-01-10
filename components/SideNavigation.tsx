@@ -16,9 +16,48 @@ interface SideNavigationProps {
 }
 
 export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
-  const [activeTab, setActiveTab] = useState<'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | null>(null);
+  // Determine initial tab based on mode
+  const getInitialTab = () => {
+    switch (mode) {
+      case 'text-only':
+        return 'text';
+      case 'shapes-only':
+        return 'shapes';
+      case 'remove-background-only':
+        return 'remove-background';
+      case 'change-background-only':
+        return 'change-background';
+      case 'clone-image-only':
+        return 'clone-image';
+      default:
+        return null;
+    }
+  };
+
+  const [activeTab, setActiveTab] = useState<'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | null>(getInitialTab());
   const { image, isProcessing, isConverting, addTextSet, addShapeSet } = useEditor();
   const canAddLayers = !!image.original && !!image.background && !isProcessing && !isConverting;
+
+  // Get appropriate message based on active tab
+  const getUploadMessage = () => {
+    if (!image.original) {
+      switch (activeTab) {
+        case 'text':
+          return 'Please upload an image first to add text behind objects';
+        case 'shapes':
+          return 'Please upload an image first to add shapes behind objects';
+        case 'remove-background':
+          return 'Please upload an image first to remove the background';
+        case 'change-background':
+          return 'Please upload an image first to change the background';
+        case 'clone-image':
+          return 'Please upload an image first to use the clone feature';
+        default:
+          return 'Please upload an image first';
+      }
+    }
+    return null;
+  };
 
   const showTextButton = mode === 'full' || mode === 'text-only';
   const showShapesButton = mode === 'full' || mode === 'shapes-only';
@@ -185,11 +224,19 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-4">
-              {activeTab === 'text' && <TextEditor />}
-              {activeTab === 'shapes' && <ShapeEditor />}
-              {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
-              {activeTab === 'change-background' && <ChangeBackgroundEditor />}
-              {activeTab === 'clone-image' && <CloneImageEditor />}
+              {getUploadMessage() ? (
+                <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                  <p className="text-gray-400 mb-4">{getUploadMessage()}</p>
+                </div>
+              ) : (
+                <>
+                  {activeTab === 'text' && <TextEditor />}
+                  {activeTab === 'shapes' && <ShapeEditor />}
+                  {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
+                  {activeTab === 'change-background' && <ChangeBackgroundEditor />}
+                  {activeTab === 'clone-image' && <CloneImageEditor />}
+                </>
+              )}
             </div>
           </div>
         )}
@@ -264,7 +311,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
         {activeTab && (
           <div className="w-[280px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 flex flex-col">
             <div className="sticky top-0 bg-white dark:bg-zinc-950 p-4 border-b border-gray-200 dark:border-white/10 z-10">
-             {(activeTab === 'text' || activeTab === 'shapes') ? (
+             {(activeTab === 'text' || activeTab === 'shapes') && canAddLayers ? (
               <button
                 onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
                 disabled={!canAddLayers}
@@ -277,16 +324,26 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                 <h3 className="text-lg font-semibold">
                   {activeTab === 'remove-background' ? 'Remove Background' : 
                    activeTab === 'change-background' ? 'Change Background' : 
-                   'Clone Image'}
+                   activeTab === 'clone-image' ? 'Clone Image' :
+                   activeTab === 'text' ? 'Add Text' :
+                   'Add Shapes'}
                 </h3>
               )}
             </div>
             <div className="flex-1 overflow-y-auto p-4 h-full">
-              {activeTab === 'text' && <TextEditor />}
-              {activeTab === 'shapes' && <ShapeEditor />}
-              {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
-              {activeTab === 'change-background' && <ChangeBackgroundEditor />}
-              {activeTab === 'clone-image' && <CloneImageEditor />}
+              {getUploadMessage() ? (
+                <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                  <p className="text-gray-400 mb-4">{getUploadMessage()}</p>
+                </div>
+              ) : (
+                <>
+                  {activeTab === 'text' && <TextEditor />}
+                  {activeTab === 'shapes' && <ShapeEditor />}
+                  {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
+                  {activeTab === 'change-background' && <ChangeBackgroundEditor />}
+                  {activeTab === 'clone-image' && <CloneImageEditor />}
+                </>
+              )}
             </div>
           </div>
         )}
