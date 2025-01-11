@@ -40,7 +40,6 @@ import {
   Roboto_Flex,
   Rubik,
   Saira,
-  Source_Serif_4,
   Space_Grotesk,
   Space_Mono,
   Spectral,
@@ -325,11 +324,7 @@ export const saira = Saira({
   variable: '--font-saira'
 });
 
-export const sourceSerif4 = Source_Serif_4({
-  subsets: ['latin'],
-  weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-sourceserif4'
-});
+
 
 export const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
