@@ -47,13 +47,13 @@ export default function Home() {
                 </Link>
                 <div className="flex items-center gap-6">
                   <NavDropdown />
-                  <button
+                  {/* <button
                     onClick={() => setShowAuthDialog(true)}
                     className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>Login</span>
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
@@ -67,7 +67,7 @@ export default function Home() {
 
         <main className="pt-24" role="main" aria-label="Main content">
           {/* Hero Section */}
-          <section className="container mx-auto px-4 py-16 md:py-16"> {/* Changed from md:py-24 to md:py-16 */}
+          <section className="container mx-auto px-4 py-8 md:py-10"> {/* Changed from md:py-24 to md:py-16 */}
             <div className="max-w-4xl mx-auto text-center mb-16">
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
                 Transform Your Images
@@ -78,7 +78,7 @@ export default function Home() {
               The all-in-one tool to seamlessly add text and shapes behind images, remove backgrounds, clone objects, and change backgrounds.
               </p>
               <Link 
-                href="/custom-editor" 
+                href="/custom-editor?upload=true" // Changed to include query parameter
                 onClick={() => setIsLoading(true)}
                 className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
               >

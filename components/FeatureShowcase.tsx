@@ -36,7 +36,7 @@ const features = [
 
 export function FeatureShowcase() {
   return (
-    <section className="py-4" aria-label="Feature examples">
+    <section className="py-2" aria-label="Feature examples">
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
           <div className="md:grid md:grid-cols-4 gap-2 md:gap-4 flex overflow-x-auto snap-x snap-mandatory hide-scrollbar">

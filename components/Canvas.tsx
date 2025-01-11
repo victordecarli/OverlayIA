@@ -7,8 +7,11 @@ import { convertHeicToJpeg, optimizeImage } from '@/lib/image-utils';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useState, useRef, useCallback, useEffect } from 'react'; // Add useRef, useCallback, useEffect
 
+interface CanvasProps {
+  shouldAutoUpload?: boolean;
+}
 
-export function Canvas() {
+export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const { 
     image, 
     isProcessing, 
@@ -23,6 +26,7 @@ export function Canvas() {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null); // Add this ref
+  const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
 
   // Add this function inside the Canvas component
   const preloadFonts = useCallback(async (fontFamily: string) => {
@@ -85,6 +89,9 @@ export function Canvas() {
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
+      // Reset the input value right after getting the file
+      e.target.value = '';
+      
       const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
@@ -139,6 +146,26 @@ export function Canvas() {
     
     loadFonts();
   }, [textSets, preloadFonts]);
+
+  useEffect(() => {
+    const handleAutoUpload = () => {
+      if (shouldAutoUpload && !hasTriedAutoUpload && fileInputRef.current && !image.original) {
+        setHasTriedAutoUpload(true);
+        fileInputRef.current.click();
+      }
+    };
+
+    // Small delay to ensure proper initialization
+    const timeoutId = setTimeout(handleAutoUpload, 100);
+
+    // Cleanup function
+    return () => {
+      clearTimeout(timeoutId);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    };
+  }, []);  // Empty dependency array - only run once on mount
 
   return (
     <>

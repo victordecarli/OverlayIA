@@ -7,10 +7,12 @@ import { Upload, Download, RefreshCw } from 'lucide-react';
 import { SideNavigation } from '@/components/SideNavigation';
 import { cn } from '@/lib/utils';
 import { Canvas } from '@/components/Canvas';
-import { EditorTools } from '@/components/EditorTools';
+import { useSearchParams } from 'next/navigation';
 
 export default function EditorPage() {
   const { resetEditor, downloadImage, isDownloading } = useEditor();
+  const searchParams = useSearchParams();
+  const shouldAutoUpload = searchParams.get('upload') === 'true';
 
   useEffect(() => {
     resetEditor();
@@ -69,7 +71,7 @@ export default function EditorPage() {
           {/* Editor Content */}
           <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
             <div className="w-full max-w-[800px] aspect-square lg:aspect-auto lg:h-full relative rounded-lg overflow-hidden bg-gray-50 dark:bg-zinc-900 mobile-canvas-container">
-              <Canvas />
+              <Canvas shouldAutoUpload={shouldAutoUpload} />
             </div>
           </div>
         </main>
