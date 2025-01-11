@@ -22,9 +22,9 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen relative flex flex-col" style={{ position: 'relative' }}>
+    <div className="min-h-screen relative flex flex-col" role="region" aria-label="Home page content">
       {/* Simplified Gradient Background */}
-      <div className="fixed inset-0 z-0">
+      <div className="fixed inset-0 z-0" aria-hidden="true">
         <div className="absolute inset-0 bg-[#0A0A0A]" />
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-[#0A0A0A] to-[#0A0A0A]" />
       </div>
@@ -32,7 +32,7 @@ export default function Home() {
       {/* Content Container */}
       <div ref={scrollRef} className="relative z-10 flex-grow">
         {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-[100]">
+        <nav className="fixed top-0 left-0 right-0 z-[100]" role="navigation" aria-label="Main navigation">
           <div className="container mx-auto px-4 py-6">
             <div className="max-w-2xl mx-auto bg-[#141414] backdrop-blur-xl border border-white/5 rounded-full shadow-xl">
               <div className="px-8 py-3 flex items-center justify-between">
@@ -48,7 +48,7 @@ export default function Home() {
           </div>
         </nav>
 
-        <main className="pt-24">
+        <main className="pt-24" role="main" aria-label="Main content">
           {/* Hero Section */}
           <section className="container mx-auto px-4 py-16 md:py-16"> {/* Changed from md:py-24 to md:py-16 */}
             <div className="max-w-4xl mx-auto text-center mb-16">

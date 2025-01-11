@@ -85,7 +85,7 @@ export function Canvas() {
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
+      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
 
@@ -167,8 +167,8 @@ export function Canvas() {
                   <Upload className="w-10 h-10 text-gray-400" />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-gray-400 font-medium">Click here or drag & drop to upload</p>
-                  <p className="text-gray-500 text-sm">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
+                  <p className="text-gray-600 font-medium dark:text-gray-400">Click here or drag & drop to upload</p>
+                  <p className="text-gray-600 text-sm dark:text-gray-400">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
                 </div>
               </div>
             </label>
