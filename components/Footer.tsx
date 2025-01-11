@@ -36,14 +36,12 @@ export function Footer() {
           
           <div className="flex flex-col items-center md:items-end gap-2">
             <p className="text-gray-400 text-sm">
-              Created by{' '}
+              Contact:{' '}
               <a 
-                href="https://www.linkedin.com/in/vineerpasam/" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                href="mailto:dailifyofficial@gmail.com"
                 className="text-gray-300 hover:text-white transition-colors hover:underline"
               >
-                @Vineer
+                dailifyofficial@gmail.com
               </a>
             </p>
             <p className="text-gray-400 text-sm">
