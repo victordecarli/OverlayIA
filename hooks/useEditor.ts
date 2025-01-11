@@ -570,16 +570,19 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
   changeBackground: async () => {
     try {
-      set({ isProcessing: true });
+      // Remove the premature loading state
       const file = await uploadFile();
       if (!file) {
-        return;
+        return; // User cancelled, just return without setting any loading state
       }
 
-      // Create URL for the file first
+      // Only set loading after file is selected
+      set({ 
+        isProcessing: true,
+        processingMessage: 'Changing background...'
+      });
+
       const backgroundUrl = URL.createObjectURL(file);
-      
-      // Load image to ensure it's valid
       await loadImage(backgroundUrl);
 
       set(state => ({
@@ -588,6 +591,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           background: backgroundUrl
         },
         hasChangedBackground: true,
+        isProcessing: false, // Clear loading state
         processingMessage: 'Background changed successfully!'
       }));
 
@@ -596,9 +600,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       console.error('Error changing background:', error);
       set({ 
         processingMessage: 'Failed to change background. Please try again.',
+        isProcessing: false // Make sure to clear loading state on error
       });
-    } finally {
-      set({ isProcessing: false });
     }
   },
 

@@ -29,7 +29,7 @@ export function ChangeBackgroundEditor() {
           disabled={isProcessing}
         >
           <Upload className="w-4 h-4 mr-2" />
-          {hasChangedBackground ? 'Change Background' : 'Upload Background'}
+          {isProcessing ? 'procesing...' : hasChangedBackground ? 'Change Background' : 'Upload Background'}
         </Button>
         <Button
           onClick={resetBackground}

@@ -80,7 +80,7 @@ export default function Home() {
               <Link 
                 href="/custom-editor" 
                 onClick={() => setIsLoading(true)}
-                className="inline-flex items-center px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
+                className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
               >
                 {isLoading ? (
                   <>
