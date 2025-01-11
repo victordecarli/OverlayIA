@@ -60,7 +60,8 @@ export const blogPosts = {
       <p>Adding a glowing effect to text can make your designs pop! UnderlayX lets you customize text styles, including adding vibrant color effects and shadows. Pair this with the behind-the-subject placement, and you'll have a design that stands out in any crowd. Try it now and elevate your creativity.</p>
     `,
     date: '2025-01-03',
-    category: 'Design Tips'
+    category: 'Design Tips',
+    path: '/custom-editor'
   },
   'shapes-transform-designs': {
     slug: 'shapes-transform-designs',
