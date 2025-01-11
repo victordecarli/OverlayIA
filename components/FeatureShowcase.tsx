@@ -37,16 +37,17 @@ const features = [
 export function FeatureShowcase() {
   return (
     <section className="py-4" aria-label="Feature examples">
-      <div className="container mx-auto">
-        <div className="max-w-7xl mx-auto overflow-hidden">
-          <div className="flex overflow-x-auto gap-1 snap-x snap-mandatory hide-scrollbar px-4 md:px-0">
+      <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="md:grid md:grid-cols-4 md:gap-4 flex overflow-x-auto snap-x snap-mandatory hide-scrollbar">
             {features.map((feature, index) => (
               <Link
                 key={index}
                 href={feature.href}
-                className="flex-none w-[80vw] md:w-[25%] snap-start group"
+                className="flex-none w-[80vw] md:w-full snap-start group"
               >
-                <div className="relative max-h-[400px] md:max-h-[600px] w-full flex items-center rounded-2xl justify-center  overflow-hidden">
+                <div className="relative max-h-[400px] md:max-h-[600px] w-full flex items-center justify-center rounded-2xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-b z-10 pointer-events-none" />
                   <Image
                     src={feature.image}
                     alt={feature.altText}
@@ -67,7 +68,7 @@ export function FeatureShowcase() {
             ))}
           </div>
 
-          {/* Mobile scroll indicator */}
+          {/* Mobile scroll indicator - only show on mobile */}
           <div className="md:hidden text-center text-white/40 text-xs mt-2">
             Scroll to see more →
           </div>
