@@ -53,11 +53,11 @@ export default function Home() {
           <section className="container mx-auto px-4 py-16 md:py-16"> {/* Changed from md:py-24 to md:py-16 */}
             <div className="max-w-4xl mx-auto text-center mb-16">
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Transform Your Images
-                <br />
-                <span className="text-purple-400">Like Never Before</span>
+                Transform Your Images Like
+                <br/>
+                <span className="text-purple-400">Never Before</span>
               </h1>
-              <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-xl mx-auto">
+              <p className="text-lg md:text-lg text-gray-300 mb-8 max-w-xl mx-auto">
               The all-in-one tool to seamlessly add text and shapes behind images, remove backgrounds, clone objects, and change backgrounds.
               </p>
               <Link 
@@ -71,7 +71,7 @@ export default function Home() {
                     Loading...
                   </>
                 ) : (
-                  "Start Creating for Free"
+                  "Upload Image"
                 )}
               </Link>
             </div>

@@ -39,14 +39,14 @@ export function FeatureShowcase() {
     <section className="py-4" aria-label="Feature examples">
       <div className="container mx-auto">
         <div className="max-w-7xl mx-auto overflow-hidden">
-          <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory hide-scrollbar px-4 md:px-0">
+          <div className="flex overflow-x-auto gap-1 snap-x snap-mandatory hide-scrollbar px-4 md:px-0">
             {features.map((feature, index) => (
               <Link
                 key={index}
                 href={feature.href}
                 className="flex-none w-[80vw] md:w-[25%] snap-start group"
               >
-                <div className="relative max-h-[400px] md:max-h-[600px] w-full flex items-center justify-center rounded-2xl overflow-hidden">
+                <div className="relative max-h-[400px] md:max-h-[600px] w-full flex items-center rounded-2xl justify-center  overflow-hidden">
                   <Image
                     src={feature.image}
                     alt={feature.altText}
