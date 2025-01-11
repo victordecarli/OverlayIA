@@ -35,10 +35,10 @@ export function CloneImageEditor() {
       </Button>
 
       <div className="space-y-4">
-        {clonedForegrounds.map((clone, index) => (
+        {clonedForegrounds.map((clone) => (
           <div key={clone.id} className="space-y-4 p-4 border border-gray-200 dark:border-gray-800 rounded-lg">
             <div className="flex justify-between items-center">
-              <h4 className="font-medium">Clone {index + 1}</h4>
+              <h4 className="font-medium">Clone</h4>
               <Button
                 variant="ghost"
                 size="sm"

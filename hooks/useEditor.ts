@@ -5,6 +5,7 @@ import { removeBackground } from '@imgly/background-removal';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 import { uploadFile } from '@/lib/upload';  // Add this import
+import { optimizeImage } from '@/lib/image-utils';
 
 interface GlowEffect {
   enabled: boolean;
@@ -104,6 +105,8 @@ interface EditorActions {
   addClonedForeground: () => void;
   removeClonedForeground: (id: number) => void;
   updateClonedForegroundPosition: (id: number, position: { x: number; y: number }) => void;
+  setIsProcessing: (value: boolean) => void;
+  setIsConverting: (value: boolean) => void;
 }
 
 // Add helper functions outside of the store
@@ -124,7 +127,7 @@ const filterString = (enhancements: ImageEnhancements): string => `
   opacity(${100 - enhancements.fade}%)
 `;
 
-export const useEditor = create<EditorState & EditorActions>((set, get) => ({
+export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   image: {
     original: null,
     background: null,
@@ -254,15 +257,31 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     if (state?.isConverting !== undefined) set({ isConverting: state.isConverting });
     if (state?.isProcessing !== undefined) set({ isProcessing: state.isProcessing });
 
+    const messages = [
+      'Getting your photo ready...',
+      'Preparing something special...',
+      'Adding a touch of magic...',
+      'Making your image perfect...',
+      'Almost ready to create...'
+    ];
+
+    let messageIndex = 0;
+    const messageInterval = setInterval(() => {
+      set({ processingMessage: messages[messageIndex] });
+      messageIndex = (messageIndex + 1) % messages.length;
+    }, 3000);
+
     try {
       const fileName = file.name.replace(/\.[^/.]+$/, "");
       set({ originalFileName: fileName });
 
+      // File is already optimized when it reaches here
       const originalUrl = URL.createObjectURL(file);
       set(state => ({
         image: {
           ...state.image,
-          original: originalUrl
+          original: originalUrl,
+          background: originalUrl // Set both original and background
         }
       }));
 
@@ -276,18 +295,11 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
 
       set({ isProcessing: true });
 
-      // Set background image
-      const backgroundUrl = URL.createObjectURL(file);
-      set(state => ({
-        image: {
-          ...state.image,
-          background: backgroundUrl
-        }
-      }));
-
       // Process foreground
-      const processedBlob = await removeBackground(backgroundUrl);
+      const processedBlob = await removeBackground(originalUrl);
       const foregroundUrl = URL.createObjectURL(processedBlob);
+      
+      clearInterval(messageInterval);
       
       set(state => ({
         image: {
@@ -300,6 +312,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       setTimeout(() => set({ processingMessage: '' }), 2000);
 
     } catch (error) {
+      clearInterval(messageInterval); // Make sure to clear interval on error
       console.error('Error processing image:', error);
       set({ 
         processingMessage: 'Oops! Something went wrong. Please try again.',
@@ -307,6 +320,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         isConverting: false
       });
     } finally {
+      clearInterval(messageInterval); // Make sure to clear interval
       set({ isConverting: false, isProcessing: false });
     }
   },
@@ -616,4 +630,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       clone.id === id ? { ...clone, position } : clone
     )
   })),
+  setIsProcessing: (value: boolean) => set({ isProcessing: value }),
+  setIsConverting: (value: boolean) => set({ isConverting: value }),
 }));

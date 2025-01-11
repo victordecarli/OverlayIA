@@ -1,70 +1,25 @@
 'use client';
 
-import NextImage from 'next/image';
 import { useEditor } from '@/hooks/useEditor';
 import { Upload } from 'lucide-react';
 import { CanvasPreview } from './CanvasPreview';
-import { convertHeicToJpeg } from '@/lib/image-utils';
+import { convertHeicToJpeg, optimizeImage } from '@/lib/image-utils';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useState, useRef, useCallback, useEffect } from 'react'; // Add useRef, useCallback, useEffect
 
-const MAX_IMAGE_SIZE = 1920; // Maximum dimension for images
-
-const optimizeImage = async (file: File): Promise<File> => {
-  return new Promise((resolve, reject) => {
-    // Use native HTML Image constructor
-    const img = new window.Image();
-    const url = URL.createObjectURL(file);
-    
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      
-      // Check if optimization is needed
-      // if (img.width <= MAX_IMAGE_SIZE && img.height <= MAX_IMAGE_SIZE) {
-      //   resolve(file);
-      //   return;
-      // }
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      // Calculate new dimensions
-      let width = img.width;
-      let height = img.height;
-      
-      // if (width > height && width > MAX_IMAGE_SIZE) {
-      //   height = Math.round((height * MAX_IMAGE_SIZE) / width);
-      //   width = MAX_IMAGE_SIZE;
-      // } else if (height > MAX_IMAGE_SIZE) {
-      //   width = Math.round((width * MAX_IMAGE_SIZE) / height);
-      //   height = MAX_IMAGE_SIZE;
-      // }
-
-      canvas.width = width;
-      canvas.height = height;
-      
-      ctx?.drawImage(img, 0, 0, width, height);
-      
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
-          } else {
-            reject(new Error('Failed to optimize image'));
-          }
-        },
-        'image/jpeg',
-        0.2
-      );
-    };
-
-    img.onerror = () => reject(new Error('Failed to load image'));
-    img.src = url;
-  });
-};
 
 export function Canvas() {
-  const { image, isProcessing, isConverting, handleImageUpload, processingMessage, textSets } = useEditor();
+  const { 
+    image, 
+    isProcessing, 
+    isConverting, 
+    handleImageUpload, 
+    processingMessage, 
+    textSets,
+    setProcessingMessage,
+    setIsProcessing,
+    setIsConverting
+  } = useEditor();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null); // Add this ref
@@ -86,10 +41,17 @@ export function Canvas() {
       setPendingFile(file);
       setShowConvertDialog(true);
     } else {
-      // Process non-HEIC/HEIF files normally
-      handleImageUpload(file, { isProcessing: true });
-      const optimizedFile = await optimizeImage(file);
-      handleImageUpload(optimizedFile, { isProcessing: false });
+      try {
+        setIsProcessing(true);
+        setProcessingMessage('Processing...');
+        const optimizedFile = await optimizeImage(file);
+        await handleImageUpload(optimizedFile);
+      } catch (error) {
+        console.error('Error processing image:', error);
+        alert('Error processing image. Please try again.');
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -97,17 +59,17 @@ export function Canvas() {
     if (!pendingFile) return;
 
     try {
-      setShowConvertDialog(false); // Close dialog immediately
-      handleImageUpload(pendingFile, { isConverting: true });
+      setShowConvertDialog(false);
+      setIsConverting(true);
       const convertedFile = await convertHeicToJpeg(pendingFile);
-      handleImageUpload(convertedFile, { isConverting: false, isProcessing: true });
       const optimizedFile = await optimizeImage(convertedFile);
-      handleImageUpload(optimizedFile, { isProcessing: false });
+      await handleImageUpload(optimizedFile);
     } catch (error) {
       console.error('Error processing image:', error);
       alert('Error processing image. Please try again.');
     } finally {
       setPendingFile(null);
+      setIsConverting(false);
     }
   };
 
@@ -123,7 +85,7 @@ export function Canvas() {
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heif'];
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
 
@@ -139,7 +101,7 @@ export function Canvas() {
     e.preventDefault();
     e.stopPropagation();
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image.heic', 'image.heif', 'image/heif'];
     const fileType = file.type.toLowerCase();
     const fileName = file.name.toLowerCase();
 
