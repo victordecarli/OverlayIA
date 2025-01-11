@@ -148,7 +148,7 @@ export const blogPosts = {
     `,
     date: '2025-01-11',
     category: 'Tutorial',
-    path: '/change-background'
+    path: '/remove-background'
   },
 
   'change-backgrounds-pro': {
