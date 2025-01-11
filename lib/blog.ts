@@ -130,6 +130,63 @@ export const blogPosts = {
     date: '2025-01-03',
     category: 'Trends',
     path: '/text-behind-image'
+  },
+
+  'remove-background-guide': {
+    slug: 'remove-background-guide',
+    title: 'How to Remove Backgrounds from Images with Precision',
+    description: 'Learn how to effortlessly remove image backgrounds for clean, professional results with UnderlayX.',
+    content: `
+      <p>Removing backgrounds from images is no longer a task reserved for professionals. With UnderlayX, you can quickly isolate your subject, creating stunning visuals perfect for e-commerce, presentations, or social media.</p>
+      <p>Why choose UnderlayX?</p>
+      <ul>
+        <li>AI-powered precision for clean edges.</li>
+        <li>Retain high image quality after removal.</li>
+        <li>Perfect for creating transparent PNGs or placing your subject on a new background.</li>
+      </ul>
+      <p>Whether you're a business owner, content creator, or hobbyist, UnderlayX gives you the tools to elevate your designs effortlessly.</p>
+    `,
+    date: '2025-01-11',
+    category: 'Tutorial',
+    path: '/change-background'
+  },
+
+  'change-backgrounds-pro': {
+    slug: 'change-backgrounds-pro',
+    title: 'Change Backgrounds Like a Pro with UnderlayX',
+    description: 'Transform your images by swapping backgrounds in just a few clicks.',
+    content: `
+      <p>Want to place your image in a dreamy landscape or a minimalist studio setting? With UnderlayX, you can replace your image background with ease.</p>
+      <p>Features you'll love:</p>
+      <ul>
+        <li>Wide range of preset backgrounds to choose from.</li>
+        <li>Upload your own custom backgrounds.</li>
+        <li>Advanced blending options to make changes look natural.</li>
+      </ul>
+      <p>Unleash your creativity and let your designs tell the story you want.</p>
+    `,
+    date: '2025-01-11',
+    category: 'Tutorial',
+    path: '/change-background'
+  },
+
+  'clone-transform-objects': {
+    slug: 'clone-transform-objects',
+    title: 'Clone and Transform Objects in Your Images',
+    description: 'Master the art of object cloning and create visually compelling designs.',
+    content: `
+      <p>UnderlayX makes it easy to duplicate and transform objects within your images. Perfect for creating patterns, enhancing compositions, or fixing details in photos.</p>
+      <p>Key benefits:</p>
+      <ul>
+        <li>Intuitive cloning with precise placement.</li>
+        <li>Adjust sizes, rotations, and positions of cloned objects.</li>
+        <li>Use cloned elements to fill gaps or create symmetrical designs.</li>
+      </ul>
+      <p>With UnderlayX, you have the power to refine every detail of your image effortlessly.</p>
+    `,
+    date: '2025-01-11',
+    category: 'Tutorial',
+    path: '/clone-image'
   }
 };
 
