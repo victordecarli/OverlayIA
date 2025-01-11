@@ -43,7 +43,6 @@ export const FONT_OPTIONS = [
   { name: 'Roboto Flex', value: 'Roboto Flex' },
   { name: 'Rubik', value: 'Rubik' },
   { name: 'Saira', value: 'Saira' },
-  { name: 'Source Serif 4', value: 'Source Serif 4' },
   { name: 'Space Grotesk', value: 'Space Grotesk' },
   { name: 'Space Mono', value: 'Space Mono' },
   { name: 'Spectral', value: 'Spectral' },

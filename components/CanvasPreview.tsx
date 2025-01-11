@@ -5,7 +5,7 @@ import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
 
 export function CanvasPreview() {
-  const { image, textSets, shapeSets, imageEnhancements } = useEditor();
+  const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground, foregroundPosition, hasChangedBackground, clonedForegrounds } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
   const fgImageRef = useRef<HTMLImageElement | null>(null);
@@ -38,11 +38,19 @@ export function CanvasPreview() {
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Apply image enhancements
-      ctx.filter = filterString;
-
-      // Draw background
-      ctx.drawImage(bgImageRef.current!, 0, 0);
+      // Draw background only if not transparent
+      if (!hasTransparentBackground) {
+        ctx.filter = filterString;
+        ctx.drawImage(bgImageRef.current!, 0, 0);
+        ctx.filter = 'none';
+      } else {
+        // Create checkerboard pattern for transparency
+        const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
+        if (pattern) {
+          ctx.fillStyle = pattern;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+      }
 
       // Draw shapes with consistent scaling
       shapeSets.forEach(shapeSet => {
@@ -132,14 +140,51 @@ export function CanvasPreview() {
         }
       });
 
-      // Draw foreground with correct dimensions - FIX HERE
+      // Draw original foreground
       if (fgImageRef.current) {
-        ctx.filter = 'none'; // Reset filter before drawing foreground
-        ctx.globalAlpha = 1; // Reset opacity
-        ctx.drawImage(fgImageRef.current, 0, 0, canvas.width, canvas.height);
+        ctx.filter = 'none';
+        ctx.globalAlpha = 1;
+
+        const scale = Math.min(
+          canvas.width / fgImageRef.current.width,
+          canvas.height / fgImageRef.current.height
+        );
+        
+        const newWidth = fgImageRef.current.width * scale;
+        const newHeight = fgImageRef.current.height * scale;
+        
+        const x = (canvas.width - newWidth) / 2;
+        const y = (canvas.height - newHeight) / 2;
+
+        if (hasTransparentBackground || hasChangedBackground) {
+          const offsetX = (canvas.width * foregroundPosition.x) / 100;
+          const offsetY = (canvas.height * foregroundPosition.y) / 100;
+          ctx.drawImage(fgImageRef.current, x + offsetX, y + offsetY, newWidth, newHeight);
+        } else {
+          ctx.drawImage(fgImageRef.current, x, y, newWidth, newHeight);
+        }
+
+        // Draw cloned foregrounds
+        clonedForegrounds.forEach(clone => {
+          const scale = Math.min(
+            canvas.width / fgImageRef.current!.width,
+            canvas.height / fgImageRef.current!.height
+          );
+          
+          const newWidth = fgImageRef.current!.width * scale;
+          const newHeight = fgImageRef.current!.height * scale;
+          
+          const x = (canvas.width - newWidth) / 2;
+          const y = (canvas.height - newHeight) / 2;
+          
+          const offsetX = (canvas.width * clone.position.x) / 100;
+          const offsetY = (canvas.height * clone.position.y) / 100;
+
+          ctx.drawImage(fgImageRef.current!, x + offsetX, y + offsetY, newWidth, newHeight);
+        });
       }
     });
-  }, [textSets, shapeSets, filterString]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds]);
 
   // Cleanup animation frame on unmount
   useEffect(() => {
@@ -151,18 +196,19 @@ export function CanvasPreview() {
   }, []);
 
   useEffect(() => {
-    if (!image.background) return;
+    if (!hasTransparentBackground && !image.background) return;
+    if (hasTransparentBackground && !image.foreground) return;
 
-    // Load background image
-    const bgImg = new Image();
-    bgImg.src = image.background;
-    bgImg.onload = () => {
-      bgImageRef.current = bgImg;
+    // Load appropriate image based on transparency state
+    const img = new Image();
+    img.src = hasTransparentBackground ? image.foreground! : image.background!;
+    img.onload = () => {
+      bgImageRef.current = img;
       render();
     };
 
-    // Load foreground image if exists
-    if (image.foreground) {
+    // Load foreground image if not in transparent mode
+    if (!hasTransparentBackground && image.foreground) {
       const fgImg = new Image();
       fgImg.src = image.foreground;
       fgImg.onload = () => {
@@ -170,7 +216,7 @@ export function CanvasPreview() {
         render();
       };
     }
-  }, [image.background, image.foreground]);
+  }, [image.background, image.foreground, hasTransparentBackground, foregroundPosition]);
 
   useEffect(() => {
     // Load all fonts used in text sets
@@ -187,18 +233,34 @@ export function CanvasPreview() {
     loadFonts();
   }, [textSets]);
 
-  // Re-render on text or shape changes
+  // Re-render on text, shape, imageEnhancements, and foregroundPosition changes
   useEffect(() => {
     render();
-  }, [textSets, shapeSets, imageEnhancements]);
+  }, [textSets, shapeSets, imageEnhancements, foregroundPosition, clonedForegrounds, hasChangedBackground]);
 
   return (
     <div className="relative w-full h-full">
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full object-contain"
+        className="absolute inset-0 w-full h-full object-contain z-10"
       />
-      {/* Remove background and foreground image elements - we'll draw everything on canvas */}
     </div>
   );
+}
+
+// Add helper function for transparency visualization
+function createCheckerboardPattern() {
+  const size = 16;
+  const canvas = document.createElement('canvas');
+  canvas.width = size * 2;
+  canvas.height = size * 2;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size * 2, size * 2);
+  ctx.fillStyle = '#e5e5e5';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillRect(size, size, size, size);
+
+  return canvas;
 }

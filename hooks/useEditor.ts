@@ -4,6 +4,8 @@ import { create } from 'zustand';
 import { removeBackground } from '@imgly/background-removal';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
+import { uploadFile } from '@/lib/upload';  // Add this import
+import { optimizeImage } from '@/lib/image-utils';
 
 interface GlowEffect {
   enabled: boolean;
@@ -48,6 +50,14 @@ interface ImageEnhancements {
   sharpness: number;
 }
 
+interface ClonedForeground {
+  id: number;
+  position: {
+    x: number;
+    y: number;
+  };
+}
+
 interface EditorState {
   image: {
     original: string | null;
@@ -64,6 +74,13 @@ interface EditorState {
   originalFileName: string | null;
   processingMessage: string;
   loadedFonts: Set<string>;
+  hasTransparentBackground: boolean;
+  hasChangedBackground: boolean;
+  foregroundPosition: {
+    x: number;
+    y: number;
+  };
+  clonedForegrounds: ClonedForeground[];
 }
 
 interface EditorActions {
@@ -81,9 +98,36 @@ interface EditorActions {
   setExportQuality: (quality: 'high' | 'medium' | 'low') => void;
   updateImageEnhancements: (enhancements: ImageEnhancements) => void;
   setProcessingMessage: (message: string) => void;
+  removeBackground: () => Promise<void>;
+  resetBackground: () => void;
+  changeBackground: () => Promise<void>;
+  updateForegroundPosition: (position: { x: number; y: number }) => void;
+  addClonedForeground: () => void;
+  removeClonedForeground: (id: number) => void;
+  updateClonedForegroundPosition: (id: number, position: { x: number; y: number }) => void;
+  setIsProcessing: (value: boolean) => void;
+  setIsConverting: (value: boolean) => void;
 }
 
-export const useEditor = create<EditorState & EditorActions>((set, get) => ({
+// Add helper functions outside of the store
+const loadImage = (src: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+};
+
+const filterString = (enhancements: ImageEnhancements): string => `
+  brightness(${enhancements.brightness}%)
+  contrast(${enhancements.contrast}%)
+  saturate(${enhancements.saturation}%)
+  opacity(${100 - enhancements.fade}%)
+`;
+
+export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   image: {
     original: null,
     background: null,
@@ -108,6 +152,13 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   originalFileName: null,
   processingMessage: '',
   loadedFonts: new Set(),
+  hasTransparentBackground: false,
+  hasChangedBackground: false,
+  foregroundPosition: {
+    x: 0,
+    y: 0
+  },
+  clonedForegrounds: [],
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -128,43 +179,31 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     const state = get();
     
     try {
-      // If there's a font update, load it first
       if (updates.fontFamily) {
         const weightsToLoad = ['400', '700'];
         const fontLoadPromises = weightsToLoad.map(weight => 
-          document.fonts.load(`${weight} 16px "${updates.fontFamily}"`)
+          document.fonts.load(`${weight} 16px ${updates.fontFamily}`)
         );
 
-        // Wait for all font weights to load
         await Promise.all(fontLoadPromises);
 
-        // Fix the type error by ensuring fontFamily is not undefined and creating a new Set properly
         if (updates.fontFamily) {
           const newLoadedFonts = new Set(state.loadedFonts);
           newLoadedFonts.add(updates.fontFamily);
-          
-          set({
-            loadedFonts: newLoadedFonts
-          });
+          set({ loadedFonts: newLoadedFonts });
         }
       }
 
-      // Update the text set after font is loaded (or immediately if no font change)
       set(state => ({
         textSets: state.textSets.map(set => 
-          set.id === id 
-            ? { ...set, ...updates }
-            : set
+          set.id === id ? { ...set, ...updates } : set
         )
       }));
     } catch (error) {
       console.warn(`Failed to update text set (ID: ${id}):`, error);
-      // Still update other properties even if font loading fails
       set(state => ({
         textSets: state.textSets.map(set => 
-          set.id === id 
-            ? { ...set, ...updates }
-            : set
+          set.id === id ? { ...set, ...updates } : set
         )
       }));
     }
@@ -215,31 +254,36 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   }),
 
   handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean }) => {
-    // Set states if provided
     if (state?.isConverting !== undefined) set({ isConverting: state.isConverting });
     if (state?.isProcessing !== undefined) set({ isProcessing: state.isProcessing });
 
-    if (file.name.toLowerCase().match(/\.(heic|heif)$/)) {
-      set({ isConverting: true });
-      set(state => ({
-        image: {
-          ...state.image,
-          original: URL.createObjectURL(file)
-        }
-      }));
-    } else {
-      set({ isProcessing: true });
-      set(state => ({
-        image: {
-          ...state.image,
-          original: URL.createObjectURL(file)
-        }
-      }));
-    }
+    const messages = [
+      'Getting your photo ready...',
+      'Preparing something special...',
+      'Adding a touch of magic...',
+      'Making your image perfect...',
+      'Almost ready to create...'
+    ];
+
+    let messageIndex = 0;
+    const messageInterval = setInterval(() => {
+      set({ processingMessage: messages[messageIndex] });
+      messageIndex = (messageIndex + 1) % messages.length;
+    }, 3000);
 
     try {
       const fileName = file.name.replace(/\.[^/.]+$/, "");
       set({ originalFileName: fileName });
+
+      // File is already optimized when it reaches here
+      const originalUrl = URL.createObjectURL(file);
+      set(state => ({
+        image: {
+          ...state.image,
+          original: originalUrl,
+          background: originalUrl // Set both original and background
+        }
+      }));
 
       if (file.type === 'image/heic' || file.type === 'image/heif') {
         set({ 
@@ -251,102 +295,73 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
 
       set({ isProcessing: true });
 
-      // More friendly loading messages
-      const messages = [
-        'Getting your photo ready...',
-        'Working some magic...',
-        'Making your photo shine...',
-        'Almost ready to create something amazing...',
-        'Just a few more moments...'
-      ];
-
-      let messageIndex = 0;
-      const messageInterval = setInterval(() => {
-        set({ processingMessage: messages[messageIndex] });
-        messageIndex = (messageIndex + 1) % messages.length;
-      }, 3000); // Increased to 3 seconds for better readability
-
-      const originalUrl = URL.createObjectURL(file);
-      
-      set(state => ({
-        image: {
-          ...state.image,
-          original: originalUrl,
-          background: originalUrl
-        }
-      }));
-
-      // Process at original quality
+      // Process foreground
       const processedBlob = await removeBackground(originalUrl);
-      const processedUrl = URL.createObjectURL(processedBlob);
+      const foregroundUrl = URL.createObjectURL(processedBlob);
       
       clearInterval(messageInterval);
+      
       set(state => ({
         image: {
           ...state.image,
-          foreground: processedUrl
+          foreground: foregroundUrl
         },
         processingMessage: 'All set! Let\'s create something beautiful!'
       }));
 
-      // Clear the success message after 2 seconds
-      setTimeout(() => {
-        set({ processingMessage: '' });
-      }, 2000);
+      setTimeout(() => set({ processingMessage: '' }), 2000);
 
     } catch (error) {
+      clearInterval(messageInterval); // Make sure to clear interval on error
       console.error('Error processing image:', error);
-      set({ processingMessage: 'Oops! Something went wrong. Please try again.' });
-      
+      set({ 
+        processingMessage: 'Oops! Something went wrong. Please try again.',
+        isProcessing: false,
+        isConverting: false
+      });
     } finally {
+      clearInterval(messageInterval); // Make sure to clear interval
       set({ isConverting: false, isProcessing: false });
     }
   },
 
   downloadImage: async () => {
-    // Start loading state immediately
     set({ 
       isDownloading: true,
       processingMessage: 'Preparing your masterpiece...'
     });
 
-    const { image, textSets, shapeSets, imageEnhancements, exportQuality, originalFileName } = get();
-    if (!image.background || !image.foreground) return;
+    const { 
+      image, 
+      textSets, 
+      shapeSets, 
+      imageEnhancements, 
+      hasTransparentBackground,
+      hasChangedBackground,
+      foregroundPosition,
+      originalFileName 
+    } = get();
+
+    if (!image.original || (!hasTransparentBackground && !image.background) || (hasTransparentBackground && !image.foreground)) return;
 
     try {
-      // Load fonts first with a status update
-      set({ processingMessage: 'Getting everything perfect...' });
-      const fontPromises = textSets.map(textSet => 
-        document.fonts.load(`${textSet.fontWeight} 1rem "${textSet.fontFamily}"`)
-      );
-      await Promise.all(fontPromises);
-
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) throw new Error('Failed to get canvas context');
 
-      // Load the original background image at full quality
-      const bgImg = new Image();
-      bgImg.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        bgImg.onload = resolve;
-        bgImg.onerror = reject;
-        bgImg.src = image.original!; // Use original image instead of background
-      });
+      // 1. Draw background first
+      const backgroundImage = await loadImage(image.background || image.original);
+      canvas.width = backgroundImage.width;
+      canvas.height = backgroundImage.height;
 
-      // Maintain original dimensions
-      canvas.width = bgImg.width;
-      canvas.height = bgImg.height;
+      if (!hasTransparentBackground) {
+        ctx.filter = filterString(imageEnhancements);
+        ctx.drawImage(backgroundImage, 0, 0);
+        ctx.filter = 'none';
+      }
 
-      ctx.filter = `
-        brightness(${imageEnhancements.brightness}%)
-        contrast(${imageEnhancements.contrast}%)
-        saturate(${imageEnhancements.saturation}%)
-        opacity(${100 - imageEnhancements.fade}%)
-      `;
-
-      ctx.drawImage(bgImg, 0, 0);
-
+      // 2. Draw shapes and text
+      // Draw shapes
       shapeSets.forEach(shapeSet => {
         ctx.save();
         
@@ -356,11 +371,9 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ctx.translate(x, y);
         ctx.rotate((shapeSet.rotation * Math.PI) / 180);
 
-        // Use the same scale calculation as CanvasPreview
         const baseSize = Math.min(canvas.width, canvas.height);
         const scale = (baseSize * (shapeSet.scale / 100)) / 1000;
         
-        // Add center-based scaling
         ctx.translate(-0.5, -0.5);
         ctx.scale(scale, scale);
         ctx.translate(0.5, 0.5);
@@ -391,6 +404,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ctx.restore();
       });
 
+      // Draw text
       textSets.forEach(textSet => {
         ctx.save();
         
@@ -418,79 +432,84 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         ctx.restore();
       });
 
-      const fgImg = new Image();
-      fgImg.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        fgImg.onload = resolve;
-        fgImg.onerror = reject;
-        fgImg.src = image.foreground!;
+      // 3. Draw foreground LAST and ONCE
+      if (image.foreground) {
+        const fgImg = await loadImage(image.foreground);
+        ctx.filter = 'none';
+        ctx.globalAlpha = 1;
+
+        const scale = Math.min(
+          canvas.width / fgImg.width,
+          canvas.height / fgImg.height
+        );
+        
+        const newWidth = fgImg.width * scale;
+        const newHeight = fgImg.height * scale;
+        
+        const x = (canvas.width - newWidth) / 2;
+        const y = (canvas.height - newHeight) / 2;
+
+        // Apply offset if background is changed or transparent
+        if (hasTransparentBackground || hasChangedBackground) {
+          const offsetX = (canvas.width * foregroundPosition.x) / 100;
+          const offsetY = (canvas.height * foregroundPosition.y) / 100;
+          ctx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
+        } else {
+          ctx.drawImage(fgImg, x, y, newWidth, newHeight);
+        }
+
+        // Draw cloned foregrounds
+        for (const clone of get().clonedForegrounds) {
+          const fgImg = await loadImage(image.foreground);
+          const scale = Math.min(
+            canvas.width / fgImg.width,
+            canvas.height / fgImg.height
+          );
+          
+          const newWidth = fgImg.width * scale;
+          const newHeight = fgImg.height * scale;
+          
+          const x = (canvas.width - newWidth) / 2;
+          const y = (canvas.height - newHeight) / 2;
+
+          const offsetX = (canvas.width * clone.position.x) / 100;
+          const offsetY = (canvas.height * clone.position.y) / 100;
+          
+          ctx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
+        }
+      }
+
+      // Create blob and download
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          blob => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
+          'image/png',
+          1.0
+        );
       });
-      
-      ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
 
-      // Always use maximum quality (1.0) regardless of exportQuality setting for PNG
-      const blobPromise = new Promise<void>((resolve, reject) => {
-        canvas.toBlob(async (blob) => {
-          if (!blob) {
-            reject(new Error('Failed to generate image'));
-            return;
-          }
-          
-          const now = new Date();
-          const baseFileName = originalFileName || 'UnderlayXAI';
-          const timestamp = [
-            now.getDate().toString().padStart(2, '0'),
-            (now.getMonth() + 1).toString().padStart(2, '0'),
-            now.getSeconds().toString().padStart(2, '0')
-          ].join('_');
-          
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.download = `${baseFileName}_${timestamp}.png`;
-          link.href = url;
-          
-          set({ processingMessage: 'Downloading your creation...' });
-          
-          // Create a promise that resolves when the download starts
-          const downloadPromise = new Promise<void>((downloadResolve) => {
-            link.onclick = () => {
-              setTimeout(() => {
-                URL.revokeObjectURL(url);
-                downloadResolve();
-              }, 1000); // Give enough time for the download to start
-            };
-          });
+      // Download logic
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = `${originalFileName || 'UnderlayX'}.png`;
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
-          link.click();
-          await downloadPromise;
-          resolve();
-        }, 'image/png', 1.0);
-      });
-
-      await blobPromise;
-      
-      // Immediately clear the downloading state and show success message
       set({ 
         isDownloading: false,
         processingMessage: 'Download complete!' 
       });
-
-      // Clear the success message after 2 seconds
-      setTimeout(() => {
-        set({ processingMessage: '' });
-      }, 2000);
+      setTimeout(() => set({ processingMessage: '' }), 2000);
 
     } catch (error) {
       console.error('Error downloading image:', error);
       set({ 
-        processingMessage: 'Oops! Download failed. Please try again.',
+        processingMessage: 'Download failed. Please try again.',
         isDownloading: false 
       });
-      
-      // Clear error message after 3 seconds
-      setTimeout(() => {
-        set({ processingMessage: '' });
-      }, 3000);
     }
   },
 
@@ -507,6 +526,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       shadows: 0,
       sharpness: 0,
     },
+    clonedForegrounds: [], // Clear clones on reset
     image: clearImage ? {
       original: null,
       background: null,
@@ -514,5 +534,105 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     } : state.image
   })),
   setExportQuality: (quality) => set({ exportQuality: quality }),
-  updateImageEnhancements: (enhancements) => set({ imageEnhancements: enhancements })
+  updateImageEnhancements: (enhancements) => set({ imageEnhancements: enhancements }),
+  removeBackground: async () => {
+    const { image } = get();
+    if (!image.foreground) return;
+
+    // Simply update the state to show only foreground
+    set(state => ({
+      image: {
+        ...state.image,
+        background: null
+      },
+      hasTransparentBackground: true,
+      processingMessage: 'Background removed!'
+    }));
+
+    // Clear message after a brief moment
+    setTimeout(() => set({ processingMessage: '' }), 1000);
+  },
+
+  resetBackground: () => {
+    const { image } = get();
+    if (!image.original) return;
+
+    set(state => ({
+      image: {
+        ...state.image,
+        background: image.original
+      },
+      hasTransparentBackground: false,
+      hasChangedBackground: false,
+      foregroundPosition: { x: 0, y: 0 }
+    }));
+  },
+
+  changeBackground: async () => {
+    try {
+      // Remove the premature loading state
+      const file = await uploadFile();
+      if (!file) {
+        return; // User cancelled, just return without setting any loading state
+      }
+
+      // Only set loading after file is selected
+      set({ 
+        isProcessing: true,
+        processingMessage: 'Changing background...'
+      });
+
+      const backgroundUrl = URL.createObjectURL(file);
+      await loadImage(backgroundUrl);
+
+      set(state => ({
+        image: {
+          ...state.image,
+          background: backgroundUrl
+        },
+        hasChangedBackground: true,
+        isProcessing: false, // Clear loading state
+        processingMessage: 'Background changed successfully!'
+      }));
+
+      setTimeout(() => set({ processingMessage: '' }), 2000);
+    } catch (error) {
+      console.error('Error changing background:', error);
+      set({ 
+        processingMessage: 'Failed to change background. Please try again.',
+        isProcessing: false // Make sure to clear loading state on error
+      });
+    }
+  },
+
+  updateForegroundPosition: ({ x, y }) => {
+    set({ foregroundPosition: { x, y } });
+  },
+
+  addClonedForeground: () => {
+    const { image } = get();
+    if (!image.foreground) return;
+
+    set((state) => ({
+      clonedForegrounds: [
+        ...state.clonedForegrounds,
+        {
+          id: Date.now(),
+          position: { x: 0, y: 0 }
+        }
+      ]
+    }));
+  },
+
+  removeClonedForeground: (id) => set((state) => ({
+    clonedForegrounds: state.clonedForegrounds.filter(clone => clone.id !== id)
+  })),
+
+  updateClonedForegroundPosition: (id, position) => set((state) => ({
+    clonedForegrounds: state.clonedForegrounds.map(clone =>
+      clone.id === id ? { ...clone, position } : clone
+    )
+  })),
+  setIsProcessing: (value: boolean) => set({ isProcessing: value }),
+  setIsConverting: (value: boolean) => set({ isConverting: value }),
 }));
