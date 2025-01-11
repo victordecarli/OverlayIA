@@ -10,9 +10,12 @@ import { Features } from '@/components/Features';
 import { UseCases } from '@/components/UseCases';
 import { ProductHuntBadges } from '@/components/ProductHuntBadges';
 import { FeatureShowcase } from '@/components/FeatureShowcase';
+import { LogIn } from 'lucide-react';
+import { AuthDialog } from '@/components/AuthDialog';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const scrollRef = useRef(null);
   
   const { scrollYProgress } = useScroll({
@@ -42,20 +45,34 @@ export default function Home() {
                 >
                   UnderlayX
                 </Link>
-                <NavDropdown />
+                <div className="flex items-center gap-6">
+                  <NavDropdown />
+                  <button
+                    onClick={() => setShowAuthDialog(true)}
+                    className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>Login</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </nav>
+
+        <AuthDialog 
+          isOpen={showAuthDialog}
+          onClose={() => setShowAuthDialog(false)}
+        />
 
         <main className="pt-24" role="main" aria-label="Main content">
           {/* Hero Section */}
           <section className="container mx-auto px-4 py-16 md:py-16"> {/* Changed from md:py-24 to md:py-16 */}
             <div className="max-w-4xl mx-auto text-center mb-16">
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Transform Your Images Like
+                Transform Your Images
                 <br/>
-                <span className="text-purple-400">Never Before</span>
+                <span className="text-purple-400 md:mt-2 block">Like Never Before</span>
               </h1>
               <p className="text-lg md:text-lg text-gray-300 mb-8 max-w-xl mx-auto">
               The all-in-one tool to seamlessly add text and shapes behind images, remove backgrounds, clone objects, and change backgrounds.
@@ -63,7 +80,7 @@ export default function Home() {
               <Link 
                 href="/custom-editor" 
                 onClick={() => setIsLoading(true)}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
+                className="inline-flex items-center px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
               >
                 {isLoading ? (
                   <>

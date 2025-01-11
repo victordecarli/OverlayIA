@@ -24,9 +24,8 @@ export function NavDropdown() {
     <div ref={dropdownRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-6 py-2.5 bg-white/10 hover:bg-white/15 rounded-full text-white font-medium transition-all hover:scale-[1.02] border border-white/20 backdrop-blur-sm"
+        className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors"
         onBlur={(e) => {
-          // Only close if focus didn't move to the dropdown
           if (dropdownRef.current && !dropdownRef.current.contains(e.relatedTarget)) {
             setIsOpen(false);
           }
