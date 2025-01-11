@@ -8,29 +8,30 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 
 
 export const metadata = {
-  title: 'UnderlayX | Add Text & Shapes Behind Images | Create Glowing Effects',
-  description: 'Create stunning visuals by adding text behind images, placing shapes behind objects, and creating glowing effects. Free online tool for content creators, marketers & designers. No login required.',
+  title: 'Transform Your Images Like Never Before - UnderlayX',
+  description: 'The ultimate tool to add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Perfect for creators and designers.',
   metadataBase: new URL('https://www.underlayx.com'),
   openGraph: {
     type: 'website',
     url: 'https://www.underlayx.com',
-    title: 'UnderlayX | Add Text & Shapes Behind Images | Create Glowing Effects',
-    description: 'Create stunning visuals by adding text behind images, placing shapes behind objects, and creating glowing effects. Perfect for content creators and designers.',
+    title: 'Transform Your Images Like Never Before - UnderlayX',
+    description: 'Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects. Elevate your visuals with UnderlayX.',
     images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'UnderlayX | Add Text & Shapes Behind Images',
-    description: 'Create stunning visuals by adding text behind images, placing shapes behind objects, and creating glowing effects. Free online tool for designers.',
+    title: 'UnderlayX | Transform Your Images Like Never Before',
+    description: 'Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Try it now!',
     creator: '@underlayx',
     images: ['/og-image.png'],
     site: '@underlayx',
   },
-  keywords: 'text behind image, shapes behind image, glowing text effect, image editor, photo editing, background text, layered text effects',
+  keywords: 'text behind image, shapes behind image, remove background, clone objects, change background, glowing text effect, image editor, photo editing, advanced image editor',
   icons: {
     icon: '/favicon.ico',
   },
 };
+
 
 export default function RootLayout({
   children,

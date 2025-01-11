@@ -1,7 +1,21 @@
 export const ProductHuntBadges = () => {
   return (
-    <section className="bg-black/40 py-16 md:py-24">
-        <div className="sm:flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 px-4 pb-10">
+    <section className="py-16 md:py-24">
+      {/* Achievement Heading */}
+      <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          Recognized by{' '}
+          <span className="inline-flex md:inline">
+            <span className="text-purple-400">Product Hunt</span>
+          </span>
+        </h2>
+        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          Proud to be ranked among the top products in Marketing and Design tools, trusted by creators worldwide
+        </p>
+      </div>
+
+      {/* Badges Container */}
+      <div className="sm:flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 px-4 pb-10">
       {[
         {
           href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",

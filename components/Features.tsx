@@ -48,7 +48,7 @@ export const Features = () => {
   ];
 
   return (
-    <section className="bg-black/40 py-16 md:py-24">
+    <section className="py-16 md:py-24"> {/* Removed bg-black/40 */}
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-16">
           Everything You Need for <span className="text-purple-400">Professional Designs</span>

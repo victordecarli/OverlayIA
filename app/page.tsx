@@ -57,8 +57,8 @@ export default function Home() {
                 <br />
                 <span className="text-purple-400">Like Never Before</span>
               </h1>
-              <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                The ultimate tool to place text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create stunning glowing effects effortlessly.
+              <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-xl mx-auto">
+              The all-in-one tool to seamlessly add text and shapes behind images, remove backgrounds, clone objects, and change backgrounds.
               </p>
               <Link 
                 href="/custom-editor" 

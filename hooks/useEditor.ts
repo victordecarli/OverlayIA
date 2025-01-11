@@ -470,7 +470,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         canvas.toBlob(
           blob => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
           'image/png',
-          0.3
+          1.0
         );
       });
 

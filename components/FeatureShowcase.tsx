@@ -11,17 +11,17 @@ const features = [
   {
     title: 'Shape Behind Image',
     description: 'Add shapes behind objects for depth',
-    image: '/1.webp'
+    image: '/2.webp'
   },
   {
     title: 'Clone Image',
     description: 'Clone and duplicate objects easily',
-    image: '/1.webp'
+    image: '/3.webp'
   },
   {
     title: 'Change Background',
     description: 'Swap backgrounds instantly',
-    image: '/1.webp'
+    image: '/4.webp'
   }
 ];
 
@@ -30,22 +30,22 @@ export function FeatureShowcase() {
     <section className="py-4">
       <div className="container mx-auto">
         <div className="max-w-7xl mx-auto overflow-hidden">
-          {/* Centered scrolling container */}
-          <div className="flex overflow-x-auto gap-0 snap-x snap-mandatory hide-scrollbar justify-center">
+          {/* Updated scrolling container */}
+          <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory hide-scrollbar px-4 md:px-0">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex-none w-[80vw] md:w-[25%] snap-start px-0.5 first:ml-auto last:mr-auto"
+                className="flex-none w-[80vw] md:w-[25%] snap-start"
               >
-                {/* Image Container - Added rounded corners */}
-                <div className="relative max-h-[400px] md:max-h-[600px] w-full flex items-center justify-center rounded-2xl overflow-hidden"> {/* Added max-h-[400px] for mobile */}
+                {/* Image Container */}
+                <div className="relative max-h-[400px] md:max-h-[600px] w-full flex items-center justify-center rounded-2xl overflow-hidden">
                   <Image
                     src={feature.image}
                     alt={feature.title}
                     width={800}
                     height={800}
                     className="max-w-full max-h-full w-auto h-auto object-contain rounded-2xl"
-                    sizes="(max-width: 768px) 80vw, 25vw" // Updated sizes
+                    sizes="(max-width: 768px) 80vw, 25vw"
                     quality={100}
                     priority={index < 2}
                   />
