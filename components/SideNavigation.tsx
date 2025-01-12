@@ -223,7 +223,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                 </svg>
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 overscroll-contain">
+            <div className="flex-1 overflow-y-auto p-4 overscroll-contain mb-6">
               {getUploadMessage() ? (
                 <div className="flex flex-col items-center justify-center h-full text-center p-4">
                   <p className="text-gray-400 mb-4">{getUploadMessage()}</p>

@@ -16,7 +16,14 @@ interface EditorLayoutProps {
 }
 
 export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
-  const { resetEditor, downloadImage, isDownloading, image } = useEditor(); // Add image to destructuring
+  const { 
+    resetEditor, 
+    downloadImage, 
+    isDownloading, 
+    image,
+    isProcessing,
+    isConverting 
+  } = useEditor();
   const isMobile = useIsMobile();
   const { user, isLoading } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -34,6 +41,9 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Unified state check for all button actions
+  const isActionDisabled = isProcessing || isConverting || isDownloading;
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
@@ -107,18 +117,31 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             <div className="mb-4 flex items-center justify-between max-w-[800px] mx-auto">
               <button
                 onClick={() => user ? resetEditor(true) : setShowAuthDialog(true)}
-                className="p-3 rounded-lg bg-gray-200 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors flex items-center gap-2"
+                disabled={isActionDisabled}
+                className={cn(
+                  "p-3 rounded-lg bg-gray-200 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors flex items-center gap-2",
+                  isActionDisabled && "opacity-50 cursor-not-allowed hover:bg-gray-200 dark:hover:bg-white/5"
+                )}
+                aria-disabled={isActionDisabled}
               >
                 <Upload className="w-4 h-4" />
-                <span className="text-sm">New Image</span>
+                <span className="text-sm">
+                  {isDownloading ? 'Please wait...' : 'New Image'}
+                </span>
               </button>
               <button
                 onClick={downloadImage}
-                disabled={isDownloading}
-                className="p-3 rounded-lg bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-white/90 text-white dark:text-black transition-colors flex items-center gap-2"
+                disabled={isActionDisabled}
+                className={cn(
+                  "p-3 rounded-lg bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-white/90 text-white dark:text-black transition-colors flex items-center gap-2",
+                  isActionDisabled && "opacity-50 cursor-not-allowed hover:bg-black dark:hover:bg-white"
+                )}
+                aria-disabled={isActionDisabled}
               >
-                <Download className="w-4 h-4" />
-                <span className="text-sm">Download</span>
+                <Download className={cn("w-4 h-4", isDownloading && "animate-pulse")} />
+                <span className="text-sm">
+                  {isDownloading ? 'Downloading...' : 'Download'}
+                </span>
               </button>
             </div>
           )}

@@ -4,7 +4,6 @@ import { useEditor } from '@/hooks/useEditor';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Upload } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export function ChangeBackgroundEditor() {
   const { 
@@ -31,14 +30,6 @@ export function ChangeBackgroundEditor() {
           <Upload className="w-4 h-4 mr-2" />
           {isProcessing ? 'procesing...' : hasChangedBackground ? 'Change Background' : 'Upload Background'}
         </Button>
-        <Button
-          onClick={resetBackground}
-          variant="outline"
-          className="w-full"
-          disabled={!hasChangedBackground}
-        >
-          Reset Background
-        </Button>
       </div>
 
       {hasChangedBackground && (
@@ -53,7 +44,7 @@ export function ChangeBackgroundEditor() {
               step={1}
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 mb-2">
             <label className="text-sm font-medium">Vertical Position</label>
             <Slider
               value={[foregroundPosition.y]}
@@ -63,6 +54,14 @@ export function ChangeBackgroundEditor() {
               step={1}
             />
           </div>
+          <Button
+          onClick={resetBackground}
+          variant="outline"
+          className="w-full"
+          disabled={!hasChangedBackground}
+        >
+          Reset Background
+        </Button>
         </div>
       )}
     </div>
