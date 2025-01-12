@@ -134,23 +134,27 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
         </div>
       </nav>
 
-      <div className="pt-16 sm:pt-16 flex h-[calc(100vh-4rem)]"> {/* Adjusted padding top */}
-        <div className="hidden lg:block border-r border-gray-200 dark:border-white/10">
-          <SideNavComponent mobile={isMobile} />
+      <div className="pt-16 flex flex-col h-screen">
+        {/* Changed lg to xl for larger screens only */}
+        <div className="hidden xl:block fixed top-16 bottom-0 w-[320px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 z-10">
+          <SideNavComponent mobile={false} />
         </div>
 
         <main className={cn(
           "flex-1 transition-all duration-300 ease-in-out relative",
-          "p-1 sm:p-4", // Reduced padding even more on mobile
-          "lg:ml-[60px]",
-          "lg:pl-[320px]"
+          "p-1 sm:p-4",
+          "xl:ml-[320px]", // Changed lg to xl and reduced width
+          "pb-[100px] xl:pb-4" // Changed lg to xl
         )}>
-          <div className="lg:hidden mb-1"> {/* Reduced margin on mobile */}
-            <SideNavComponent mobile={isMobile} />
+          {/* Bottom Navigation for mobile, tablet and small desktop */}
+          <div className="fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 z-20">
+            <div className="p-2">
+              <SideNavComponent mobile={true} />
+            </div>
           </div>
 
-          <div className="flex items-start justify-center h-[calc(100vh-5rem)] sm:h-[calc(100vh-7rem)]"> {/* Adjusted height calculation for mobile */}
-            <div className="w-full max-w-[800px] aspect-square lg:aspect-auto lg:h-full relative overflow-hidden">
+          <div className="flex items-start justify-center h-[calc(100vh-180px)] xl:h-[calc(100vh-5rem)]">
+            <div className="w-full max-w-[800px] aspect-square xl:aspect-auto xl:h-full relative overflow-hidden">
               <Canvas />
             </div>
           </div>
