@@ -12,7 +12,7 @@ import { useSearchParams } from 'next/navigation';
 export default function EditorPage() {
   const { resetEditor, downloadImage, isDownloading } = useEditor();
   const searchParams = useSearchParams();
-  const shouldAutoUpload = searchParams.get('upload') === 'true';
+  const shouldAutoUpload = false;
 
   useEffect(() => {
     resetEditor();
@@ -33,6 +33,7 @@ export default function EditorPage() {
               onClick={() => resetEditor(true)}
               className="p-2 sm:px-4 sm:py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors flex items-center gap-2"
               title="Upload New Image"
+              aria-label="Upload New Image"
             >
               <Upload className="w-4 h-4" />
               <span className="hidden sm:inline text-sm">Upload</span>
@@ -41,6 +42,7 @@ export default function EditorPage() {
               onClick={downloadImage}
               disabled={isDownloading}
               className="p-2 sm:px-4 sm:py-2 rounded-lg bg-gray-900 hover:bg-gray-800 dark:bg-white/10 dark:hover:bg-white/20 text-white transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Download Image"
             >
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline text-sm">Download</span>

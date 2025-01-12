@@ -36,7 +36,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
               className="p-2 sm:px-4 sm:py-2 rounded-lg bg-gray-900 hover:bg-gray-800 dark:bg-white/10 dark:hover:bg-white/20 text-white transition-colors flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm">Download</span>
+              <span className="sm:inline text-sm">Download</span>
             </button>
             <ThemeToggle />
           </div>

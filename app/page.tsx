@@ -1,8 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { Footer } from '@/components/Footer';
 import { NavDropdown } from '@/components/NavDropdown';
@@ -18,11 +16,6 @@ export default function Home() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const scrollRef = useRef(null);
   
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ["start start", "end start"],
-    layoutEffect: false
-  });
 
   return (
     <div className="min-h-screen relative flex flex-col" role="region" aria-label="Home page content">
@@ -47,13 +40,13 @@ export default function Home() {
                 </Link>
                 <div className="flex items-center gap-6">
                   <NavDropdown />
-                  {/* <button
+                  <button
                     onClick={() => setShowAuthDialog(true)}
                     className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>Login</span>
-                  </button> */}
+                  </button>
                 </div>
               </div>
             </div>
