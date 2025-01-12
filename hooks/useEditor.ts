@@ -5,7 +5,6 @@ import { removeBackground } from '@imgly/background-removal';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 import { uploadFile } from '@/lib/upload';  // Add this import
-import { optimizeImage } from '@/lib/image-utils';
 
 interface GlowEffect {
   enabled: boolean;
@@ -275,7 +274,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const fileName = file.name.replace(/\.[^/.]+$/, "");
       set({ originalFileName: fileName });
 
-      // File is already optimized when it reaches here
       const originalUrl = URL.createObjectURL(file);
       set(state => ({
         image: {
