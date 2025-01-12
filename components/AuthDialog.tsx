@@ -8,8 +8,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { signInWithGoogle } from "@/lib/auth.actions";
 import { useState } from 'react';
+import { supabase } from "@/utils/supabaseClient";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -21,15 +21,20 @@ export function AuthDialog({ isOpen, onClose, returnUrl }: AuthDialogProps) {
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (formData: FormData) => {
+  // signin with google
+  const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      formData.set('returnUrl', returnUrl || currentPath);
-      const response = await signInWithGoogle(formData);
-      
-      if (response.url) {
-        window.location.href = response.url;
-      }
+       await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            },
+            redirectTo: 'https://underlayx.com/custom-editor',
+          },
+        });
     } catch (error) {
       console.error('Authentication error:', error);
     }

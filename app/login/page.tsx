@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthDialog } from '@/components/AuthDialog';
-import { createClient } from '@/utils/supabase/client';
+import { supabase } from '@/utils/supabaseClient';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,17 +11,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     const handleAuth = async () => {
-      const supabase = createClient();
-      
       // Check if we have a session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-      
       if (session) {
         router.push('/');
         return;
       }
-
       // If no session but we have a code, we're in the OAuth callback
       const code = searchParams.get('code');
       if (code) {

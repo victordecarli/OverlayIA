@@ -4,11 +4,11 @@ import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronDown, Type, Shapes, ImageDown, LogIn, Loader2, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { UserMenu } from './UserMenu';
 import { AuthDialog } from './AuthDialog';
 import Image from 'next/image';
+import { supabase } from '@/utils/supabaseClient';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,17 +32,14 @@ export function Navbar() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
         setUser(user);
-
         // Set up auth state change listener
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
           (_event, session) => {
             setUser(session?.user ?? null);
           }
         );
-
         return () => subscription.unsubscribe();
       } finally {
         setIsLoading(false);
