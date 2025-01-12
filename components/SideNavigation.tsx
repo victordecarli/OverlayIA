@@ -13,10 +13,9 @@ import { CloneImageEditor } from './CloneImageEditor';
 interface SideNavigationProps {
   mobile?: boolean;
   mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only';
-  onPanelStateChange?: (isOpen: boolean) => void;
 }
 
-export function SideNavigation({ mobile = false, mode = 'full', onPanelStateChange }: SideNavigationProps) {
+export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
   // Determine initial tab based on mode
   const getInitialTab = () => {
     switch (mode) {
@@ -87,11 +86,6 @@ export function SideNavigation({ mobile = false, mode = 'full', onPanelStateChan
     }
   }, [mode]);
 
-  // Update parent component when tab changes
-  useEffect(() => {
-    onPanelStateChange?.(activeTab !== null);
-  }, [activeTab, onPanelStateChange]);
-
   // Helper function to determine if we should show the "Add" button
   const shouldShowAddButton = (activeTab: string) => {
     return activeTab !== 'remove-background' && canAddLayers;
@@ -144,109 +138,109 @@ export function SideNavigation({ mobile = false, mode = 'full', onPanelStateChan
 
   if (mobile) {
     return (
-      <div className="flex flex-col h-full">
+      <>
         {/* Bottom Navigation Bar */}
-        <div className="flex gap-2 p-1.5">
-          {showTextButton && (
-            <button
-              onClick={() => setActiveTab(activeTab === 'text' ? null : 'text')}
-              className={cn(
-                "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-                activeTab === 'text' 
-                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-gray-400"
-              )}
-              disabled={!canAddLayers}
-            >
-              <Type className="w-4 h-4" />
-              <span className="text-[10px] font-medium">Text</span>
-            </button>
-          )}
-          {showShapesButton && (
-            <button
-              onClick={() => setActiveTab(activeTab === 'shapes' ? null : 'shapes')}
-              className={cn(
-                "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-                activeTab === 'shapes'
-                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-gray-400"
-              )}
-              disabled={!canAddLayers}
-            >
-              <Shapes className="w-4 h-4" />
-              <span className="text-[10px] font-medium">Shapes</span>
-            </button>
-          )}
-          {showRemoveBackground && (
-            <button
-              onClick={() => setActiveTab(activeTab === 'remove-background' ? null : 'remove-background')}
-              className={cn(
-                "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-                activeTab === 'remove-background'
-                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-gray-400"
-              )}
-              disabled={!canAddLayers}
-            >
-              <ImageIcon className="w-4 h-4" />
-              <span className="text-[10px] font-medium">Remove BG</span>
-            </button>
-          )}
-          {changeBackgroundButton}
-          {cloneImageButton}
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50">
+          <div className="flex gap-2 max-w-md mx-auto">
+            {showTextButton && (
+              <button
+                onClick={() => setActiveTab(activeTab === 'text' ? null : 'text')}
+                className={cn(
+                  "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+                  activeTab === 'text' 
+                    ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+                    : "text-gray-500 dark:text-gray-400"
+                )}
+                disabled={!canAddLayers}
+              >
+                <Type className="w-4 h-4" />
+                <span className="text-[10px] font-medium">Text</span>
+              </button>
+            )}
+            {showShapesButton && (
+              <button
+                onClick={() => setActiveTab(activeTab === 'shapes' ? null : 'shapes')}
+                className={cn(
+                  "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+                  activeTab === 'shapes'
+                    ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+                    : "text-gray-500 dark:text-gray-400"
+                )}
+                disabled={!canAddLayers}
+              >
+                <Shapes className="w-4 h-4" />
+                <span className="text-[10px] font-medium">Shapes</span>
+              </button>
+            )}
+            {showRemoveBackground && (
+              <button
+                onClick={() => setActiveTab(activeTab === 'remove-background' ? null : 'remove-background')}
+                className={cn(
+                  "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+                  activeTab === 'remove-background'
+                    ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+                    : "text-gray-500 dark:text-gray-400"
+                )}
+                disabled={!canAddLayers}
+              >
+                <ImageIcon className="w-4 h-4" />
+                <span className="text-[10px] font-medium">Remove BG</span>
+              </button>
+            )}
+            {changeBackgroundButton}
+            {cloneImageButton}
+          </div>
         </div>
 
-        {/* Mobile Panel Content */}
+        {/* Mobile Slide-up Editor Panel */}
         {activeTab && (
-          <div className="flex-1 overflow-hidden">
-            <div className="h-full flex flex-col">
-              <div className="p-3 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
-                {(activeTab === 'text' || activeTab === 'shapes') ? (
-                  <button
-                    onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
-                    disabled={!canAddLayers}
-                    className="flex-1 p-2 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-900 dark:text-white rounded-lg transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add {activeTab === 'text' ? 'Text' : 'Shape'}</span>
-                  </button>
+          <div className="fixed inset-x-0 bottom-[56px] bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 rounded-t-xl z-40 max-h-[32vh] flex flex-col shadow-2xl">
+            <div className="sticky top-0 bg-white dark:bg-zinc-950 p-3 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
+                 {(activeTab === 'text' || activeTab === 'shapes') ? (
+                   <button
+                   onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
+                   disabled={!canAddLayers}
+                   className="flex-1 p-2 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-900 dark:text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                 >
+                   <Plus className="w-4 h-4" />
+                   <span>Add {activeTab === 'text' ? 'Text' : 'Shape'}</span>
+                 </button>
                 ) : (
-                  <h3 className="text-lg font-semibold">
-                    {activeTab === 'remove-background' ? 'Remove Background' : ''}
-                    {activeTab === 'change-background' ? 'Change Background' : ''}
-                    {activeTab === 'clone-image' ? 'Clone Image' : ''}
-                  </h3>)
-                }
-                
-                {/* Add close button */}
-                <button
-                  onClick={() => setActiveTab(null)}
-                  className="ml-3 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-900 dark:text-white text-right"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4">
-                {getUploadMessage() ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                    <p className="text-gray-400 mb-4">{getUploadMessage()}</p>
-                  </div>
-                ) : (
-                  <>
-                    {activeTab === 'text' && <TextEditor />}
-                    {activeTab === 'shapes' && <ShapeEditor />}
-                    {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
-                    {activeTab === 'change-background' && <ChangeBackgroundEditor />}
-                    {activeTab === 'clone-image' && <CloneImageEditor />}
-                  </>
-                )}
-              </div>
+                <h3 className="text-lg font-semibold">
+                  {activeTab === 'remove-background' ? 'Remove Background' : ''}
+                  {activeTab === 'change-background' ? 'Change Background' : ''}
+                  {activeTab === 'clone-image' ? 'Clone Image' : ''}
+                </h3>)
+              }
+               
+              {/* Add close button */}
+              <button
+                onClick={() => setActiveTab(null)}
+                className="ml-3 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-900 dark:text-white text-right"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 overscroll-contain mb-6">
+              {getUploadMessage() ? (
+                <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                  <p className="text-gray-400 mb-4">{getUploadMessage()}</p>
+                </div>
+              ) : (
+                <>
+                  {activeTab === 'text' && <TextEditor />}
+                  {activeTab === 'shapes' && <ShapeEditor />}
+                  {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
+                  {activeTab === 'change-background' && <ChangeBackgroundEditor />}
+                  {activeTab === 'clone-image' && <CloneImageEditor />}
+                </>
+              )}
             </div>
           </div>
         )}
-      </div>
+      </>
     );
   }
 
