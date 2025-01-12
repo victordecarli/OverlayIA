@@ -8,6 +8,7 @@ import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { UserMenu } from './UserMenu';
 import { AuthDialog } from './AuthDialog';
+import Image from 'next/image';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -195,11 +196,16 @@ export function Navbar() {
                   </div>
                 ) : user ? (
                   <div className="flex items-center gap-3 text-white">
-                    <img
-                      src={user.user_metadata.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
-                      alt="User avatar"
-                      className="w-10 h-10 rounded-full"
-                    />
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                      <Image
+                        src={user.user_metadata.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
+                        alt="User avatar"
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover"
+                        priority
+                      />
+                    </div>
                     <div className="flex flex-col">
                       <span className="font-medium">{user.email}</span>
                     </div>

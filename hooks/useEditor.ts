@@ -483,7 +483,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
           blob => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
-          'image/png',
+          'image/jpeg',
           1.0
         );
       });
@@ -491,7 +491,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       // Download logic
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download = `${originalFileName || 'UnderlayX'}.png`;
+      link.download = `${originalFileName || 'UnderlayX'}.jpeg`;
       link.href = url;
       document.body.appendChild(link);
       link.click();
