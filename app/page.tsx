@@ -30,12 +30,12 @@ export default function Home() {
           {/* Hero Section */}
           <section className="container mx-auto px-4 py-4 md:py-10"> {/* Changed from md:py-24 to md:py-16 */}
             <div className="max-w-4xl mx-auto text-center mb-16">
-              <h1 className="text-2xl md:text-6xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-3xl md:text-6xl font-bold text-white mb-6 leading-tight">
                 Transform Your Images
                 <br/>
                 <span className="text-purple-400 md:mt-2 block">Like Never Before</span>
               </h1>
-              <p className="text-sm md:text-lg text-gray-300 mb-8 max-w-xl mx-auto">
+              <p className="text-md md:text-lg text-gray-300 mb-8 max-w-xl mx-auto">
               The all-in-one tool to seamlessly add text and shapes behind images, remove backgrounds, clone objects, and change backgrounds.
               </p>
               <Link 
@@ -54,15 +54,12 @@ export default function Home() {
               </Link>
             </div>
           </section>
-
           {/* Feature Showcase */}
           <FeatureShowcase />
-
           {/* Features, Use Cases, and Product Hunt Badges */}
           <Features />
           <UseCases />
           <ProductHuntBadges />
-
           <Footer />
         </main>
       </div>
