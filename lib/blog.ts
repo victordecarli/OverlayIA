@@ -6,7 +6,6 @@ export const blogPosts = {
     title: 'How to Place Shapes Behind Your Image\'s Subject',
     description: 'Learn how to enhance your photos with creative shapes using UnderlayX\'s intuitive tools.',
     content: `
-      <img src="/shape.png" alt="A black and white image shows a silhouette of a person with arms outstretched in front of a heart-shaped outline, against a misty background." className="w-full rounded-lg mb-8" />
       <p>Want to make your photos pop with creative shapes?</p>
       <p>With UnderlayX, adding shapes to your images is as easy as it gets. Whether you're designing social media posts, creating professional graphics, or just exploring your creativity, our shape tool lets you add a unique flair to your photos in seconds.</p>
       <p>Here's how it works:</p>
@@ -17,7 +16,6 @@ export const blogPosts = {
         <li>Position with precision: Drag and drop the shape anywhere on your image, or layer it to create depth and perspective.</li>
         <li>Refine your masterpiece: Use our smart tools to ensure the shape seamlessly integrates into your photo.</li>
       </ul>
-      <img src="/shape-tutorial.png" alt="A black and white image shows a silhouette of a person with arms outstretched in front of a heart-shaped outline, against a misty background." className="w-full rounded-lg mb-8" />
       <p>With UnderlayX, you can:</p>
       <ul>
         <li>Experiment with different shapes to create standout visuals.</li>
@@ -35,7 +33,6 @@ export const blogPosts = {
     title: 'How to Add Text Behind Your Image\'s Subject',
     description: 'Learn how to create stunning designs by placing text behind image subjects with UnderlayX.',
     content: `
-      <img src="/move.png" alt="A silhouette of a person riding a bicycle" className="w-full rounded-lg mb-8" />
       <p>Ever wanted to create the stunning effect of text appearing seamlessly behind the subject in your photos?</p>
       <p>With UnderlayX, it's not just possible—it's effortless. Upload your image, type your desired text, and watch the tool work its magic as it intelligently places the text behind the main subject. It's perfect for crafting eye-catching social media posts, unique presentations, or adding a creative touch to personal projects.</p>
       <p>But we don't stop there. UnderlayX also allows you to:</p>
@@ -45,7 +42,6 @@ export const blogPosts = {
       <li>Preview and refine your designs instantly.</li>
       <li>Download high-quality images ready to share or use anywhere.</li>
       </ul>
-      <img src="/hand.png" alt="A silhouette of a person riding a bicycle" className="w-full rounded-lg mb-8" />
       <p>Whether you're a designer, a content creator, or just someone who loves unique visuals, UnderlayX empowers you to create like never before. It's not just a tool; it's your gateway to creativity.</p>
     `,
     date: '2025-01-03',
