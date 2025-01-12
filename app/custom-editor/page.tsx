@@ -7,11 +7,9 @@ import { Upload, Download, RefreshCw } from 'lucide-react';
 import { SideNavigation } from '@/components/SideNavigation';
 import { cn } from '@/lib/utils';
 import { Canvas } from '@/components/Canvas';
-import { useSearchParams } from 'next/navigation';
 
 export default function EditorPage() {
   const { resetEditor, downloadImage, isDownloading } = useEditor();
-  const searchParams = useSearchParams();
   const shouldAutoUpload = false;
 
   useEffect(() => {
@@ -19,7 +17,7 @@ export default function EditorPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-white/10">
         <div className="px-4 h-16 flex items-center justify-between max-w-7xl mx-auto">
           <a 
@@ -45,7 +43,7 @@ export default function EditorPage() {
               aria-label="Download Image"
             >
               <Download className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm">Download</span>
+              <span className="sm:inline text-sm">Download</span>
             </button>
             <ThemeToggle />
           </div>
@@ -63,7 +61,9 @@ export default function EditorPage() {
           "flex-1 transition-all duration-300 ease-in-out relative",
           "p-4", // Adjusted padding
           "lg:ml-[60px]", // Base margin for collapsed state
-          "lg:pl-[320px]" // Reduced space for expanded navigation
+          "lg:pl-[320px]", // Reduced space for expanded navigation
+          // Add these classes for mobile scrolling
+          "overflow-y-auto md:overflow-hidden"
         )}>
           {/* Mobile Tabs - Visible only on mobile */}
           <div className="lg:hidden mb-2">
@@ -71,13 +71,21 @@ export default function EditorPage() {
           </div>
 
           {/* Editor Content */}
-          <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
+          <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] md:h-[calc(100vh-8rem)]">
             <div className="w-full max-w-[800px] aspect-square lg:aspect-auto lg:h-full relative rounded-lg overflow-hidden bg-gray-50 dark:bg-zinc-900 mobile-canvas-container">
               <Canvas shouldAutoUpload={shouldAutoUpload} />
             </div>
           </div>
         </main>
       </div>
+
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          body.editor-panel-open {
+            overflow: auto;
+          }
+        }
+      `}</style>
     </div>
   );
 }

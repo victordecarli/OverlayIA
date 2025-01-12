@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useEditor } from '@/hooks/useEditor';
-import { ChevronDown } from 'lucide-react';
 import { FONT_OPTIONS, FONT_WEIGHTS } from '@/constants/fonts';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -97,26 +96,6 @@ export function TextEditor() {
                 <SelectContent 
                   className="max-h-[400px] overflow-y-auto bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white w-[280px]"
                 >
-                  {/* <div className="sticky top-0 z-50 bg-white dark:bg-zinc-900 p-2 border-b border-gray-200 dark:border-white/10">
-                    <Input
-                      type="text"
-                      placeholder="Search fonts..."
-                      value={fontSearch}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                      }}
-                      onKeyDown={(e) => {
-                        e.stopPropagation();
-                      }}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setFontSearch(e.target.value);
-                      }}
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-white/10 rounded text-gray-900 dark:text-white text-sm"
-                    />
-                  </div> */}
                   <div className="pt-2">
                     {FONT_OPTIONS
                       .filter(font => 
@@ -165,7 +144,6 @@ export function TextEditor() {
           <div className="space-y-1">
             <div className="flex justify-between items-center">
               <Label className="text-sm text-gray-600 dark:text-gray-400">Text Size</Label>
-              {/* <span className="text-sm text-gray-400">{textSet.fontSize}px</span> */}
             </div>
             <Slider
               min={12}
@@ -178,14 +156,8 @@ export function TextEditor() {
           {/* Color */}
           <div>
             <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Color</Label>
-            {/* <input
-              type="color"
-              value={textSet.color}
-              onChange={(e) => updateTextSet(textSet.id, { color: e.target.value })}
-              className="w-full h-9 cursor-pointer rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
-            /> */}
             <ColorInput
-              value={textSet.color} // or shapeSet.color
+              value={textSet.color} 
               onChange={(value) => updateTextSet(textSet.id, { color: value })} // or updateShapeSet
             />
           </div>
@@ -269,19 +241,6 @@ export function TextEditor() {
               <>
                 <div>
                   <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Glow Color</Label>
-                  {/* <input
-                    type="color"
-                    value={textSet.glow.color}
-                    onChange={(e) => {
-                      const newGlow: GlowEffect = {
-                        ...textSet.glow!,
-                        color: e.target.value
-                      };
-                      updateTextSet(textSet.id, { glow: newGlow });
-                    }}
-                    className="w-full h-9 cursor-pointer rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 [&::-webkit-color-swatch-wrapper]:p-1 [&::-webkit-color-swatch]:rounded-md"
-                  /> */}
-
               <ColorInput
                 value={textSet.glow.color} 
                 onChange={(value) => {

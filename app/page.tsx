@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useState, useRef } from 'react';
+import Link from 'next/link';
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import { Features } from '@/components/Features';
@@ -24,22 +24,7 @@ export default function Home() {
 
       {/* Content Container */}
       <div ref={scrollRef} className="relative z-10 flex-grow">
-        {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-[100]" role="navigation" aria-label="Main navigation">
-          <div className="container mx-auto px-4 py-6">
-            <div className="max-w-2xl mx-auto bg-[#141414] backdrop-blur-xl border border-white/5 rounded-full shadow-xl">
-              <div className="px-8 py-3 flex items-center justify-between">
-                <Link 
-                  href="/" 
-                  className="text-xl font-bold text-white hover:text-gray-200 transition-colors"
-                >
-                  UnderlayX
-                </Link>
-                <Navbar />
-              </div>
-            </div>
-          </div>
-        </nav>
+        <Navbar />
 
         <main className="pt-24" role="main" aria-label="Main content">
           {/* Hero Section */}
