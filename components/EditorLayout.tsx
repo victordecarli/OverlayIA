@@ -2,7 +2,7 @@
 
 import { useEditor } from '@/hooks/useEditor';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { Upload, Download, LogIn, Loader2 } from 'lucide-react';
+import { Upload, Download, LogIn, Loader2, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Canvas } from '@/components/Canvas';
 import { useIsMobile } from '@/hooks/useIsMobile'; // Add this hook
@@ -49,105 +49,112 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-white/10">
         <div className="px-4 h-16 flex items-center justify-between max-w-7xl mx-auto">
-          <a href="/" className="text-xl font-semibold text-gray-900 dark:text-white hover:opacity-80 transition-opacity">
-            UnderlayX
-          </a>
-          <div className="flex items-center gap-2 sm:gap-4">
-            {isLoading ? (
-              <div className="w-8 h-8 flex items-center justify-center">
-                <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+          <div className="flex items-center gap-4">
+            <a href="/" className="flex items-center gap-2 text-gray-900 dark:text-white hover:opacity-80 transition-opacity">
+              <span className="text-xl font-semibold hidden sm:inline">UnderlayX</span>
+              <div className="flex items-center flex-col">
+                <Home className="sm:hidden w-5 h-5" />
+                <span className="sm:hidden text-xs mt-0.5 text-gray-600 dark:text-gray-400">Home</span>
               </div>
-            ) : user ? (
-              <div className="relative" ref={userMenuRef}>
+            </a>
+          </div>
+
+          <div className="flex items-center gap-4 sm:gap-6"> {/* Increased gap spacing */}
+            {image.original && (
+              <>
                 <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="relative flex items-center"
+                  onClick={() => user ? resetEditor(true) : setShowAuthDialog(true)}
+                  disabled={isActionDisabled}
+                  className={cn(
+                    "flex flex-col items-center px-2", // Added horizontal padding
+                    isActionDisabled && "opacity-50 cursor-not-allowed"
+                  )}
+                  aria-disabled={isActionDisabled}
                 >
-                  <div className="w-8 h-8 relative rounded-full overflow-hidden">
-                    <Image
-                      src={user.user_metadata.avatar_url}
-                      alt="User avatar"
-                      fill
-                      sizes="32px"
-                      className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
-                      priority
-                    />
-                  </div>
+                  <Upload className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  <span className="text-xs mt-0.5 text-gray-600 dark:text-gray-400">Upload</span>
                 </button>
-                
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10">
-                    <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-white/10">
-                      {user.email}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowAuthDialog(true)}
-                className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Login</span>
-              </button>
+                <button
+                  onClick={downloadImage}
+                  disabled={isActionDisabled}
+                  className={cn(
+                    "flex flex-col items-center px-2", // Added horizontal padding
+                    isActionDisabled && "opacity-50 cursor-not-allowed"
+                  )}
+                  aria-disabled={isActionDisabled}
+                >
+                  <Download className={cn("w-5 h-5 text-gray-700 dark:text-gray-300", isDownloading && "animate-pulse")} />
+                  <span className="text-xs mt-0.5 text-gray-600 dark:text-gray-400">Save</span>
+                </button>
+              </>
             )}
-            <ThemeToggle />
+            <div className="flex items-center gap-4 sm:gap-6"> {/* Increased gap between theme toggle and avatar */}
+              <ThemeToggle />
+              {isLoading ? (
+                <div className="w-8 h-8 flex items-center justify-center">
+                  <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                </div>
+              ) : user ? (
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="relative flex items-center"
+                  >
+                    <div className="w-8 h-8 relative rounded-full overflow-hidden">
+                      <Image
+                        src={user.user_metadata.avatar_url}
+                        alt="User avatar"
+                        fill
+                        sizes="32px"
+                        className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
+                        priority
+                      />
+                    </div>
+                  </button>
+                  
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10">
+                      <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-white/10">
+                        {user.email}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowAuthDialog(true)}
+                  className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Login</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </nav>
 
-      <div className="pt-16 flex h-[calc(100vh-4rem)]">
-        <div className="hidden lg:block border-r border-gray-200 dark:border-white/10">
-          <SideNavComponent mobile={isMobile} />
+      <div className="pt-16 flex flex-col h-screen">
+        {/* Changed lg to xl for larger screens only */}
+        <div className="hidden xl:block fixed top-16 bottom-0 w-[320px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 z-10">
+          <SideNavComponent mobile={false} />
         </div>
 
         <main className={cn(
           "flex-1 transition-all duration-300 ease-in-out relative",
-          "p-4",
-          "lg:ml-[60px]",
-          "lg:pl-[320px]"
+          "p-1 sm:p-4",
+          "xl:ml-[320px]", // Changed lg to xl and reduced width
+          "pb-[100px] xl:pb-4" // Changed lg to xl
         )}>
-          <div className="lg:hidden mb-2">
-            <SideNavComponent mobile={isMobile} />
+          {/* Bottom Navigation for mobile, tablet and small desktop */}
+          <div className="fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 z-20">
+            <div className="p-2">
+              <SideNavComponent mobile={true} />
+            </div>
           </div>
 
-          {/* Editor Controls - Only show when needed */}
-          {image.original && (
-            <div className="mb-4 flex items-center justify-between max-w-[800px] mx-auto">
-              <button
-                onClick={() => user ? resetEditor(true) : setShowAuthDialog(true)}
-                disabled={isActionDisabled}
-                className={cn(
-                  "p-3 rounded-lg bg-gray-200 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors flex items-center gap-2",
-                  isActionDisabled && "opacity-50 cursor-not-allowed hover:bg-gray-200 dark:hover:bg-white/5"
-                )}
-                aria-disabled={isActionDisabled}
-              >
-                <Upload className="w-4 h-4" />
-                <span className="text-sm">
-                  {isDownloading ? 'Please wait...' : 'New Image'}
-                </span>
-              </button>
-              <button
-                onClick={downloadImage}
-                disabled={isActionDisabled}
-                className={cn(
-                  "p-3 rounded-lg bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-white/90 text-white dark:text-black transition-colors flex items-center gap-2",
-                  isActionDisabled && "opacity-50 cursor-not-allowed hover:bg-black dark:hover:bg-white"
-                )}
-                aria-disabled={isActionDisabled}
-              >
-                <Download className={cn("w-4 h-4", isDownloading && "animate-pulse")} />
-                <span className="text-sm">
-                  {isDownloading ? 'Downloading...' : 'Download'}
-                </span>
-              </button>
-            </div>
-          )}
-
-          <div className="flex items-start justify-center h-[calc(100vh-10rem)]">
-            <div className="w-full max-w-[800px] aspect-square lg:aspect-auto lg:h-full relative rounded-lg overflow-hidden bg-gray-50 dark:bg-zinc-900 mobile-canvas-container">
+          <div className="flex items-start justify-center h-[calc(100vh-180px)] xl:h-[calc(100vh-5rem)]">
+            <div className="w-full max-w-[800px] aspect-square xl:aspect-auto xl:h-full relative overflow-hidden">
               <Canvas />
             </div>
           </div>
