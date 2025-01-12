@@ -1,31 +1,36 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthDialog } from '@/components/AuthDialog';
 import { createClient } from '@/utils/supabase/client';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const checkUser = async () => {
-      const supabase = await createClient();
-      const { data, error } = await supabase.auth.getUser();
+    const handleAuth = async () => {
+      const supabase = createClient();
+      
+      // Check if we have a session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-      if (error) {
-        console.error('Error fetching user:', error);
+      
+      if (session) {
+        router.push('/');
         return;
       }
 
-      if (data?.user) {
-        // Redirect authenticated user to the home page or dashboard
+      // If no session but we have a code, we're in the OAuth callback
+      const code = searchParams.get('code');
+      if (code) {
         router.push('/');
       }
     };
 
-    checkUser();
-  }, [router]);
+    handleAuth();
+  }, [router, searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A]">

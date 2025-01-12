@@ -3,17 +3,14 @@
 import Link from 'next/link';
 import { useState, useRef } from 'react';
 import { Footer } from '@/components/Footer';
-import { NavDropdown } from '@/components/NavDropdown';
+import { Navbar } from '@/components/Navbar';
 import { Features } from '@/components/Features';
 import { UseCases } from '@/components/UseCases';
 import { ProductHuntBadges } from '@/components/ProductHuntBadges';
 import { FeatureShowcase } from '@/components/FeatureShowcase';
-import { LogIn } from 'lucide-react';
-import { AuthDialog } from '@/components/AuthDialog';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const scrollRef = useRef(null);
   
 
@@ -38,25 +35,11 @@ export default function Home() {
                 >
                   UnderlayX
                 </Link>
-                <div className="flex items-center gap-6">
-                  <NavDropdown />
-                  <button
-                    onClick={() => setShowAuthDialog(true)}
-                    className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors"
-                  >
-                    <LogIn className="w-4 h-4" />
-                    <span>Login</span>
-                  </button>
-                </div>
+                <Navbar />
               </div>
             </div>
           </div>
         </nav>
-
-        <AuthDialog 
-          isOpen={showAuthDialog}
-          onClose={() => setShowAuthDialog(false)}
-        />
 
         <main className="pt-24" role="main" aria-label="Main content">
           {/* Hero Section */}
@@ -71,7 +54,7 @@ export default function Home() {
               The all-in-one tool to seamlessly add text and shapes behind images, remove backgrounds, clone objects, and change backgrounds.
               </p>
               <Link 
-                href="/custom-editor?upload=true" // Changed to include query parameter
+                href="/custom-editor"
                 onClick={() => setIsLoading(true)}
                 className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
               >
