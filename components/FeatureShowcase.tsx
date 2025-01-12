@@ -7,28 +7,28 @@ const features = [
   {
     title: 'Text Behind Image',
     description: 'Place text behind objects seamlessly',
-    image: '/1.webp',
+    image: '/text-behind-image.webp',
     href: '/text-behind-image',
     altText: 'Example of text behind image effect' // Added unique alt text
   },
   {
     title: 'Shape Behind Image',
     description: 'Add shapes behind objects for depth',
-    image: '/2.webp',
+    image: '/shape-behind-image.webp',
     href: '/shape-behind-image',
     altText: 'Demonstration of shapes placed behind objects'
   },
   {
     title: 'Clone Image',
     description: 'Clone and duplicate objects easily',
-    image: '/3.webp',
+    image: '/clone-image.webp',
     href: '/clone-image',
     altText: 'Example of cloned image elements'
   },
   {
     title: 'Change Background',
     description: 'Swap backgrounds instantly',
-    image: '/4.webp',
+    image: '/change-background.webp',
     href: '/change-background',
     altText: 'Background replacement demonstration'
   }

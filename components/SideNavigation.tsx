@@ -100,7 +100,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
           "rounded-lg flex flex-col items-center gap-0.5 transition-colors",
           activeTab === 'change-background'
             ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-            : "text-gray-500 dark:text-gray-400"
+            : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" // Added hover states
         )}
         disabled={!canAddLayers}
       >
@@ -123,7 +123,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
           "rounded-lg flex flex-col items-center gap-0.5 transition-colors",
           activeTab === 'clone-image'
             ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-            : "text-gray-500 dark:text-gray-400"
+            : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" // Added hover states
         )}
         disabled={!canAddLayers}
       >
@@ -139,7 +139,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   if (mobile) {
     return (
       <>
-        {/* Fixed Bottom Navigation Bar - Reduced height */}
+        {/* Bottom Navigation Bar */}
         <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50">
           <div className="flex gap-2 max-w-md mx-auto">
             {showTextButton && (
@@ -194,7 +194,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
 
         {/* Mobile Slide-up Editor Panel */}
         {activeTab && (
-          <div className="fixed inset-x-0 bottom-[56px] bg-white dark:bg-zinc-950 border-gray-200 dark:border-white/10 rounded-t-xl z-40 h-[35vh] flex flex-col shadow-2xl">
+          <div className="fixed inset-x-0 bottom-[56px] bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 rounded-t-xl z-40 max-h-[32vh] flex flex-col shadow-2xl">
             <div className="sticky top-0 bg-white dark:bg-zinc-950 p-3 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
                  {(activeTab === 'text' || activeTab === 'shapes') ? (
                    <button
@@ -223,7 +223,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                 </svg>
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-4 overscroll-contain mb-6">
               {getUploadMessage() ? (
                 <div className="flex flex-col items-center justify-center h-full text-center p-4">
                   <p className="text-gray-400 mb-4">{getUploadMessage()}</p>

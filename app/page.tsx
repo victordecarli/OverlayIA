@@ -1,28 +1,18 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion, useScroll, useTransform } from 'framer-motion';
 import { useState, useRef } from 'react';
+import Link from 'next/link';
 import { Footer } from '@/components/Footer';
-import { NavDropdown } from '@/components/NavDropdown';
+import { Navbar } from '@/components/Navbar';
 import { Features } from '@/components/Features';
 import { UseCases } from '@/components/UseCases';
 import { ProductHuntBadges } from '@/components/ProductHuntBadges';
 import { FeatureShowcase } from '@/components/FeatureShowcase';
-import { LogIn } from 'lucide-react';
-import { AuthDialog } from '@/components/AuthDialog';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const scrollRef = useRef(null);
   
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ["start start", "end start"],
-    layoutEffect: false
-  });
 
   return (
     <div className="min-h-screen relative flex flex-col" role="region" aria-label="Home page content">
@@ -34,36 +24,7 @@ export default function Home() {
 
       {/* Content Container */}
       <div ref={scrollRef} className="relative z-10 flex-grow">
-        {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-[100]" role="navigation" aria-label="Main navigation">
-          <div className="container mx-auto px-4 py-6">
-            <div className="max-w-2xl mx-auto bg-[#141414] backdrop-blur-xl border border-white/5 rounded-full shadow-xl">
-              <div className="px-8 py-3 flex items-center justify-between">
-                <Link 
-                  href="/" 
-                  className="text-xl font-bold text-white hover:text-gray-200 transition-colors"
-                >
-                  UnderlayX
-                </Link>
-                <div className="flex items-center gap-6">
-                  <NavDropdown />
-                  {/* <button
-                    onClick={() => setShowAuthDialog(true)}
-                    className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors"
-                  >
-                    <LogIn className="w-4 h-4" />
-                    <span>Login</span>
-                  </button> */}
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <AuthDialog 
-          isOpen={showAuthDialog}
-          onClose={() => setShowAuthDialog(false)}
-        />
+        <Navbar />
 
         <main className="pt-24" role="main" aria-label="Main content">
           {/* Hero Section */}
@@ -78,7 +39,7 @@ export default function Home() {
               The all-in-one tool to seamlessly add text and shapes behind images, remove backgrounds, clone objects, and change backgrounds.
               </p>
               <Link 
-                href="/custom-editor?upload=true" // Changed to include query parameter
+                href="/custom-editor"
                 onClick={() => setIsLoading(true)}
                 className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
               >

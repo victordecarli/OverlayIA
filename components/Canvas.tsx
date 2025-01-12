@@ -6,6 +6,8 @@ import { CanvasPreview } from './CanvasPreview';
 import { convertHeicToJpeg, optimizeImage } from '@/lib/image-utils';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useState, useRef, useCallback, useEffect } from 'react'; // Add useRef, useCallback, useEffect
+import { useAuth } from '@/hooks/useAuth';
+import { AuthDialog } from './AuthDialog';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -27,6 +29,8 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null); // Add this ref
   const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const { user } = useAuth();
 
   // Add this function inside the Canvas component
   const preloadFonts = useCallback(async (fontFamily: string) => {
@@ -87,6 +91,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   };
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // if (!user) {
+    //   setShowAuthDialog(true);
+    //   return;
+    // }
+
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
       // Reset the input value right after getting the file
@@ -167,6 +176,14 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
     };
   }, []);  // Empty dependency array - only run once on mount
 
+  const handleUploadClick = (e: React.MouseEvent<HTMLElement>) => {
+    if (!user) {
+      e.preventDefault();
+      setShowAuthDialog(true);
+      return;
+    }
+  };
+
   return (
     <>
       <div className="absolute inset-0 flex items-center justify-center p-4">
@@ -187,6 +204,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             <label
               htmlFor="canvas-upload"
               className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl transition-all bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer"
+              // onClick={handleUploadClick}
             >
               <div className="text-center space-y-6">
                 <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">Upload an image to get started</h3>
@@ -230,6 +248,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
         onConfirm={handleConvertConfirm}
         title="Convert Image Format"
         description="This image is in HEIC/HEIF format. To ensure compatibility, it needs to be converted to JPEG. Would you like to proceed with the conversion?"
+      />
+
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={() => setShowAuthDialog(false)}
       />
     </>
   );

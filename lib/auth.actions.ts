@@ -1,24 +1,24 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { createClient } from "@/utils/supabase/server";
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(formData: FormData) {
+
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  // Fix type issue by ensuring returnUrl is a string
+  const returnUrl = (formData.get("returnUrl") as string) || "/";
+
+  const { data } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
       queryParams: {
-        access_type: "offline",
-        prompt: "consent",
+        access_type: 'offline',
+        prompt: 'consent',
       },
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?returnUrl=${encodeURIComponent(returnUrl)}`,
     },
   });
 
-  if (error) {
-    console.error("Error signing in with Google:", error);
-    redirect("/");
-  }
-  redirect(data.url);
+  // Instead of returning data, return the URL to redirect to
+  return { url: data?.url };
 }
