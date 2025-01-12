@@ -12,7 +12,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 interface EditorLayoutProps {
-  SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
+  SideNavComponent: React.ComponentType<{ mobile?: boolean, onPanelStateChange?: (isOpen: boolean) => void }>;
 }
 
 export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
@@ -29,6 +29,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   // Add click outside handler
   useEffect(() => {
@@ -143,20 +144,37 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
         <main className={cn(
           "flex-1 transition-all duration-300 ease-in-out relative",
           "p-1 sm:p-4",
-          "xl:ml-[320px]", // Changed lg to xl and reduced width
-          "pb-[100px] xl:pb-4" // Changed lg to xl
+          "xl:ml-[320px]",
+          "xl:mb-4"
         )}>
-          {/* Bottom Navigation for mobile, tablet and small desktop */}
-          <div className="fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 z-20">
-            <div className="p-2">
-              <SideNavComponent mobile={true} />
+          <div 
+            className={cn(
+              "flex items-center justify-center transition-all duration-300 ease-in-out",
+              isPanelOpen 
+                ? "h-[calc(100vh-340px)]" // Height when panel is open
+                : "h-[calc(100vh-80px)]", // Height when panel is closed
+              "xl:h-[calc(100vh-5rem)]"
+            )}
+          >
+            <div className={cn(
+              "w-full h-full relative overflow-hidden",
+              "max-w-[800px]",
+              "xl:aspect-auto xl:h-full"
+            )}>
+              <Canvas />
             </div>
           </div>
 
-          <div className="flex items-start justify-center h-[calc(100vh-180px)] xl:h-[calc(100vh-5rem)]">
-            <div className="w-full max-w-[800px] aspect-square xl:aspect-auto xl:h-full relative overflow-hidden">
-              <Canvas />
-            </div>
+          {/* Bottom Navigation */}
+          <div className={cn(
+            "fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10",
+            "transition-all duration-300 ease-in-out",
+            isPanelOpen ? "h-[280px]" : "h-[60px]"
+          )}>
+            <SideNavComponent 
+              mobile={true} 
+              onPanelStateChange={setIsPanelOpen}
+            />
           </div>
         </main>
       </div>
