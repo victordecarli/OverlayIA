@@ -146,7 +146,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             </div>
           )}
 
-          <div className="flex items-center justify-center h-[calc(100vh-12rem)]">
+          <div className="flex items-start justify-center h-[calc(100vh-10rem)]">
             <div className="w-full max-w-[800px] aspect-square lg:aspect-auto lg:h-full relative rounded-lg overflow-hidden bg-gray-50 dark:bg-zinc-900 mobile-canvas-container">
               <Canvas />
             </div>

@@ -28,7 +28,7 @@ export function getImageFormat(file: File): string {
   return file.type.split('/')[1];
 }
 
-export const optimizeImage = async (file: File, quality: number = 0.5): Promise<File> => {
+export const optimizeImage = async (file: File, quality: number = 0.2): Promise<File> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);

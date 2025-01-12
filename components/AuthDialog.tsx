@@ -18,7 +18,6 @@ interface AuthDialogProps {
 }
 
 export function AuthDialog({ isOpen, onClose, returnUrl }: AuthDialogProps) {
-  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
   const [isLoading, setIsLoading] = useState(false);
 
   // signin with google
