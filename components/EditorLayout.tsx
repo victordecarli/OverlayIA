@@ -16,21 +16,12 @@ interface EditorLayoutProps {
 }
 
 export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
-  const { 
-    resetEditor, 
-    downloadImage, 
-    isDownloading, 
-    image,
-    isProcessing, // Add this
-    isConverting  // Add this
-  } = useEditor();
+  const { resetEditor, downloadImage, isDownloading, image } = useEditor(); // Add image to destructuring
   const isMobile = useIsMobile();
   const { user, isLoading } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-
-  const isActionDisabled = isProcessing || isConverting || isDownloading;
 
   // Add click outside handler
   useEffect(() => {
@@ -116,22 +107,15 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             <div className="mb-4 flex items-center justify-between max-w-[800px] mx-auto">
               <button
                 onClick={() => user ? resetEditor(true) : setShowAuthDialog(true)}
-                disabled={isActionDisabled}
-                className={cn(
-                  "p-3 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors flex items-center gap-2",
-                  isActionDisabled && "opacity-50 cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/5"
-                )}
+                className="p-3 rounded-lg bg-gray-200 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors flex items-center gap-2"
               >
                 <Upload className="w-4 h-4" />
                 <span className="text-sm">New Image</span>
               </button>
               <button
                 onClick={downloadImage}
-                disabled={isActionDisabled}
-                className={cn(
-                  "p-3 rounded-lg bg-white hover:bg-gray-50 dark:bg-white/10 dark:hover:bg-white/20 text-gray-900 dark:text-white transition-colors flex items-center gap-2",
-                  isActionDisabled && "opacity-50 cursor-not-allowed hover:bg-white dark:hover:bg-white/10"
-                )}
+                disabled={isDownloading}
+                className="p-3 rounded-lg bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-white/90 text-white dark:text-black transition-colors flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 <span className="text-sm">Download</span>
