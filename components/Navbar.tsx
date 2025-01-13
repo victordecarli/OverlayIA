@@ -118,7 +118,6 @@ export function Navbar() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-4">
-              <SaveDropdown />  {/* Replace the existing save button with this */}
               <div ref={dropdownRef} className="relative">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
