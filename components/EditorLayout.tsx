@@ -146,10 +146,10 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
           "flex-1 transition-all duration-300 ease-in-out relative",
           "p-1 sm:p-4",
           "xl:ml-[320px]", // Changed lg to xl and reduced width
-          // Increased safe area padding
+          // Precise padding calculations
           isPanelOpen ? 
-            'pb-[calc(32vh+88px)]' : // Added extra padding for safety
-            'pb-24 xl:pb-8' // Increased bottom padding
+            'pb-[calc(32vh+96px)]' : // Increased safe area
+            'pb-28 xl:pb-12' // Additional padding when closed
         )}>
           {/* Bottom Navigation for mobile, tablet and small desktop */}
           <div className="fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 z-20">
@@ -160,15 +160,15 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
 
           <div className={cn(
             "flex items-center justify-center transition-all duration-300", // Changed from items-start to items-center
-            // Adjusted heights to maintain safe area
+            // More precise height calculations
             isPanelOpen ?
-              'h-[calc(68vh-5rem)]' : // Increased spacing
-              'h-[calc(100vh-9rem)]', // Adjusted for better spacing
-            "xl:h-[calc(100vh-6rem)]" // Consistent desktop height
+              'h-[calc(68vh-7rem)]' : // Increased spacing from bottom
+              'h-[calc(100vh-11rem)]', // Adjusted for better spacing
+            "xl:h-[calc(100vh-7rem)]" // Consistent desktop height
           )}>
             <div className="w-full h-full max-w-[800px] flex items-center justify-center xl:h-full relative">
-              {/* Added safe area wrapper */}
-              <div className="w-full h-full p-4 pb-8"> {/* Extra bottom padding */}
+              {/* Enhanced safe area wrapper */}
+              <div className="w-full h-full p-4 pb-12 xl:pb-8"> {/* Increased bottom padding */}
                 <Canvas />
               </div>
             </div>

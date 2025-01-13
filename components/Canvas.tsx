@@ -196,10 +196,10 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             onDragOver={handleDragOver}
             className={cn(
               "w-full h-full transition-all duration-300",
-              "max-w-full max-h-full", // Removed p-4 as it's handled by parent
+              "max-w-full max-h-full",
               isPanelOpen ? 
-                'max-h-[calc(68vh-6rem)]' : // Increased spacing
-                'max-h-[calc(100vh-9rem)]' // Adjusted for consistency
+                'max-h-[calc(68vh-8rem)]' : // Further reduced height when panel is open
+                'max-h-[calc(100vh-12rem)]' // Increased spacing when closed
             )}
           >
             <input
@@ -230,10 +230,10 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
         ) : (
           <div className={cn(
             "relative w-full h-full flex items-center justify-center transition-all duration-300",
-            "max-w-full max-h-full", // Removed p-4 as it's handled by parent
+            "max-w-full max-h-full",
             isPanelOpen ? 
-              'max-h-[calc(68vh-6rem)]' : // Increased spacing
-              'max-h-[calc(100vh-9rem)]' // Adjusted for consistency
+              'max-h-[calc(68vh-8rem)]' : // Further reduced height when panel is open
+              'max-h-[calc(100vh-12rem)]' // Increased spacing when closed
           )}>
             {(isProcessing || isConverting) && (
               <div className="absolute inset-0 flex items-center justify-center z-50">
