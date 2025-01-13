@@ -169,6 +169,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                 <span className="text-[10px] font-medium">Shapes</span>
               </button>
             )}
+            {cloneImageButton}
             {showRemoveBackground && (
               <button
                 onClick={() => setActiveTab(activeTab === 'remove-background' ? null : 'remove-background')}
@@ -185,7 +186,6 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               </button>
             )}
             {changeBackgroundButton}
-            {cloneImageButton}
           </div>
         </div>
 
@@ -293,6 +293,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
               <span className="text-xs font-medium">Shapes</span>
             </button>
           )}
+          {cloneImageButton}
           {showRemoveBackground && (
             <button
               onClick={() => setActiveTab(activeTab === 'remove-background' ? null : 'remove-background')}
@@ -309,7 +310,6 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
             </button>
           )}
           {changeBackgroundButton}
-          {cloneImageButton}
         </div>
 
         {/* Editor Content with border */}

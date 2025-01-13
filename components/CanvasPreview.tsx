@@ -172,8 +172,8 @@ export function CanvasPreview() {
             canvas.height / fgImageRef.current!.height
           );
           
-          const newWidth = fgImageRef.current!.width * scale;
-          const newHeight = fgImageRef.current!.height * scale;
+          const newWidth = fgImageRef.current!.width * scale * (clone.size / 100);
+          const newHeight = fgImageRef.current!.height * scale * (clone.size / 100);
           
           const x = (canvas.width - newWidth) / 2;
           const y = (canvas.height - newHeight) / 2;
@@ -181,7 +181,26 @@ export function CanvasPreview() {
           const offsetX = (canvas.width * clone.position.x) / 100;
           const offsetY = (canvas.height * clone.position.y) / 100;
 
-          ctx.drawImage(fgImageRef.current!, x + offsetX, y + offsetY, newWidth, newHeight);
+          // Save context state before transformations
+          ctx.save();
+
+          // Move to center of where we want to draw the image
+          ctx.translate(x + offsetX + newWidth / 2, y + offsetY + newHeight / 2);
+          
+          // Rotate around the center
+          ctx.rotate((clone.rotation * Math.PI) / 180);
+          
+          // Draw image centered at origin
+          ctx.drawImage(
+            fgImageRef.current!, 
+            -newWidth / 2, 
+            -newHeight / 2, 
+            newWidth, 
+            newHeight
+          );
+
+          // Restore context state
+          ctx.restore();
         });
       }
     });
