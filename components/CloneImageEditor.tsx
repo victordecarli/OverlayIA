@@ -3,7 +3,7 @@
 import { useEditor } from '@/hooks/useEditor';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Copy, X } from 'lucide-react';
+import { Copy, X, Expand, RotateCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function CloneImageEditor() {
@@ -12,7 +12,7 @@ export function CloneImageEditor() {
     clonedForegrounds,
     addClonedForeground,
     removeClonedForeground,
-    updateClonedForegroundPosition
+    updateClonedForegroundTransform
   } = useEditor();
 
   if (!image.foreground) {
@@ -52,7 +52,9 @@ export function CloneImageEditor() {
               <label className="text-sm font-medium">Horizontal Position</label>
               <Slider
                 value={[clone.position.x]}
-                onValueChange={([x]) => updateClonedForegroundPosition(clone.id, { x, y: clone.position.y })}
+                onValueChange={([x]) => updateClonedForegroundTransform(clone.id, { 
+                  position: { x, y: clone.position.y }
+                })}
                 min={-100}
                 max={100}
                 step={1}
@@ -63,12 +65,41 @@ export function CloneImageEditor() {
               <label className="text-sm font-medium">Vertical Position</label>
               <Slider
                 value={[clone.position.y]}
-                onValueChange={([y]) => updateClonedForegroundPosition(clone.id, { x: clone.position.x, y })}
+                onValueChange={([y]) => updateClonedForegroundTransform(clone.id, { 
+                  position: { x: clone.position.x, y }
+                })}
                 min={-100}
                 max={100}
                 step={1}
               />
             </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <Expand className="w-4 h-4" /> Size
+              </label>
+              <Slider
+                value={[clone.size]}
+                onValueChange={([size]) => updateClonedForegroundTransform(clone.id, { size })}
+                min={10}
+                max={200}
+                step={1}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <RotateCw className="w-4 h-4" /> Rotation
+              </label>
+              <Slider
+                value={[clone.rotation]}
+                onValueChange={([rotation]) => updateClonedForegroundTransform(clone.id, { rotation })}
+                min={0}
+                max={360}
+                step={1}
+              />
+            </div>
+
           </div>
         ))}
       </div>

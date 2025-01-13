@@ -1,8 +1,6 @@
 import './globals.css';
 import { inter } from './fonts';
 import { Toaster } from "@/components/ui/toaster"
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
@@ -41,7 +39,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Remove preload links since we're using Next.js Image component with priority */}
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
       </head>
@@ -54,8 +51,6 @@ export default function RootLayout({
         >
           {children}
           <Toaster />
-          <Analytics />
-          <SpeedInsights />
         </ThemeProvider>
       </body>
       <GoogleAnalytics gaId="G-LWYW0Q03ZL" />

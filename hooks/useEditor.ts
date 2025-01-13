@@ -55,6 +55,8 @@ interface ClonedForeground {
     x: number;
     y: number;
   };
+  size: number;
+  rotation: number;
 }
 
 interface EditorState {
@@ -88,7 +90,7 @@ interface EditorActions {
   removeTextSet: (id: number) => void;
   duplicateTextSet: (id: number) => void;
   handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean }) => Promise<void>;
-  downloadImage: () => Promise<void>;
+  downloadImage: (quality?: number) => Promise<void>;
   resetEditor: (clearImage?: boolean) => void;
   addShapeSet: (type: string) => void;
   updateShapeSet: (id: number, updates: Partial<ShapeSet>) => void;
@@ -104,6 +106,7 @@ interface EditorActions {
   addClonedForeground: () => void;
   removeClonedForeground: (id: number) => void;
   updateClonedForegroundPosition: (id: number, position: { x: number; y: number }) => void;
+  updateClonedForegroundTransform: (id: number, updates: Partial<{ position: { x: number; y: number }; size: number; rotation: number }>) => void;
   setIsProcessing: (value: boolean) => void;
   setIsConverting: (value: boolean) => void;
 }
@@ -166,7 +169,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       text: 'new text',
       fontFamily: 'Inter',
       fontWeight: '700',
-      fontSize: 350,
+      fontSize: 600,
       color: '#FFFFFF',
       position: { vertical: 50, horizontal: 50 },
       opacity: 1,
@@ -323,7 +326,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }
   },
 
-  downloadImage: async () => {
+  downloadImage: async (quality: number = 1.0) => {
     set({ 
       isDownloading: true,
       processingMessage: 'Preparing your masterpiece...'
@@ -464,16 +467,35 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
             canvas.height / fgImg.height
           );
           
-          const newWidth = fgImg.width * scale;
-          const newHeight = fgImg.height * scale;
+          const newWidth = fgImg.width * scale * (clone.size / 100);
+          const newHeight = fgImg.height * scale * (clone.size / 100);
           
           const x = (canvas.width - newWidth) / 2;
           const y = (canvas.height - newHeight) / 2;
 
           const offsetX = (canvas.width * clone.position.x) / 100;
           const offsetY = (canvas.height * clone.position.y) / 100;
+
+          // Save context state before transformations
+          ctx.save();
+
+          // Move to center of where we want to draw the image
+          ctx.translate(x + offsetX + newWidth / 2, y + offsetY + newHeight / 2);
           
-          ctx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
+          // Rotate around the center
+          ctx.rotate((clone.rotation * Math.PI) / 180);
+          
+          // Draw image centered at origin
+          ctx.drawImage(
+            fgImg, 
+            -newWidth / 2, 
+            -newHeight / 2, 
+            newWidth, 
+            newHeight
+          );
+
+          // Restore context state
+          ctx.restore();
         }
       }
 
@@ -481,15 +503,15 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
           blob => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
-          'image/jpeg',
-          1.0
+          quality === 1.0 ? 'image/png' : 'image/jpeg',
+          quality 
         );
       });
 
       // Download logic
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download = `${originalFileName || 'UnderlayX'}.jpeg`;
+      link.download =  quality === 1.0 ? 'UnderlayX.png' : 'UnderlayX.jpeg';
       link.href = url;
       document.body.appendChild(link);
       link.click();
@@ -616,7 +638,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         ...state.clonedForegrounds,
         {
           id: Date.now(),
-          position: { x: 0, y: 0 }
+          position: { x: 0, y: 0 },
+          size: 100,
+          rotation: 0
         }
       ]
     }));
@@ -629,6 +653,12 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   updateClonedForegroundPosition: (id, position) => set((state) => ({
     clonedForegrounds: state.clonedForegrounds.map(clone =>
       clone.id === id ? { ...clone, position } : clone
+    )
+  })),
+
+  updateClonedForegroundTransform: (id, updates) => set((state) => ({
+    clonedForegrounds: state.clonedForegrounds.map(clone =>
+      clone.id === id ? { ...clone, ...updates } : clone
     )
   })),
   setIsProcessing: (value: boolean) => set({ isProcessing: value }),

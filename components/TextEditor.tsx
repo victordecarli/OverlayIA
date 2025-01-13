@@ -147,7 +147,7 @@ export function TextEditor() {
             </div>
             <Slider
               min={12}
-              max={1500}
+              max={2000}
               value={[textSet.fontSize]}
               onValueChange={([value]) => updateTextSet(textSet.id, { fontSize: value })}
             />

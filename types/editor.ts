@@ -35,3 +35,13 @@ export interface ShapeSet {
   strokeWidth?: number;
   glow?: GlowEffect;
 }
+
+export interface ClonedForeground {
+  id: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  size: number;  // 100 is original size
+  rotation: number;  // degrees
+}

@@ -12,13 +12,6 @@ const features = [
     altText: 'Example of text behind image effect' // Added unique alt text
   },
   {
-    title: 'Shape Behind Image',
-    description: 'Add shapes behind objects for depth',
-    image: '/shape-behind-image.webp',
-    href: '/shape-behind-image',
-    altText: 'Demonstration of shapes placed behind objects'
-  },
-  {
     title: 'Clone Image',
     description: 'Clone and duplicate objects easily',
     image: '/clone-image.webp',
@@ -31,7 +24,14 @@ const features = [
     image: '/change-background.webp',
     href: '/change-background',
     altText: 'Background replacement demonstration'
-  }
+  },
+  {
+    title: 'Shape Behind Image',
+    description: 'Add shapes behind objects for depth',
+    image: '/shape-behind-image.webp',
+    href: '/shape-behind-image',
+    altText: 'Demonstration of shapes placed behind objects'
+  },
 ];
 
 export function FeatureShowcase() {
