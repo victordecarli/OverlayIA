@@ -8,6 +8,8 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { useState, useRef, useCallback, useEffect } from 'react'; // Add useRef, useCallback, useEffect
 import { useAuth } from '@/hooks/useAuth';
 import { AuthDialog } from './AuthDialog';
+import { cn } from '@/lib/utils';
+import { useEditorPanel } from '@/contexts/EditorPanelContext';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -31,6 +33,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { user } = useAuth();
+  const { isPanelOpen } = useEditorPanel();
 
   // Add this function inside the Canvas component
   const preloadFonts = useCallback(async (fontFamily: string) => {
@@ -186,13 +189,19 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
 
   return (
     <>
-      <div className="absolute inset-0 flex items-center justify-center p-4">
+      <div className="absolute inset-0 flex items-center justify-center">
         {!image.original ? (
           <div 
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            className="w-full h-full"
-            >
+            className={cn(
+              "w-full h-full transition-all duration-300",
+              "max-w-full max-h-full",
+              isPanelOpen ? 
+                'max-h-[calc(68vh-8rem)]' : // Further reduced height when panel is open
+                'max-h-[calc(100vh-12rem)]' // Increased spacing when closed
+            )}
+          >
             <input
               ref={fileInputRef} // Add the ref here
               id="canvas-upload"
@@ -219,9 +228,15 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             </label>
           </div>
         ) : (
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className={cn(
+            "relative w-full h-full flex items-center justify-center transition-all duration-300",
+            "max-w-full max-h-full",
+            isPanelOpen ? 
+              'max-h-[calc(68vh-8rem)]' : // Further reduced height when panel is open
+              'max-h-[calc(100vh-12rem)]' // Increased spacing when closed
+          )}>
             {(isProcessing || isConverting) && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
+              <div className="absolute inset-0 flex items-center justify-center z-50">
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
                   <p className="text-white text-sm">{getLoadingMessage()}</p>

@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { AuthDialog } from '@/components/AuthDialog';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useEditorPanel } from '@/contexts/EditorPanelContext';
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
@@ -29,6 +30,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const { isPanelOpen } = useEditorPanel();
 
   // Add click outside handler
   useEffect(() => {
@@ -144,7 +146,10 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
           "flex-1 transition-all duration-300 ease-in-out relative",
           "p-1 sm:p-4",
           "xl:ml-[320px]", // Changed lg to xl and reduced width
-          "pb-[100px] xl:pb-4" // Changed lg to xl
+          // Precise padding calculations
+          isPanelOpen ? 
+            'pb-[calc(32vh+96px)]' : // Increased safe area
+            'pb-28 xl:pb-12' // Additional padding when closed
         )}>
           {/* Bottom Navigation for mobile, tablet and small desktop */}
           <div className="fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 z-20">
@@ -153,9 +158,19 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             </div>
           </div>
 
-          <div className="flex items-start justify-center h-[calc(100vh-180px)] xl:h-[calc(100vh-5rem)]">
-            <div className="w-full max-w-[800px] aspect-square xl:aspect-auto xl:h-full relative overflow-hidden">
-              <Canvas />
+          <div className={cn(
+            "flex items-center justify-center transition-all duration-300", // Changed from items-start to items-center
+            // More precise height calculations
+            isPanelOpen ?
+              'h-[calc(68vh-7rem)]' : // Increased spacing from bottom
+              'h-[calc(100vh-11rem)]', // Adjusted for better spacing
+            "xl:h-[calc(100vh-7rem)]" // Consistent desktop height
+          )}>
+            <div className="w-full h-full max-w-[800px] flex items-center justify-center xl:h-full relative">
+              {/* Enhanced safe area wrapper */}
+              <div className="w-full h-full p-4 pb-12 xl:pb-8"> {/* Increased bottom padding */}
+                <Canvas />
+              </div>
             </div>
           </div>
         </main>
