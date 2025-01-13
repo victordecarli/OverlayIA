@@ -143,13 +143,13 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
         </div>
 
         <main className={cn(
-          "flex-1 transition-all duration-300 ease-in-out relative",
-          "p-1 sm:p-4",
-          "xl:ml-[320px]", // Changed lg to xl and reduced width
-          // Precise padding calculations
+          "flex-1 relative transition-all duration-300 ease-in-out",
+          "px-0 sm:px-4", // Changed padding to horizontal only
+          "xl:ml-[320px]",
+          // Adjusted padding to prevent overflow
           isPanelOpen ? 
-            'pb-[calc(32vh+96px)]' : // Increased safe area
-            'pb-28 xl:pb-12' // Additional padding when closed
+            'pb-[calc(32vh+96px)]' : 
+            'pb-20 xl:pb-8'
         )}>
           {/* Bottom Navigation for mobile, tablet and small desktop */}
           <div className="fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 z-20">
@@ -159,16 +159,20 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
           </div>
 
           <div className={cn(
-            "flex items-center justify-center transition-all duration-300", // Changed from items-start to items-center
-            // More precise height calculations
+            "flex items-center justify-center transition-all duration-300",
+            "w-full mx-auto", // Added width constraint
+            "overflow-hidden", // Prevent horizontal scroll
             isPanelOpen ?
-              'h-[calc(68vh-7rem)]' : // Increased spacing from bottom
-              'h-[calc(100vh-11rem)]', // Adjusted for better spacing
-            "xl:h-[calc(100vh-7rem)]" // Consistent desktop height
+              'h-[calc(68vh-7rem)]' : 
+              'h-[calc(100vh-9rem)]',
+            "xl:h-[calc(100vh-7rem)]"
           )}>
-            <div className="w-full h-full max-w-[800px] flex items-center justify-center xl:h-full relative">
-              {/* Enhanced safe area wrapper */}
-              <div className="w-full h-full p-4 pb-12 xl:pb-8"> {/* Increased bottom padding */}
+            <div className={cn(
+              "relative w-full h-full",
+              "max-w-[min(800px,calc(100vw-2rem))]", // Dynamic max width
+              "flex items-center justify-center"
+            )}>
+              <div className="w-full h-full p-2 sm:p-4"> {/* Reduced padding on mobile */}
                 <Canvas />
               </div>
             </div>
