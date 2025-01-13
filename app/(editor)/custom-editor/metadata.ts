@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'UnderlayX Editor - Add Text & Shapes Behind Images',
-  description: 'Free online tool to add text behind images, create glowing effects, and place shapes behind objects. Perfect for YouTube thumbnails, social media posts, and professional design.',
+  title: 'UnderlayX: Edit Images with Cloning, Text Behind, and Background Customization',
+  description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
   keywords: [
     'text behind image',
     'image editor',
@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     'online image editor'
   ].join(', '),
   openGraph: {
-    title: 'UnderlayX Editor - Add Text & Shapes Behind Images',
-    description: 'Free online tool to add text behind images, create glowing effects, and place shapes behind objects.',
+    title: 'UnderlayX: Edit Images with Cloning, Text Behind, and Background Customization',
+    description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
     url: 'https://underlayx.com/custom-editor',
     siteName: 'UnderlayX',
     images: [
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'UnderlayX Editor - Add Text & Shapes Behind Images',
-    description: 'Free online tool to add text behind images, create glowing effects, and place shapes behind objects.',
+    title: 'UnderlayX: Edit Images with Cloning, Text Behind, and Background Customization',
+    description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
     images: ['https://underlayx.com/og-image.png'], // Add your Twitter card image path
   },
   robots: {

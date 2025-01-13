@@ -8,19 +8,19 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 
 
 export const metadata = {
-  title: 'Transform Your Images Like Never Before - UnderlayX',
+  title: 'Transform Your Images with Cloning, Text Behind, and Background Customization - UnderlayX',
   description: 'The ultimate tool to add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Perfect for creators and designers.',
   metadataBase: new URL('https://www.underlayx.com'),
   openGraph: {
     type: 'website',
     url: 'https://www.underlayx.com',
-    title: 'Transform Your Images Like Never Before - UnderlayX',
+    title: 'Transform Your Images with Cloning, Text Behind, and Background Customization - UnderlayX',
     description: 'Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects. Elevate your visuals with UnderlayX.',
     images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'UnderlayX | Transform Your Images Like Never Before',
+    title: 'UnderlayX | Transform Your Images with Cloning, Text Behind, and Background Customization',
     description: 'Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Try it now!',
     creator: '@underlayx',
     images: ['/og-image.png'],
