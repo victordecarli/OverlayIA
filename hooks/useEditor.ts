@@ -90,7 +90,7 @@ interface EditorActions {
   removeTextSet: (id: number) => void;
   duplicateTextSet: (id: number) => void;
   handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean }) => Promise<void>;
-  downloadImage: () => Promise<void>;
+  downloadImage: (quality?: number) => Promise<void>;
   resetEditor: (clearImage?: boolean) => void;
   addShapeSet: (type: string) => void;
   updateShapeSet: (id: number, updates: Partial<ShapeSet>) => void;
@@ -326,7 +326,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }
   },
 
-  downloadImage: async () => {
+  downloadImage: async (quality: number = 1.0) => {
     set({ 
       isDownloading: true,
       processingMessage: 'Preparing your masterpiece...'
@@ -503,15 +503,15 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
           blob => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
-          'image/png',
-          1.0
+          quality === 1.0 ? 'image/png' : 'image/jpeg',
+          quality 
         );
       });
 
       // Download logic
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download =  'UnderlayX.png';
+      link.download =  quality === 1.0 ? 'UnderlayX.png' : 'UnderlayX.jpeg';
       link.href = url;
       document.body.appendChild(link);
       link.click();

@@ -9,6 +9,7 @@ import { UserMenu } from './UserMenu';
 import { AuthDialog } from './AuthDialog';
 import Image from 'next/image';
 import { supabase } from '@/utils/supabaseClient';
+import { SaveDropdown } from './SaveDropdown';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -117,6 +118,7 @@ export function Navbar() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-4">
+              <SaveDropdown />  {/* Replace the existing save button with this */}
               <div ref={dropdownRef} className="relative">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
