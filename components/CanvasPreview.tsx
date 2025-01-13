@@ -3,6 +3,7 @@
 import { useEffect, useRef, useMemo, useCallback } from 'react';
 import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
+import { cn } from '@/lib/utils';
 
 export function CanvasPreview() {
   const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground, foregroundPosition, hasChangedBackground, clonedForegrounds } = useEditor();
@@ -240,10 +241,16 @@ export function CanvasPreview() {
 
   return (
     <div className="relative w-full h-full">
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full object-contain z-10"
-      />
+      <div className={cn(
+        "absolute inset-0",
+        "flex items-center justify-center",
+        "overflow-hidden" // Prevent image overflow
+      )}>
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full object-contain z-10"
+        />
+      </div>
     </div>
   );
 }

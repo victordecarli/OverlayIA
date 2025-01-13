@@ -195,11 +195,12 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             className={cn(
-              "w-full h-full transition-all duration-300",
-              "max-w-full max-h-full",
+              "w-full transition-all duration-300",
+              "relative flex items-center justify-center",
+              // Adjusted height calculations
               isPanelOpen ? 
-                'max-h-[calc(68vh-8rem)]' : // Further reduced height when panel is open
-                'max-h-[calc(100vh-12rem)]' // Increased spacing when closed
+                'h-[calc(68vh-8rem)]' : 
+                'h-[calc(100vh-10rem)]'
             )}
           >
             <input
@@ -212,7 +213,13 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             />
             <label
               htmlFor="canvas-upload"
-              className="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl transition-all bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer"
+              className={cn(
+                "absolute inset-0",
+                "flex items-center justify-center",
+                "border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl",
+                "transition-all bg-white dark:bg-zinc-900",
+                "hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer"
+              )}
               onClick={handleUploadClick}
             >
               <div className="text-center space-y-6">
@@ -229,11 +236,12 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
           </div>
         ) : (
           <div className={cn(
-            "relative w-full h-full flex items-center justify-center transition-all duration-300",
-            "max-w-full max-h-full",
+            "relative w-full transition-all duration-300",
+            "flex items-center justify-center",
+            // Maintain aspect ratio with object-fit
             isPanelOpen ? 
-              'max-h-[calc(68vh-8rem)]' : // Further reduced height when panel is open
-              'max-h-[calc(100vh-12rem)]' // Increased spacing when closed
+              'h-[calc(68vh-8rem)]' : 
+              'h-[calc(100vh-10rem)]'
           )}>
             {(isProcessing || isConverting) && (
               <div className="absolute inset-0 flex items-center justify-center z-50">
@@ -244,13 +252,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
               </div>
             )}
             
-            {image.original ? (
+            {image.original && (
               <div className="relative w-full h-full">
-                <CanvasPreview />
-              </div>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-gray-400">Upload an image to get started</p>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <CanvasPreview />
+                </div>
               </div>
             )}
           </div>
