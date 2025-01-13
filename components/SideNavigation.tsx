@@ -9,6 +9,7 @@ import { RemoveBackgroundEditor } from './RemoveBackgroundEditor';
 import { useEditor } from '@/hooks/useEditor';
 import { ChangeBackgroundEditor } from './ChangeBackgroundEditor';
 import { CloneImageEditor } from './CloneImageEditor';
+import { useEditorPanel } from '@/contexts/EditorPanelContext';
 
 interface SideNavigationProps {
   mobile?: boolean;
@@ -37,6 +38,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   const [activeTab, setActiveTab] = useState<'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | null>(getInitialTab());
   const { image, isProcessing, isConverting, addTextSet, addShapeSet } = useEditor();
   const canAddLayers = !!image.original && !!image.background && !isProcessing && !isConverting;
+  const { setIsPanelOpen } = useEditorPanel();
 
   // Get appropriate message based on active tab
   const getUploadMessage = () => {
@@ -67,13 +69,8 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
 
   // Add effect to handle body class for mobile slide up
   useEffect(() => {
-    if (mobile && activeTab) {
-      document.body.classList.add('editor-panel-open');
-    } else {
-      document.body.classList.remove('editor-panel-open');
-    }
-    return () => document.body.classList.remove('editor-panel-open');
-  }, [mobile, activeTab]);
+    setIsPanelOpen(mobile && activeTab !== null);
+  }, [mobile, activeTab, setIsPanelOpen]);
 
   // If we're in remove-background-only mode, set it as initial active tab
   useEffect(() => {
@@ -194,8 +191,12 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
 
         {/* Mobile Slide-up Editor Panel */}
         {activeTab && (
-          <div className="fixed inset-x-0 bottom-[56px] bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 rounded-t-xl z-40 max-h-[32vh] flex flex-col shadow-2xl">
-            <div className="sticky top-0 bg-white dark:bg-zinc-950 p-3 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
+          <div className={cn(
+            "fixed inset-x-0 bottom-[56px] bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 rounded-t-xl z-40 flex flex-col shadow-2xl",
+            "transition-all duration-300 ease-in-out",
+            "max-h-[32vh]" // Fixed height for consistency
+          )}>
+            <div className="sticky top-0 bg-white dark:bg-zinc-950 p-2.5 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
                  {(activeTab === 'text' || activeTab === 'shapes') ? (
                    <button
                    onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
@@ -223,20 +224,24 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                 </svg>
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 overscroll-contain mb-6">
-              {getUploadMessage() ? (
-                <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                  <p className="text-gray-400 mb-4">{getUploadMessage()}</p>
-                </div>
-              ) : (
-                <>
-                  {activeTab === 'text' && <TextEditor />}
-                  {activeTab === 'shapes' && <ShapeEditor />}
-                  {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
-                  {activeTab === 'change-background' && <ChangeBackgroundEditor />}
-                  {activeTab === 'clone-image' && <CloneImageEditor />}
-                </>
-              )}
+            <div className="flex-1 overflow-y-auto overscroll-contain">
+              <div className="space-y-3 p-3 pb-12 [&_*]:text-sm [&_input]:h-8 [&_button]:h-8 [&_select]:h-8">
+                {/* Increased bottom padding to pb-12 */}
+                {/* This wrapper adds mobile-optimized styles to all child elements */}
+                {getUploadMessage() ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                    <p className="text-gray-400 text-sm">{getUploadMessage()}</p>
+                  </div>
+                ) : (
+                  <>
+                    {activeTab === 'text' && <TextEditor />}
+                    {activeTab === 'shapes' && <ShapeEditor />}
+                    {activeTab === 'remove-background' && <RemoveBackgroundEditor />}
+                    {activeTab === 'change-background' && <ChangeBackgroundEditor />}
+                    {activeTab === 'clone-image' && <CloneImageEditor />}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}
