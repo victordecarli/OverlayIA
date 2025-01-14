@@ -13,21 +13,32 @@ import { Save, Lock } from "lucide-react";
 import { useState } from "react";
 import { AuthDialog } from "./AuthDialog";
 import { cn } from "@/lib/utils";
+import { isInAppBrowser } from '@/utils/browserDetect';
+import { SaveDialog } from './SaveDialog';
 
 export function SaveDropdown() {
   const { user } = useAuth();
   const { downloadImage, isDownloading, isProcessing, isConverting, image } = useEditor();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   // Check if we can enable the save button
   const isDisabled = !image.original || isDownloading || isProcessing || isConverting;
 
-  const handleSave = (quality: 'standard' | 'hd') => {
+  const handleSave = async (quality: 'standard' | 'hd') => {
     if (isDisabled) return;
     if (quality === 'hd' && !user) {
       setShowAuthDialog(true);
       return;
     }
+
+    // Check if in in-app browser before saving
+    if (isInAppBrowser()) {
+      setShowSaveDialog(true);
+      return;
+    }
+
+    // Proceed with save if not in in-app browser
     downloadImage(quality === 'hd' ? 1.0 : 0.2);
   };
 
@@ -76,6 +87,11 @@ export function SaveDropdown() {
       <AuthDialog 
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
+      />
+
+      <SaveDialog
+        isOpen={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
       />
     </>
   );
