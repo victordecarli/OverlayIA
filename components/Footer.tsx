@@ -47,7 +47,15 @@ export function Footer() {
               </a>
             </p>
             <p className="text-gray-400 text-sm">
-              UnderlayX. © {new Date().getFullYear()} All Rights Reserved.
+              Open source on{' '}
+              <a 
+                href="https://github.com/nagavineerpasam/UnderlayX"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors hover:underline"
+              >
+                GitHub
+              </a>
             </p>
           </div>
         </div>
