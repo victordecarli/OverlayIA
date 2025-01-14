@@ -82,6 +82,7 @@ interface EditorState {
     y: number;
   };
   clonedForegrounds: ClonedForeground[];
+  isBackgroundRemoved: boolean;  // Add this new state
 }
 
 interface EditorActions {
@@ -161,6 +162,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     y: 0
   },
   clonedForegrounds: [],
+  isBackgroundRemoved: false,  // Initialize the new state
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -559,17 +561,16 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     const { image } = get();
     if (!image.foreground) return;
 
-    // Simply update the state to show only foreground
     set(state => ({
       image: {
         ...state.image,
         background: null
       },
       hasTransparentBackground: true,
+      isBackgroundRemoved: true,
       processingMessage: 'Background removed!'
     }));
 
-    // Clear message after a brief moment
     setTimeout(() => set({ processingMessage: '' }), 1000);
   },
 
@@ -584,34 +585,33 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       },
       hasTransparentBackground: false,
       hasChangedBackground: false,
+      isBackgroundRemoved: false,
       foregroundPosition: { x: 0, y: 0 }
     }));
   },
 
   changeBackground: async () => {
     try {
-      // Remove the premature loading state
       const file = await uploadFile();
-      if (!file) {
-        return; // User cancelled, just return without setting any loading state
-      }
+      if (!file) return;
 
-      // Only set loading after file is selected
       set({ 
         isProcessing: true,
         processingMessage: 'Changing background...'
       });
 
       const backgroundUrl = URL.createObjectURL(file);
-      await loadImage(backgroundUrl);
+      await loadImage(backgroundUrl); // Ensure image loads successfully
 
       set(state => ({
         image: {
           ...state.image,
           background: backgroundUrl
         },
+        hasTransparentBackground: false, // Important: Set this to false
         hasChangedBackground: true,
-        isProcessing: false, // Clear loading state
+        isBackgroundRemoved: false,
+        isProcessing: false,
         processingMessage: 'Background changed successfully!'
       }));
 
@@ -620,7 +620,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       console.error('Error changing background:', error);
       set({ 
         processingMessage: 'Failed to change background. Please try again.',
-        isProcessing: false // Make sure to clear loading state on error
+        isProcessing: false
       });
     }
   },

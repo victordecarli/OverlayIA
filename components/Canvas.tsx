@@ -10,6 +10,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { AuthDialog } from './AuthDialog';
 import { cn } from '@/lib/utils';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
+import { BrowserWarning } from './BrowserWarning';
+import { isInAppBrowser } from '@/utils/browserDetect';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -34,6 +36,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { user } = useAuth();
   const { isPanelOpen } = useEditorPanel();
+  const [isInApp, setIsInApp] = useState(false);
+
+  useEffect(() => {
+    setIsInApp(isInAppBrowser());
+  }, []);
 
   // Add this function inside the Canvas component
   const preloadFonts = useCallback(async (fontFamily: string) => {
@@ -189,7 +196,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
 
   return (
     <>
-      <div className="absolute inset-0 flex items-center justify-center">
+      {isInApp && <BrowserWarning />}
+      <div className={cn(
+        "absolute inset-0 flex items-center justify-center",
+        isInApp && "mt-16" // Add margin top when warning is shown
+      )}>
         {!image.original ? (
           <div 
             onDrop={handleDrop}
