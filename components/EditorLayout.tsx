@@ -2,7 +2,7 @@
 
 import { useEditor } from '@/hooks/useEditor';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { Upload, Download, LogIn, Loader2, Home } from 'lucide-react';
+import { Upload, Save, LogIn, Loader2, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Canvas } from '@/components/Canvas';
 import { useIsMobile } from '@/hooks/useIsMobile'; // Add this hook
@@ -11,7 +11,6 @@ import { AuthDialog } from '@/components/AuthDialog';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
-import { SaveDropdown } from './SaveDropdown';  // Add this import
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
@@ -48,11 +47,6 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   // Unified state check for all button actions
   const isActionDisabled = isProcessing || isConverting || isDownloading;
 
-  // Add this handler function
-  const handleDownload = () => {
-    downloadImage(1.0); // Use default quality
-  };
-
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-white/10">
@@ -82,7 +76,20 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
                   <Upload className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   <span className="text-xs mt-0.5 text-gray-600 dark:text-gray-400">Upload</span>
                 </button>
-                <SaveDropdown />  {/* Replace the save button with SaveDropdown */}
+                <button
+                  onClick={() => downloadImage()}
+                  disabled={isActionDisabled}
+                  className={cn(
+                    "flex flex-col items-center px-2",
+                    isActionDisabled && "opacity-50 cursor-not-allowed"
+                  )}
+                  aria-disabled={isActionDisabled}
+                >
+                  <Save className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  <span className="text-xs mt-0.5 text-gray-600 dark:text-gray-400">
+                    {isDownloading ? 'Downloading...' : 'Download'}
+                  </span>
+                </button>
               </>
             )}
             <div className="flex items-center gap-4 sm:gap-6"> {/* Increased gap between theme toggle and avatar */}

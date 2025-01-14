@@ -94,10 +94,10 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   };
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    // if (!user) {
-    //   setShowAuthDialog(true);
-    //   return;
-    // }
+    if (!user) {
+      setShowAuthDialog(true);
+      return;
+    }
 
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
@@ -119,6 +119,10 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) {
+      setShowAuthDialog(true);
+      return;
+    }
     const file = e.dataTransfer.files[0];
     const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image.heic', 'image.heif', 'image/heif'];
     const fileType = file.type.toLowerCase();
@@ -222,7 +226,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
                 "transition-all bg-white dark:bg-zinc-900",
                 "hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer"
               )}
-              // onClick={handleUploadClick}
+              onClick={handleUploadClick}
             >
               <div className="text-center space-y-6">
                 <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">Upload an image to get started</h3>
