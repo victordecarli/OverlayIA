@@ -43,11 +43,6 @@ export function AuthDialog({ isOpen, onClose, returnUrl }: AuthDialogProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md pt-8">
         <DialogHeader>
-          <div className="text-center mb-4 px-6">
-            <h2 className="text-xl font-bold text-primary bg-primary/10 py-3 rounded-md">
-              Sign in for Free to Download HD Images
-            </h2>
-          </div>
           <DialogTitle className="mt-2">Authenticate with Google</DialogTitle>
           <DialogDescription>
             To continue, please sign in with your Google account.

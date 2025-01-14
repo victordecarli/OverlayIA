@@ -9,7 +9,6 @@ import { UserMenu } from './UserMenu';
 import { AuthDialog } from './AuthDialog';
 import Image from 'next/image';
 import { supabase } from '@/utils/supabaseClient';
-import { SaveDropdown } from './SaveDropdown';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
