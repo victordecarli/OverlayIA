@@ -71,7 +71,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             {image.original && (
               <>
                 <button
-                  onClick={() => user ? resetEditor(true) : setShowAuthDialog(true)}
+                  onClick={() => resetEditor(true)}
                   disabled={isActionDisabled}
                   className={cn(
                     "flex flex-col items-center px-2", // Added horizontal padding

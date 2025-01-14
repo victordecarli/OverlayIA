@@ -1,5 +1,6 @@
 'use client';
 
+import React, { JSX } from 'react';
 import { Type, Shapes, Plus, ImageIcon, Image, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -11,14 +12,16 @@ import { ChangeBackgroundEditor } from './ChangeBackgroundEditor';
 import { CloneImageEditor } from './CloneImageEditor';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
 
+type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | null;
+
 interface SideNavigationProps {
   mobile?: boolean;
   mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only';
 }
 
 export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
-  // Determine initial tab based on mode
-  const getInitialTab = () => {
+  // Update the getInitialTab function to return the correct type
+  const getInitialTab = (): TabType => {
     switch (mode) {
       case 'text-only':
         return 'text';
@@ -35,9 +38,20 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     }
   };
 
-  const [activeTab, setActiveTab] = useState<'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | null>(getInitialTab());
-  const { image, isProcessing, isConverting, addTextSet, addShapeSet } = useEditor();
-  const canAddLayers = !!image.original && !!image.background && !isProcessing && !isConverting;
+  const [activeTab, setActiveTab] = useState<TabType>(getInitialTab());
+  const { 
+    image, 
+    isProcessing, 
+    isConverting, 
+    addTextSet, 
+    addShapeSet,
+    isBackgroundRemoved 
+  } = useEditor();
+  const canAddLayers = !!image.original && 
+    !!image.background && 
+    !isProcessing && 
+    !isConverting && 
+    !isBackgroundRemoved;  // Add this condition
   const { setIsPanelOpen } = useEditorPanel();
 
   // Get appropriate message based on active tab
@@ -88,48 +102,49 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     return activeTab !== 'remove-background' && canAddLayers;
   };
 
+  // Add this new function to determine if a tab should be disabled
+  const isTabDisabled = (tabName: TabType) => {
+    if (!image.original || isProcessing || isConverting) return true;
+    if (isBackgroundRemoved && tabName !== 'change-background') return true;
+    return false;
+  };
+
+  // Update the button rendering to use the new isTabDisabled function
+  const renderTabButton = (tabName: TabType, icon: JSX.Element, label: string) => (
+    <button
+      onClick={() => setActiveTab(activeTab === tabName ? null : tabName)}
+      className={cn(
+        mobile ? "flex-1 p-2" : "p-3",
+        "rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+        activeTab === tabName
+          ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
+          : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white",
+        isTabDisabled(tabName) && "opacity-50 cursor-not-allowed"
+      )}
+      disabled={isTabDisabled(tabName)}
+    >
+      {icon}
+      <span className={cn(
+        mobile ? "text-[10px]" : "text-xs",
+        "font-medium"
+      )}>{label}</span>
+    </button>
+  );
+
   const changeBackgroundButton = (
-    showChangeBackground && (
-      <button
-        onClick={() => setActiveTab(activeTab === 'change-background' ? null : 'change-background')}
-        className={cn(
-          mobile ? "flex-1 p-2" : "p-3",
-          "rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-          activeTab === 'change-background'
-            ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-            : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" // Added hover states
-        )}
-        disabled={!canAddLayers}
-      >
-        <Image className={mobile ? "w-4 h-4" : "w-5 h-5"} />
-        <span className={cn(
-          mobile ? "text-[10px]" : "text-xs",
-          "font-medium"
-        )}>Change BG</span>
-      </button>
+    showChangeBackground && renderTabButton(
+      'change-background' as TabType,
+      <Image className={mobile ? "w-4 h-4" : "w-5 h-5"} />,
+      'Change BG'
     )
   );
 
   // Add clone image button
   const cloneImageButton = (
-    showCloneImage && (
-      <button
-        onClick={() => setActiveTab(activeTab === 'clone-image' ? null : 'clone-image')}
-        className={cn(
-          mobile ? "flex-1 p-2" : "p-3",
-          "rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-          activeTab === 'clone-image'
-            ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-            : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" // Added hover states
-        )}
-        disabled={!canAddLayers}
-      >
-        <Copy className={mobile ? "w-4 h-4" : "w-5 h-5"} />
-        <span className={cn(
-          mobile ? "text-[10px]" : "text-xs",
-          "font-medium"
-        )}>Clone Image</span>
-      </button>
+    showCloneImage && renderTabButton(
+      'clone-image' as TabType,
+      <Copy className={mobile ? "w-4 h-4" : "w-5 h-5"} />,
+      'Clone Image'
     )
   );
 
@@ -139,52 +154,10 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
         {/* Bottom Navigation Bar */}
         <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50">
           <div className="flex gap-2 max-w-md mx-auto">
-            {showTextButton && (
-              <button
-                onClick={() => setActiveTab(activeTab === 'text' ? null : 'text')}
-                className={cn(
-                  "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-                  activeTab === 'text' 
-                    ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                    : "text-gray-500 dark:text-gray-400"
-                )}
-                disabled={!canAddLayers}
-              >
-                <Type className="w-4 h-4" />
-                <span className="text-[10px] font-medium">Text</span>
-              </button>
-            )}
-            {showShapesButton && (
-              <button
-                onClick={() => setActiveTab(activeTab === 'shapes' ? null : 'shapes')}
-                className={cn(
-                  "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-                  activeTab === 'shapes'
-                    ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                    : "text-gray-500 dark:text-gray-400"
-                )}
-                disabled={!canAddLayers}
-              >
-                <Shapes className="w-4 h-4" />
-                <span className="text-[10px] font-medium">Shapes</span>
-              </button>
-            )}
+            {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
+            {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
             {cloneImageButton}
-            {showRemoveBackground && (
-              <button
-                onClick={() => setActiveTab(activeTab === 'remove-background' ? null : 'remove-background')}
-                className={cn(
-                  "flex-1 p-2 rounded-lg flex flex-col items-center gap-0.5 transition-colors",
-                  activeTab === 'remove-background'
-                    ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                    : "text-gray-500 dark:text-gray-400"
-                )}
-                disabled={!canAddLayers}
-              >
-                <ImageIcon className="w-4 h-4" />
-                <span className="text-[10px] font-medium">Remove BG</span>
-              </button>
-            )}
+            {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
             {changeBackgroundButton}
           </div>
         </div>
@@ -259,56 +232,10 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
       <div className="flex h-full bg-white dark:bg-zinc-950">
         {/* Increase the width of the navigation buttons */}
         <div className="w-[80px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2">
-          {showTextButton && (
-            <button
-              onClick={() => {
-                setActiveTab(activeTab === 'text' ? null : 'text');
-              }}
-              className={cn(
-                "p-3 rounded-lg flex flex-col items-center gap-2 transition-colors",
-                activeTab === 'text'
-                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              )}
-              disabled={!canAddLayers}
-            >
-              <Type className="w-5 h-5" />
-              <span className="text-xs font-medium">Text</span>
-            </button>
-          )}
-          {showShapesButton && (
-            <button
-              onClick={() => {
-                setActiveTab(activeTab === 'shapes' ? null : 'shapes');
-              }}
-              className={cn(
-                "p-3 rounded-lg flex flex-col items-center gap-2 transition-colors",
-                activeTab === 'shapes'
-                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              )}
-              disabled={!canAddLayers}
-            >
-              <Shapes className="w-5 h-5" />
-              <span className="text-xs font-medium">Shapes</span>
-            </button>
-          )}
+          {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
+          {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
           {cloneImageButton}
-          {showRemoveBackground && (
-            <button
-              onClick={() => setActiveTab(activeTab === 'remove-background' ? null : 'remove-background')}
-              className={cn(
-                "p-3 rounded-lg flex flex-col items-center gap-2 transition-colors",
-                activeTab === 'remove-background'
-                  ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              )}
-              disabled={!canAddLayers}
-            >
-              <ImageIcon className="w-5 h-5" />
-              <span className="text-xs font-medium">Remove BG</span>
-            </button>
-          )}
+          {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
           {changeBackgroundButton}
         </div>
 

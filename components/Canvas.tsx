@@ -189,7 +189,9 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
 
   return (
     <>
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className={cn(
+        "absolute inset-0 flex items-center justify-center"
+      )}>
         {!image.original ? (
           <div 
             onDrop={handleDrop}
