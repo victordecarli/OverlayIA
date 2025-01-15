@@ -3,7 +3,7 @@
 
 UnderlayX is a creative image editing tool that lets you clone objects, change or remove backgrounds, and place text or shapes behind objects in an image, all in one place.
 
-![og-image](https://github.com/user-attachments/assets/ca8d13ed-4768-4b55-b079-341a4d807c16)
+![Original](https://github.com/user-attachments/assets/c1520508-e679-4787-821a-87d0dd5c3fcb)
 
 
 ### How It Works
