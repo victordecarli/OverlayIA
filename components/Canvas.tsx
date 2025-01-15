@@ -185,6 +185,19 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
     };
   }, []);  // Empty dependency array - only run once on mount
 
+  useEffect(() => {
+    // Cleanup function for file input and auto-upload state
+    return () => {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      setHasTriedAutoUpload(false);
+      setPendingFile(null);
+      setShowConvertDialog(false);
+      setShowAuthDialog(false);
+    };
+  }, []);
+
   const handleUploadClick = (e: React.MouseEvent<HTMLElement>) => {
     if (!user) {
       e.preventDefault();

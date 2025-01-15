@@ -261,7 +261,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     if (state?.isConverting !== undefined) set({ isConverting: state.isConverting });
     if (state?.isProcessing !== undefined) set({ isProcessing: state.isProcessing });
 
-
     try {
       const fileName = file.name.replace(/\.[^/.]+$/, "");
       set({ originalFileName: fileName });
@@ -285,9 +284,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       set({ isProcessing: true });
 
-      // Process foreground
+      // Process foreground with PNG format to preserve transparency
       const processedBlob = await removeBackground(originalUrl);
-      const foregroundUrl = URL.createObjectURL(processedBlob);
+      // Ensure the blob is treated as PNG
+      const transparentBlob = new Blob([processedBlob], { type: 'image/png' });
+      const foregroundUrl = URL.createObjectURL(transparentBlob);
       
       set(state => ({
         image: {
@@ -519,26 +520,45 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }
   },
 
-  resetEditor: (clearImage = true) => set((state) => ({
-    textSets: [],
-    shapeSets: [],
-    imageEnhancements: {
-      brightness: 100,
-      contrast: 100,
-      saturation: 100,
-      fade: 0,
-      exposure: 0,
-      highlights: 0,
-      shadows: 0,
-      sharpness: 0,
-    },
-    clonedForegrounds: [], // Clear clones on reset
-    image: clearImage ? {
-      original: null,
-      background: null,
-      foreground: null
-    } : state.image
-  })),
+  resetEditor: (clearImage = true) => set((state) => {
+    // Clean up existing object URLs to prevent memory leaks
+    if (clearImage) {
+      if (state.image.original) URL.revokeObjectURL(state.image.original);
+      if (state.image.background) URL.revokeObjectURL(state.image.background);
+      if (state.image.foreground) URL.revokeObjectURL(state.image.foreground);
+    }
+
+    return {
+      textSets: [],
+      shapeSets: [],
+      imageEnhancements: {
+        brightness: 100,
+        contrast: 100,
+        saturation: 100,
+        fade: 0,
+        exposure: 0,
+        highlights: 0,
+        shadows: 0,
+        sharpness: 0,
+      },
+      clonedForegrounds: [],
+      hasTransparentBackground: false,
+      hasChangedBackground: false,
+      isBackgroundRemoved: false,
+      foregroundPosition: { x: 0, y: 0 },
+      processingMessage: '',
+      isProcessing: false,
+      isConverting: false,
+      isDownloading: false,
+      image: clearImage ? {
+        original: null,
+        background: null,
+        foreground: null
+      } : state.image,
+      loadedFonts: new Set()
+    };
+  }),
+
   setExportQuality: (quality) => set({ exportQuality: quality }),
   updateImageEnhancements: (enhancements) => set({ imageEnhancements: enhancements }),
   removeBackground: async () => {

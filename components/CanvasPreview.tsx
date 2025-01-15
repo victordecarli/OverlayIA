@@ -22,7 +22,7 @@ export function CanvasPreview() {
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
+    const ctx = canvas?.getContext('2d', { willReadFrequently: true, alpha: true });
     if (!canvas || !ctx || !bgImageRef.current) return;
 
     // Cancel any pending render
@@ -36,21 +36,21 @@ export function CanvasPreview() {
       canvas.width = bgImageRef.current!.width;
       canvas.height = bgImageRef.current!.height;
 
-      // Clear canvas
+      // Clear canvas with transparency
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw background only if not transparent
-      if (!hasTransparentBackground) {
-        ctx.filter = filterString;
-        ctx.drawImage(bgImageRef.current!, 0, 0);
-        ctx.filter = 'none';
-      } else {
-        // Create checkerboard pattern for transparency
+      // If transparent background is enabled, draw checkerboard pattern
+      if (hasTransparentBackground) {
         const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
         if (pattern) {
           ctx.fillStyle = pattern;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
+      } else {
+        // Draw background with filters if not transparent
+        ctx.filter = filterString;
+        ctx.drawImage(bgImageRef.current!, 0, 0);
+        ctx.filter = 'none';
       }
 
       // Draw shapes with consistent scaling
