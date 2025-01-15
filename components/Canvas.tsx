@@ -197,7 +197,9 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
     <>
       <div className={cn(
         "absolute inset-0 flex items-center justify-center",
-        "p-4 sm:p-6" // Add padding around canvas
+        "p-4 sm:p-6",
+        isMobile && "mt-2", // Add small top margin on mobile
+        isPanelOpen && isMobile && "mb-4" // Add bottom margin when panel is open on mobile
       )}>
         {!image.original ? (
           <div 
@@ -206,10 +208,14 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             className={cn(
               "w-full transition-all duration-300",
               "relative flex items-center justify-center",
-              isMobile ? "h-[60vh]" : // Mobile height
-              isPanelOpen ? 
-                'h-[calc(68vh-8rem)]' : 
-                'h-[calc(100vh-10rem)]'
+              isMobile ? 
+                isPanelOpen ? 
+                  "h-[40vh]" : // Further reduced height when panel is open
+                  "h-[55vh]"   // Reduced height when panel is closed
+                : 
+                isPanelOpen ? 
+                  'h-[calc(68vh-8rem)]' : 
+                  'h-[calc(100vh-10rem)]'
             )}
           >
             <input
@@ -256,14 +262,17 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
         ) : (
           <div className={cn(
             "relative transition-all duration-300",
-            "max-w-3xl w-full", // Set max width
+            "max-w-3xl w-full",
             "flex items-center justify-center",
-            "overflow-hidden", // Always rounded
+            "overflow-hidden",
             isMobile ? 
-              "h-[calc(60vh-8rem)]" : // Reduced height on mobile
+              isPanelOpen ?
+                "h-[38vh]" :  // Further reduced height when panel is open
+                "h-[52vh]"    // Reduced height when panel is closed
+              : 
               isPanelOpen ? 
-                'h-[calc(68vh-12rem)]' : // More space when panel is open
-                'h-[calc(100vh-14rem)]' // More space when panel is closed
+                'h-[calc(68vh-12rem)]' : 
+                'h-[calc(100vh-14rem)]'
           )}>
             {(isProcessing || isConverting) && (
               <div className="absolute inset-0 flex items-center justify-center z-50">
