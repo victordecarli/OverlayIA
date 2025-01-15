@@ -496,7 +496,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       // Download logic
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download = 'UnderlayX.png';  // Always use PNG extension
+      const timestamp = Math.floor(Date.now() / 1000); // Get current time in seconds
+      link.download = `UnderlayX_${timestamp}.png`;  // Always use PNG extension
       link.href = url;
       document.body.appendChild(link);
       link.click();
