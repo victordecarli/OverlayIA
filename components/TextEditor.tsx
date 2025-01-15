@@ -17,6 +17,7 @@ import {
 import { GlowEffect } from '@/types/editor';
 import { useDebounce } from '@/hooks/useDebounce';
 import { ColorInput } from './ColorInput';
+import { cn } from '@/lib/utils';
 
 // Helper function for smooth scrolling
 const scrollToElement = (element: HTMLElement | null) => {
@@ -78,8 +79,13 @@ export function TextEditor() {
           <Input
             value={textSet.text}
             onChange={(e) => updateTextSet(textSet.id, { text: e.target.value })}
-            className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className={cn(
+              "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white",
+              "text-base sm:text-sm" // Add responsive font size
+            )}
             placeholder="Enter text..."
+            autoComplete="off" // Add this to prevent autocomplete zoom
+            spellCheck="false" // Add this to prevent spellcheck zoom
           />
           
           {/* Font Controls */}

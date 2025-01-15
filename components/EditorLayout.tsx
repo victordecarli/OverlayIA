@@ -148,10 +148,10 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
           "flex-1 relative transition-all duration-300 ease-in-out",
           "px-0 sm:px-4", // Changed padding to horizontal only
           "xl:ml-[320px]",
-          // Adjusted padding to prevent overflow
+          // Increased spacing between panel and content
           isPanelOpen ? 
-            'pb-[calc(32vh+96px)]' : 
-            'pb-20 xl:pb-8'
+            'pb-[calc(32vh+120px)]' : // More space when panel is open
+            'pb-24 xl:pb-12' // More space when panel is closed
         )}>
           {/* Bottom Navigation for mobile, tablet and small desktop */}
           <div className="fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 z-20">
@@ -165,16 +165,16 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             "w-full mx-auto", // Added width constraint
             "overflow-hidden", // Prevent horizontal scroll
             isPanelOpen ?
-              'h-[calc(68vh-7rem)]' : 
-              'h-[calc(100vh-9rem)]',
-            "xl:h-[calc(100vh-7rem)]"
+              'h-[calc(68vh-9rem)]' : // Adjusted height
+              'h-[calc(100vh-11rem)]',
+            "xl:h-[calc(100vh-8rem)]"
           )}>
             <div className={cn(
               "relative w-full h-full",
-              "max-w-[min(800px,calc(100vw-2rem))]", // Dynamic max width
+              "max-w-[min(900px,calc(100vw-2rem))]", // Slightly larger max width
               "flex items-center justify-center"
             )}>
-              <div className="w-full h-full p-2 sm:p-4"> {/* Reduced padding on mobile */}
+              <div className="w-full h-full">
                 <Canvas />
               </div>
             </div>

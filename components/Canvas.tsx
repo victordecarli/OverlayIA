@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { AuthDialog } from './AuthDialog';
 import { cn } from '@/lib/utils';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
+import { useIsMobile } from '@/hooks/useIsMobile'; // Add this import
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -34,6 +35,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { user } = useAuth();
   const { isPanelOpen } = useEditorPanel();
+  const isMobile = useIsMobile(); // Add this hook
 
   // Add this function inside the Canvas component
   const preloadFonts = useCallback(async (fontFamily: string) => {
@@ -194,7 +196,8 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   return (
     <>
       <div className={cn(
-        "absolute inset-0 flex items-center justify-center"
+        "absolute inset-0 flex items-center justify-center",
+        "p-4 sm:p-6" // Add padding around canvas
       )}>
         {!image.original ? (
           <div 
@@ -203,51 +206,64 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             className={cn(
               "w-full transition-all duration-300",
               "relative flex items-center justify-center",
-              // Adjusted height calculations
+              isMobile ? "h-[60vh]" : // Mobile height
               isPanelOpen ? 
                 'h-[calc(68vh-8rem)]' : 
                 'h-[calc(100vh-10rem)]'
             )}
           >
             <input
-              ref={fileInputRef} // Add the ref here
+              ref={fileInputRef}
               id="canvas-upload"
               type="file"
               onChange={onFileChange}
               accept="image/jpeg,image/png,image.webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
               className="hidden"
             />
-            <label
-              htmlFor="canvas-upload"
-              className={cn(
-                "absolute inset-0",
-                "flex items-center justify-center",
-                "border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl",
-                "transition-all bg-white dark:bg-zinc-900",
-                "hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer"
-              )}
-              onClick={handleUploadClick}
-            >
-              <div className="text-center space-y-6">
-                <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">Upload an image to get started</h3>
-                <div className="w-20 h-20 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-xl">
-                  <Upload className="w-10 h-10 text-gray-400" />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-gray-600 font-medium dark:text-gray-400">Click here or drag & drop to upload</p>
-                  <p className="text-gray-600 text-sm dark:text-gray-400">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
-                </div>
+            {isMobile ? (
+              <div className="flex flex-col items-center gap-4">
+                <p className="text-gray-600 dark:text-gray-400 text-center">
+                  Upload an image to get started
+                </p>
+                <label
+                  htmlFor="canvas-upload"
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-colors"
+                  onClick={handleUploadClick}
+                >
+                  <Upload className="w-5 h-5" />
+                  <span>Upload</span>
+                </label>
               </div>
-            </label>
+            ) : (
+              <label
+                htmlFor="canvas-upload"
+                className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl transition-all bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer"
+                onClick={handleUploadClick}
+              >
+                <div className="text-center space-y-6">
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">Upload an image to get started</h3>
+                  <div className="w-20 h-20 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-xl">
+                    <Upload className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-gray-600 font-medium dark:text-gray-400">Click here or drag & drop to upload</p>
+                    <p className="text-gray-600 text-sm dark:text-gray-400">Supports: JPG, PNG, WEBP, HEIC, HEIF</p>
+                  </div>
+                </div>
+              </label>
+            )}
           </div>
         ) : (
           <div className={cn(
-            "relative w-full transition-all duration-300",
+            "relative transition-all duration-300",
+            "max-w-3xl w-full", // Set max width
             "flex items-center justify-center",
-            // Maintain aspect ratio with object-fit
-            isPanelOpen ? 
-              'h-[calc(68vh-8rem)]' : 
-              'h-[calc(100vh-10rem)]'
+            "overflow-hidden", // Always rounded
+            isMobile ? 
+              "h-[calc(60vh-8rem)]" : // Reduced height on mobile
+              isPanelOpen ? 
+                'h-[calc(68vh-12rem)]' : // More space when panel is open
+                'h-[calc(100vh-14rem)]' // More space when panel is closed
           )}>
             {(isProcessing || isConverting) && (
               <div className="absolute inset-0 flex items-center justify-center z-50">
@@ -259,8 +275,8 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             )}
             
             {image.original && (
-              <div className="relative w-full h-full">
-                <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative w-full h-full flex items-center justify-center">
+                <div className="absolute inset-0">
                   <CanvasPreview />
                 </div>
               </div>
