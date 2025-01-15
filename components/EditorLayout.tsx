@@ -148,10 +148,15 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
           "flex-1 relative transition-all duration-300 ease-in-out",
           "px-0 sm:px-4", // Changed padding to horizontal only
           "xl:ml-[320px]",
-          // Increased spacing between panel and content
-          isPanelOpen ? 
-            'pb-[calc(32vh+120px)]' : // More space when panel is open
-            'pb-24 xl:pb-12' // More space when panel is closed
+          "pt-4", // Add top padding
+          isMobile ?
+            isPanelOpen ? 
+              'pb-[32vh]' :     // Reduced padding when panel is open
+              'pb-16'           // Minimal padding when panel is closed
+            :
+            isPanelOpen ? 
+              'pb-[calc(32vh+120px)]' : 
+              'pb-24 xl:pb-12'
         )}>
           {/* Bottom Navigation for mobile, tablet and small desktop */}
           <div className="fixed bottom-0 left-0 right-0 xl:hidden bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 z-20">
@@ -164,9 +169,14 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             "flex items-center justify-center transition-all duration-300",
             "w-full mx-auto", // Added width constraint
             "overflow-hidden", // Prevent horizontal scroll
-            isPanelOpen ?
-              'h-[calc(68vh-9rem)]' : // Adjusted height
-              'h-[calc(100vh-11rem)]',
+            isMobile ?
+              isPanelOpen ?
+                'h-[42vh]' :    // Reduced height when panel is open
+                'h-[60vh]'      // Reduced height when panel is closed
+              :
+              isPanelOpen ?
+                'h-[calc(68vh-9rem)]' : 
+                'h-[calc(100vh-11rem)]',
             "xl:h-[calc(100vh-8rem)]"
           )}>
             <div className={cn(

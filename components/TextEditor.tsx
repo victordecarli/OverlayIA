@@ -81,11 +81,12 @@ export function TextEditor() {
             onChange={(e) => updateTextSet(textSet.id, { text: e.target.value })}
             className={cn(
               "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white",
-              "text-base sm:text-sm" // Add responsive font size
+              "text-base sm:text-base" // Add responsive font size
             )}
             placeholder="Enter text..."
             autoComplete="off" // Add this to prevent autocomplete zoom
             spellCheck="false" // Add this to prevent spellcheck zoom
+            style={{ fontSize: '16px' }}
           />
           
           {/* Font Controls */}

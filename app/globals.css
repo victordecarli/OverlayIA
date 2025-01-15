@@ -246,7 +246,7 @@
 
   .hover\:shadow-indigo-500\/20:hover {
     --tw-shadow-color: rgb(99 102 241 / 0.2);
-    --tw-shadow: var(--tw-shadow-colored);
+    --tw-shadow: var (--tw-shadow-colored);
   }
 
   .hover\:shadow-orange-500\/20:hover {
@@ -271,7 +271,14 @@
 
 /* Prevent scroll when editor is open on mobile */
 .editor-panel-open {
-  @apply overflow-hidden lg:overflow-auto;
+  @apply overflow-hidden touch-none fixed inset-0 lg:overflow-auto lg:static;
+}
+
+/* Add touch-action manipulation to prevent unwanted scrolling */
+.prevent-overscroll {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+  touch-action: none;
 }
 
 /* Add these styles at the end of your global CSS file */
