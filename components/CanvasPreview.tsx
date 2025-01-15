@@ -263,11 +263,15 @@ export function CanvasPreview() {
       <div className={cn(
         "absolute inset-0",
         "flex items-center justify-center",
-        "overflow-hidden" // Prevent image overflow
+        "overflow-hidden"
       )}>
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 w-full h-full object-contain z-10"
+          className={cn(
+            "max-w-full max-h-full",
+            "object-contain",
+            "rounded-xl" // Rounded corners for canvas
+          )}
         />
       </div>
     </div>

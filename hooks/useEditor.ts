@@ -261,19 +261,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     if (state?.isConverting !== undefined) set({ isConverting: state.isConverting });
     if (state?.isProcessing !== undefined) set({ isProcessing: state.isProcessing });
 
-    const messages = [
-      'Getting your photo ready...',
-      'Preparing something special...',
-      'Adding a touch of magic...',
-      'Making your image perfect...',
-      'Almost ready to create...'
-    ];
-
-    let messageIndex = 0;
-    const messageInterval = setInterval(() => {
-      set({ processingMessage: messages[messageIndex] });
-      messageIndex = (messageIndex + 1) % messages.length;
-    }, 3000);
 
     try {
       const fileName = file.name.replace(/\.[^/.]+$/, "");
@@ -302,8 +289,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const processedBlob = await removeBackground(originalUrl);
       const foregroundUrl = URL.createObjectURL(processedBlob);
       
-      clearInterval(messageInterval);
-      
       set(state => ({
         image: {
           ...state.image,
@@ -315,7 +300,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       setTimeout(() => set({ processingMessage: '' }), 2000);
 
     } catch (error) {
-      clearInterval(messageInterval); // Make sure to clear interval on error
       console.error('Error processing image:', error);
       set({ 
         processingMessage: 'Oops! Something went wrong. Please try again.',
@@ -323,7 +307,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         isConverting: false
       });
     } finally {
-      clearInterval(messageInterval); // Make sure to clear interval
       set({ isConverting: false, isProcessing: false });
     }
   },
@@ -638,7 +621,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         ...state.clonedForegrounds,
         {
           id: Date.now(),
-          position: { x: 0, y: 0 },
+          position: { x: 5, y: 0 },
           size: 100,
           rotation: 0
         }
