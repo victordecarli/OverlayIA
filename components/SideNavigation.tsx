@@ -157,8 +157,8 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
             {cloneImageButton}
             {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
             {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
-            {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
             {changeBackgroundButton}
+            {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
           </div>
         </div>
 
@@ -235,8 +235,8 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
           {cloneImageButton}
           {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
           {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
-          {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
           {changeBackgroundButton}
+          {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
         </div>
 
         {/* Editor Content with border */}
