@@ -57,8 +57,8 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       try {
         setIsProcessing(true);
         setProcessingMessage('Processing...');
-        const optimizedFile = await optimizeImage(file);
-        await handleImageUpload(optimizedFile);
+        // const optimizedFile = await optimizeImage(file);
+        await handleImageUpload(file);
       } catch (error) {
         console.error('Error processing image:', error);
         alert('Error processing image. Please try again.');
@@ -75,8 +75,8 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       setShowConvertDialog(false);
       setIsConverting(true);
       const convertedFile = await convertHeicToJpeg(pendingFile);
-      const optimizedFile = await optimizeImage(convertedFile);
-      await handleImageUpload(optimizedFile);
+      // const optimizedFile = await optimizeImage(convertedFile);
+      await handleImageUpload(convertedFile);
     } catch (error) {
       console.error('Error processing image:', error);
       alert('Error processing image. Please try again.');
@@ -159,7 +159,6 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
         preloadFonts(textSet.fontFamily)
       );
       await Promise.all(fontPromises);
-      // Remove render() call
     };
     
     loadFonts();

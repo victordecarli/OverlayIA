@@ -22,7 +22,7 @@ export function CanvasPreview() {
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d', { willReadFrequently: true, alpha: true });
+    const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx || !bgImageRef.current) return;
 
     // Cancel any pending render
