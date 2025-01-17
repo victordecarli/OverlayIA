@@ -241,7 +241,7 @@ export function Navbar() {
                               Tokens balance: {generationInfo.tokens_balance}
                             </div>
                             <div>
-                              Free tokens used: {generationInfo.free_generations_used} / 4
+                              Free tokens used: {generationInfo.free_generations_used} / 5
                             </div>
                           </div>
                         )}
@@ -318,7 +318,7 @@ export function Navbar() {
                         </div>
                         <div className="flex justify-between items-center">
                           <span>Free tokens used:</span>
-                          <span className="font-medium">{generationInfo.free_generations_used} / 2</span>
+                          <span className="font-medium">{generationInfo.free_generations_used} / 5</span>
                         </div>
                       </div>
                     )}

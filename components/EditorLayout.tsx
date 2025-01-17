@@ -156,7 +156,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
                               )}
                             </div>
                             <div>
-                              Free tokens used: {generationInfo.free_generations_used} / 4
+                              Free tokens used: {generationInfo.free_generations_used} / 5
                             </div>
                           </div>
                         )}
