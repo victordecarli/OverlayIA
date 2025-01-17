@@ -1,16 +1,7 @@
 'use client';
 
-import { useEditor } from '@/hooks/useEditor';
-import { useEffect } from 'react';
-import { EditorLayout } from '@/components/EditorLayout';
-import { RemoveBackgroundNavigation } from '@/components/RemoveBackgroundNavigation';
+import { redirect } from 'next/navigation';
 
 export default function RemoveBackgroundPage() {
-  const { resetEditor } = useEditor();
-
-  useEffect(() => {
-    resetEditor();
-  }, []);
-
-  return <EditorLayout SideNavComponent={RemoveBackgroundNavigation} />;
+  redirect('/custom-editor');
 }
