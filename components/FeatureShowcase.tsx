@@ -1,36 +1,48 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 
-const features = [
+const bottle = [
   {
-    title: 'Text Behind Image',
+    title: 'Original Image',
     description: 'Place text behind objects seamlessly',
-    image: '/text-behind-image.webp',
-    href: '/text-behind-image',
-    altText: 'Example of text behind image effect' // Added unique alt text
+    image: '/bottle1.webp',
+    altText: 'Original bottle image'
   },
   {
-    title: 'Clone Image',
+    title: 'Clone objects, resize them, and add text behind the image',
     description: 'Clone and duplicate objects easily',
-    image: '/clone-image.webp',
+    image: '/bottle2.webp',
     href: '/clone-image',
-    altText: 'Example of cloned image elements'
+    altText: 'Bottle image with cloned and resized objects'
   },
   {
     title: 'Change Background',
     description: 'Swap backgrounds instantly',
-    image: '/change-background.webp',
+    image: '/bottle3.webp',
     href: '/change-background',
-    altText: 'Background replacement demonstration'
+    altText: 'Bottle image with changed background'
+  },
+];
+
+const human = [
+  {
+    title: 'Original Image',
+    description: 'Place text behind objects seamlessly',
+    image: '/human1.webp',
+    altText: 'Original human portrait'
   },
   {
-    title: 'Shape Behind Image',
-    description: 'Add shapes behind objects for depth',
-    image: '/shape-behind-image.webp',
-    href: '/shape-behind-image',
-    altText: 'Demonstration of shapes placed behind objects'
+    title: 'Insert logos or images behind your image',
+    description: 'Clone and duplicate objects easily',
+    image: '/human2.webp',
+    altText: 'Human portrait with logos inserted behind'
+  },
+  {
+    title: 'Place multiple images behind your main image',
+    description: 'Swap backgrounds instantly',
+    image: '/human3.webp',
+    altText: 'Human portrait with multiple background images'
   },
 ];
 
@@ -39,35 +51,58 @@ export function FeatureShowcase() {
     <section className="py-2" aria-label="Feature examples">
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="md:grid md:grid-cols-4 gap-2 md:gap-4 flex overflow-x-auto snap-x snap-mandatory hide-scrollbar">
-            {features.map((feature, index) => (
-              <Link
-                key={index}
-                href={feature.href}
-                className="flex-none w-[80vw] md:w-full snap-start group"
-              >
-                <div className="relative max-h-[400px] md:max-h-[600px] w-full flex items-center justify-center rounded-2xl overflow-hidden">
+          <div className="md:grid md:grid-cols-3 gap-4 flex overflow-x-auto snap-x snap-mandatory hide-scrollbar mb-4">
+            {bottle.map((feature, index) => (
+              <div key={index} className="w-full flex-shrink-0 snap-center">
+                <div className="text-center mb-6">
+                  <p className="text-white/50 text-sm group-hover:text-purple-400 transition-colors">
+                    {feature.title}
+                  </p>
+                </div>
+                <div className="relative h-[400px] md:h-[600px] w-full flex items-center justify-center rounded-2xl overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b z-10 pointer-events-none" />
                   <Image
                     src={feature.image}
                     alt={feature.altText}
                     width={800}
                     height={800}
-                    className="max-w-full max-h-full w-auto h-auto object-contain rounded-2xl transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 768px) 80vw, 25vw"
+                    className="w-full h-full object-cover rounded-2xl transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 80vw, 33vw"
                     quality={100}
                     priority={index < 2}
                   />
                 </div>
+              </div>
+            ))}
+          </div>
+          {/* Mobile scroll indicator - only show on mobile */}
+          <div className="md:hidden text-center text-white/40 text-xs mt-2 mb-6">
+            Scroll to see more →
+          </div>
+          <div className="md:grid md:grid-cols-3 gap-4 flex overflow-x-auto snap-x snap-mandatory hide-scrollbar mb-4">
+            {human.map((feature, index) => (
+              <div key={index} className="w-full flex-shrink-0 snap-center">
                 <div className="text-center mt-1">
-                  <p className="text-white/90 text-sm group-hover:text-purple-400 transition-colors">
+                  <p className="text-white/50 text-sm group-hover:text-purple-400 transition-colors mb-4">
                     {feature.title}
                   </p>
                 </div>
-              </Link>
+                <div className="relative h-[400px] md:h-[600px] w-full flex items-center justify-center rounded-2xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-b z-10 pointer-events-none" />
+                  <Image
+                    src={feature.image}
+                    alt={feature.altText}
+                    width={800}
+                    height={800}
+                    className="w-full h-full object-cover rounded-2xl transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 80vw, 33vw"
+                    quality={100}
+                    priority={index < 2}
+                  />
+                </div>
+              </div>
             ))}
           </div>
-
           {/* Mobile scroll indicator - only show on mobile */}
           <div className="md:hidden text-center text-white/40 text-xs mt-2">
             Scroll to see more →

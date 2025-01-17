@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="w-full py-8 bg-black/30 backdrop-blur-sm border-t border-gray-800">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
           {/* Navigation Links */}
           <div>
             <h3 className="text-white font-semibold mb-4">Product</h3>
@@ -31,6 +31,19 @@ export function Footer() {
               <li><Link href="/faq" className="text-gray-400 hover:text-white transition-colors">FAQ</Link></li>
               <li><Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">Privacy</Link></li>
               <li><Link href="/terms-and-conditions" className="text-gray-400 hover:text-white transition-colors">Terms</Link></li>
+            </ul>
+          </div>
+          
+          {/* Simplified Contact section */}
+          <div>
+            <h3 className="text-white font-semibold mb-4">Contact</h3>
+            <ul className="space-y-2">
+              <li className="text-gray-400 text-sm">
+                Have a question or need help? Email me at
+              </li>
+              <li className="text-gray-300 text-sm font-medium">
+                dailifyofficial@gmail.com
+              </li>
             </ul>
           </div>
           

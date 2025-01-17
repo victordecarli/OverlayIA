@@ -11,7 +11,7 @@ export function ImageEditor() {
   const { backgroundImages, addBackgroundImage, removeBackgroundImage, updateBackgroundImage } = useEditor();
   const [uploadError, setUploadError] = useState<string | null>(null);
   
-  const isAtLimit = backgroundImages.length >= 1;
+  const isAtLimit = backgroundImages.length >= 2;
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

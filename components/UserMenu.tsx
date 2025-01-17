@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
 import { User } from '@supabase/supabase-js';
 import {
   Tooltip,
@@ -27,7 +25,7 @@ export function UserMenu({ user }: UserMenuProps) {
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
               <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/10 cursor-pointer">
-                <Image
+                <img
                   src={user.user_metadata.avatar_url}
                   alt="Profile"
                   width={32}

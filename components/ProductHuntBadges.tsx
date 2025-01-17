@@ -1,6 +1,5 @@
 'use client';
 
-import Image from "next/image";
 
 const BADGE_DIMENSIONS = {
   width: 250,
@@ -46,13 +45,12 @@ export const ProductHuntBadges = () => {
             rel="noopener noreferrer" 
             className="w-full sm:w-auto"
           >
-            <Image
+            <img
               src={badge.src}
               alt="UnderlayX - Product Hunt Badge"
               width={BADGE_DIMENSIONS.width}
               height={BADGE_DIMENSIONS.height}
               className="w-full max-w-[250px] h-auto mx-auto"
-              unoptimized // Add this since the source is an SVG
             />
           </a>
         ))}

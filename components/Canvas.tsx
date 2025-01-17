@@ -3,7 +3,7 @@
 import { useEditor } from '@/hooks/useEditor';
 import { Upload } from 'lucide-react';
 import { CanvasPreview } from './CanvasPreview';
-import { convertHeicToJpeg, optimizeImage } from '@/lib/image-utils';
+import { convertHeicToJpeg } from '@/lib/image-utils';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useState, useRef, useCallback, useEffect } from 'react'; // Add useRef, useCallback, useEffect
 import { useAuth } from '@/hooks/useAuth';
@@ -11,6 +11,9 @@ import { AuthDialog } from './AuthDialog';
 import { cn } from '@/lib/utils';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { useIsMobile } from '@/hooks/useIsMobile'; // Add this import
+import { incrementGenerationCount, decrementTokenBalance } from '@/lib/supabase-utils';
+import { TokenPurchaseDialog } from './TokenPurchaseDialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -33,9 +36,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const fileInputRef = useRef<HTMLInputElement>(null); // Add this ref
   const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showTokenDialog, setShowTokenDialog] = useState(false);
   const { user } = useAuth();
   const { isPanelOpen } = useEditorPanel();
   const isMobile = useIsMobile(); // Add this hook
+  const { toast } = useToast();
 
   // Add this function inside the Canvas component
   const preloadFonts = useCallback(async (fontFamily: string) => {
@@ -43,43 +48,49 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       await document.fonts.load(`400 16px "${fontFamily}"`);
       await document.fonts.load(`700 16px "${fontFamily}"`);
     } catch (error) {
-      console.warn(`Failed to preload font: ${fontFamily}`, error);
+      toast({variant:'destructive', title: "Failed to preload font"});
     }
   }, []);
 
   const handleFileProcess = async (file: File) => {
-    const fileName = file.name.toLowerCase();
+    if (!user) {
+      setShowAuthDialog(true);
+      return;
+    }
 
-    if (fileName.match(/\.(heic|heif)$/)) {
-      setPendingFile(file);
-      setShowConvertDialog(true);
-    } else {
+    try {
+      setIsProcessing(true);
+      setProcessingMessage('Analyzing your image, please wait...');
+      
       try {
-        setIsProcessing(true);
-        setProcessingMessage('Processing...');
-        // const optimizedFile = await optimizeImage(file);
-        await handleImageUpload(file);
+        await decrementTokenBalance(user.id);
       } catch (error) {
-        console.error('Error processing image:', error);
-        alert('Error processing image. Please try again.');
-      } finally {
-        setIsProcessing(false);
+        if (error instanceof Error && error.message === 'No available tokens') {
+          setShowTokenDialog(true);
+          return;
+        }
+        throw error;
       }
+
+      await handleImageUpload(file);
+    } catch (error) {
+      toast({variant:'destructive', title: "Error processing image. Please try again."});
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const handleConvertConfirm = async () => {
-    if (!pendingFile) return;
+    if (!pendingFile || !user) return;
 
     try {
       setShowConvertDialog(false);
       setIsConverting(true);
       const convertedFile = await convertHeicToJpeg(pendingFile);
-      // const optimizedFile = await optimizeImage(convertedFile);
       await handleImageUpload(convertedFile);
+      await incrementGenerationCount(user);  // Pass complete user object
     } catch (error) {
-      console.error('Error processing image:', error);
-      alert('Error processing image. Please try again.');
+      toast({variant:'destructive', title: "Error processing image. Please try again."});
     } finally {
       setPendingFile(null);
       setIsConverting(false);
@@ -106,7 +117,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       // Reset the input value right after getting the file
       e.target.value = '';
       
-      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
+      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image/webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
 
@@ -126,7 +137,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       return;
     }
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image.heic', 'image.heif', 'image/heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image/webp', 'image.heic', 'image.heic', 'image.heif', 'image/heif'];
     const fileType = file.type.toLowerCase();
     const fileName = file.name.toLowerCase();
 
@@ -290,7 +301,12 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
               <div className="absolute inset-0 flex items-center justify-center z-50">
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
-                  <p className="text-white text-sm">{getLoadingMessage()}</p>
+                  <p className="text-white text-sm font-bold">{getLoadingMessage()}</p>
+                  {isProcessing && (
+                    <p className="text-white/70 text-xs max-w-sm text-center px-4">
+                      If this is your first upload, it might take a little longer as we fetch and prepare necessary data. Future uploads will be much faster!
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -317,6 +333,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       <AuthDialog
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
+      />
+
+      <TokenPurchaseDialog 
+        isOpen={showTokenDialog}
+        onClose={() => setShowTokenDialog(false)}
       />
     </>
   );

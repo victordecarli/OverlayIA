@@ -4,6 +4,7 @@ import { useEffect, useRef, useMemo, useCallback } from 'react';
 import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 export function CanvasPreview() {
   const { 
@@ -24,6 +25,8 @@ export function CanvasPreview() {
   const fgImageRef = useRef<HTMLImageElement | null>(null);
   const bgImagesRef = useRef<Map<number, HTMLImageElement>>(new Map()); // Add this line
   const renderRequestRef = useRef<number | undefined>(undefined);
+  const { toast } = useToast();
+
 
   // Memoize the filter string
   const filterString = useMemo(() => `
@@ -209,6 +212,7 @@ export function CanvasPreview() {
   
           ctx.fillText(textSet.text, 0, 0);
         } catch (error) {
+          toast({variant:'destructive', title: "Something went wrong. Please try again."});
           console.warn(`Failed to render text: ${textSet.text}`, error);
         } finally {
           ctx.restore();

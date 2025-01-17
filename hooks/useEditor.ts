@@ -383,26 +383,21 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       canvas.width = fgImg.width;
       canvas.height = fgImg.height;
 
-      // Clear canvas
+      // Clear canvas with transparency
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw background color or image
-      if (backgroundColor) {
-        // Fill with background color
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      } else if (!hasTransparentBackground && image.background) {
-        // Draw background image with filters
-        const bgImg = await loadImage(image.background);
-        ctx.filter = filterString(imageEnhancements);
-        ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-        ctx.filter = 'none';
-      } else if (hasTransparentBackground) {
-        // Handle transparent background
-        const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
-        if (pattern) {
-          ctx.fillStyle = pattern;
+      // Only draw background if it's not meant to be transparent
+      if (!hasTransparentBackground) {
+        if (backgroundColor) {
+          // Fill with background color
+          ctx.fillStyle = backgroundColor;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
+        } else if (image.background) {
+          // Draw background image with filters
+          const bgImg = await loadImage(image.background);
+          ctx.filter = filterString(imageEnhancements);
+          ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+          ctx.filter = 'none';
         }
       }
 
@@ -572,12 +567,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         }
       }
 
-      // Create blob and download
+      // Create blob with PNG format to preserve transparency
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
           blob => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
-          'image/png',
-          1.0  // Always use highest quality
+          'image/png'  // Always use PNG for transparency support
         );
       });
 

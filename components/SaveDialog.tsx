@@ -8,7 +8,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { openInBrowser } from '@/utils/browserDetect';
+import { openInBrowser } from '@/lib/browserDetect';
 
 interface SaveDialogProps {
   isOpen: boolean;

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthDialog } from '@/components/AuthDialog';
-import { supabase } from '@/utils/supabaseClient';
+import { supabase } from '@/lib/supabaseClient'; 
 
 export default function LoginPage() {
   const router = useRouter();
