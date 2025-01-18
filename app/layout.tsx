@@ -3,6 +3,8 @@ import { inter } from './fonts';
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { Analytics } from '@vercel/analytics/next';
+
 
 export const metadata = {
   title: 'Transform Your Images with Cloning, Text Behind, and Background Customization - UnderlayX',
@@ -54,6 +56,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </ThemeProvider>
+        <Analytics />
       </body>
       <GoogleAnalytics gaId="G-LWYW0Q03ZL" />
     </html>
