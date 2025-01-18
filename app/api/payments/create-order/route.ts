@@ -90,8 +90,12 @@ export async function POST(req: Request) {
       application_context: {
         shipping_preference: "NO_SHIPPING",
         user_action: "PAY_NOW",
-        return_url: `${baseUrl}/pay?success=true`,
-        cancel_url: `${baseUrl}/pay?success=false`
+        return_url: `${baseUrl}/pay`,
+        cancel_url: `${baseUrl}/pay`,
+        brand_name: "UnderLayX",
+        payment_method: {
+          payee_preferred: "IMMEDIATE_PAYMENT_REQUIRED"
+        }
       }
     });
     

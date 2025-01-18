@@ -22,7 +22,6 @@ const TOKEN_OPTIONS = [
 function PayPalButtonWrapper({ createOrder, onApprove, onError, onCancel, disabled, selectedTokens }: any) {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
   
-  // Simplified loading check
   if (isPending) {
     return <PayPalLoader />;
   }
@@ -38,15 +37,17 @@ function PayPalButtonWrapper({ createOrder, onApprove, onError, onCancel, disabl
   return (
     <div className="relative">
       <PayPalButtons
-        createOrder={(data, actions) => {
-          return createOrder().then((orderId: string) => {
-            return orderId;
-          });
-        }}
-        onApprove={(data, actions) => {
-          return actions.order!.capture().then(() => {
-            onApprove(data);
-          });
+        createOrder={createOrder}
+        onApprove={async (data, actions) => {
+          if (actions.order) {
+            try {
+              await actions.order.capture();
+              onApprove(data);
+            } catch (err) {
+              console.error('PayPal capture error:', err);
+              onError(err);
+            }
+          }
         }}
         onError={onError}
         onCancel={onCancel}
@@ -113,12 +114,7 @@ export default function PayPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       
-      // Update PayPal script with nonce
-      const scriptElement = document.querySelector('[data-namespace="paypal_sdk"]');
-      if (scriptElement) {
-        scriptElement.setAttribute('nonce', data.nonce);
-      }
-      
+      // No need to handle nonce here anymore
       return data.id;
     } catch (error) {
       toast({variant:'destructive', title: "Something went wrong"});
@@ -188,7 +184,8 @@ export default function PayPage() {
     intent: "capture",
     "disable-funding": "card,credit",
     "enable-funding": "paypal",
-    components: "buttons"
+    components: "buttons",
+    commit: true // Add this to enable immediate payment
   };
 
   // Debounced selection handler
