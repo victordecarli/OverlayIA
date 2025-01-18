@@ -88,7 +88,6 @@ export async function POST(req: Request) {
         }]
       }],
       application_context: {
-        shipping_preference: "NO_SHIPPING",
         user_action: "PAY_NOW",
         return_url: `${baseUrl}/pay`,
         cancel_url: `${baseUrl}/pay`,
