@@ -41,7 +41,6 @@ export async function getFreshUserProfile(userId: string): Promise<UserProfile |
       `)
       .eq('id', userId)
       .single();
-    console.log(error)
     if (error) throw error;
     return data;
   } catch (error) {

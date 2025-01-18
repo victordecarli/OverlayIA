@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { AuthDialog } from './AuthDialog';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { TOKEN_OPTIONS } from './TokenPurchaseDialog';
+import { TokenOption, INTERNATIONAL_TOKEN_OPTIONS, INDIAN_TOKEN_OPTIONS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 const features = {
@@ -31,7 +31,8 @@ export function Pricing() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
-  const [selectedOption, setSelectedOption] = useState(TOKEN_OPTIONS[3]); // Default to $7 plan (50 tokens)
+  const [selectedOption, setSelectedOption] = useState<TokenOption>(INTERNATIONAL_TOKEN_OPTIONS[3]); // Default to $7 plan (50 tokens)
+  const [region, setRegion] = useState<'international' | 'india'>('international');
 
   const handleBuyTokensClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,11 +40,17 @@ export function Pricing() {
       setShowAuthDialog(true);
       return;
     }
-    router.push(`/pay?tokens=${selectedOption.tokens}`);
+    router.push(`/pay?tokens=${selectedOption.tokens}&region=${region}`);
   };
 
   const handleStartCreating = () => {
     router.push('/custom-editor');
+  };
+
+  const tokenOptions = region === 'international' ? INTERNATIONAL_TOKEN_OPTIONS : INDIAN_TOKEN_OPTIONS;
+
+  const handleTokenSelection = (option: TokenOption) => {
+    setSelectedOption(option);
   };
 
   return (
@@ -56,6 +63,30 @@ export function Pricing() {
             <p className="text-gray-400">Choose the plan that works best for you</p>
           </div>
           
+          {/* Region Selection */}
+          <div className="flex justify-center gap-4 mb-8">
+            <button
+              onClick={() => setRegion('international')}
+              className={`px-4 py-2 rounded-lg ${
+                region === 'international' 
+                  ? 'bg-purple-600 text-white' 
+                  : 'bg-gray-700 text-gray-300'
+              }`}
+            >
+              International
+            </button>
+            <button
+              onClick={() => setRegion('india')}
+              className={`px-4 py-2 rounded-lg ${
+                region === 'india' 
+                  ? 'bg-purple-600 text-white' 
+                  : 'bg-gray-700 text-gray-300'
+              }`}
+            >
+              India
+            </button>
+          </div>
+
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
             {/* Free Plan */}
             <div className="bg-[#141414] border border-white/10 rounded-2xl p-8">
@@ -106,10 +137,10 @@ export function Pricing() {
               
               {/* Token Cards - More Compact Layout */}
               <div className="max-w-sm mx-auto space-y-3">
-                {TOKEN_OPTIONS.map((option) => (
+                {tokenOptions.map((option) => (
                   <div 
                     key={option.tokens} 
-                    onClick={() => setSelectedOption(option)}
+                    onClick={() => handleTokenSelection(option)}
                     className={cn(
                       "p-3 bg-zinc-900/50 rounded-lg border cursor-pointer transition-all",
                       selectedOption.tokens === option.tokens 
@@ -122,7 +153,7 @@ export function Pricing() {
                       <div>
                         <h4 className="text-white font-medium">{option.tokens} Tokens</h4>
                         <p className="text-xs text-gray-400">
-                          {option.tokens} Images • ${option.perToken.toFixed(2)}/token
+                          {option.tokens} Images • {region === 'india' ? '₹' : '$'}{option.perToken.toFixed(2)}/token
                         </p>
                         {option.savings > 0 && (
                           <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full">
@@ -131,7 +162,7 @@ export function Pricing() {
                         )}
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-purple-400">${option.price}</div>
+                        <div className="text-lg font-bold text-purple-400">{region === 'india' ? option.priceINR : `$${option.price}`}</div>
                       </div>
                     </div>
                   </div>

@@ -10,7 +10,9 @@ import Link from 'next/link';
 import { PaymentStatusDialog } from '@/components/PaymentStatusDialog';
 import { useToast } from "@/hooks/use-toast"
 import { debounce } from 'lodash'; // Add this import
-
+import { TokenOption, INTERNATIONAL_TOKEN_OPTIONS, INDIAN_TOKEN_OPTIONS } from '@/lib/constants';
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 const TOKEN_OPTIONS = [
   { tokens: 5, price: 1, savings: 0, perToken: 0.20 },
@@ -69,26 +71,42 @@ function PayPalLoader() {
 }
 
 export default function PayPage() {
-  const [selectedTokens, setSelectedTokens] = useState(TOKEN_OPTIONS[2]);
+  const [selectedTokens, setSelectedTokens] = useState<TokenOption>(INTERNATIONAL_TOKEN_OPTIONS[3]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'error' | null>(null);
   const [sdkReady, setSdkReady] = useState(false);
   const [isChangingOption, setIsChangingOption] = useState(false);
+  const [region, setRegion] = useState<'international' | 'india'>('international');
+  const [payuForm, setPayuForm] = useState({
+    firstName: '',
+    phone: '',
+  });
   const router = useRouter();
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
+  // Get appropriate token options based on region
+  const tokenOptions = region === 'international' ? INTERNATIONAL_TOKEN_OPTIONS : INDIAN_TOKEN_OPTIONS;
+
   useEffect(() => {
     const tokenParam = searchParams.get('tokens');
+    const regionParam = searchParams.get('region') as 'international' | 'india';
+    
+    if (regionParam) {
+      setRegion(regionParam);
+    }
+
+    // Update selected tokens based on region
     if (tokenParam) {
-      const option = TOKEN_OPTIONS.find(opt => opt.tokens === Number(tokenParam));
+      const options = regionParam === 'india' ? INDIAN_TOKEN_OPTIONS : INTERNATIONAL_TOKEN_OPTIONS;
+      const option = options.find(opt => opt.tokens === Number(tokenParam));
       if (option) {
         setSelectedTokens(option);
       }
     } else {
-      // Default to 50 tokens if no selection
-      setSelectedTokens(TOKEN_OPTIONS[3]);
+      // Set default based on region
+      setSelectedTokens(regionParam === 'india' ? INDIAN_TOKEN_OPTIONS[1] : INTERNATIONAL_TOKEN_OPTIONS[3]);
     }
   }, [searchParams]);
 
@@ -178,14 +196,65 @@ export default function PayPage() {
     }
   }
 
+  const handlePayUSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast({ variant: 'destructive', title: "Please login to continue" });
+      return;
+    }
+    
+    setIsProcessing(true);
+
+    try {
+      const response = await fetch('/api/payments/create-payu-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...payuForm,
+          amount: selectedTokens.price,
+          tokenAmount: selectedTokens.tokens,
+          userID: user.id,
+        })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create payment');
+      }
+
+      // Create and submit form
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = data.paymentUrl;
+
+      // Add all required PayU fields
+      Object.entries(data.formData).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value as string;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (error) {
+      console.error('PayU Error:', error);
+      toast({ 
+        variant: 'destructive', 
+        title: "Payment initialization failed",
+        description: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
+      setIsProcessing(false);
+    }
+  };
+
   const initialOptions = {
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
     "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
     currency: "USD",
     intent: "capture",
-    "disable-funding": "card,credit",
-    "enable-funding": "paypal",
-    components: "buttons",
-    commit: true // Add this to enable immediate payment
   };
 
   // Debounced selection handler
@@ -198,7 +267,7 @@ export default function PayPage() {
   );
 
   // Update token selection handler
-  const handleTokenSelection = (option: typeof TOKEN_OPTIONS[0]) => {
+  const handleTokenSelection = (option: TokenOption) => {
     setIsChangingOption(true);
     debouncedSetSelection(option);
   };
@@ -242,11 +311,45 @@ export default function PayPage() {
         <div className="container max-w-6xl mx-auto py-12 px-4">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Purchase Tokens</h1>
           
+          {/* Region Toggle */}
+          <div className="mb-8">
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => {
+                  setRegion('international');
+                  setSelectedTokens(INTERNATIONAL_TOKEN_OPTIONS[3]);
+                }}
+                className={cn(
+                  "px-6 py-2 rounded-lg font-medium transition-all",
+                  region === 'international' 
+                    ? "bg-purple-600 text-white" 
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                )}
+              >
+                International (USD)
+              </button>
+              <button
+                onClick={() => {
+                  setRegion('india');
+                  setSelectedTokens(INDIAN_TOKEN_OPTIONS[1]);
+                }}
+                className={cn(
+                  "px-6 py-2 rounded-lg font-medium transition-all",
+                  region === 'india' 
+                    ? "bg-purple-600 text-white" 
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                )}
+              >
+                India (INR)
+              </button>
+            </div>
+          </div>
+          
           <div className="grid md:grid-cols-2 gap-8">
             {/* Token Options */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Select Package</h2>
-              {TOKEN_OPTIONS.map((option) => (
+              {tokenOptions.map((option) => (
                 <button
                   key={option.tokens}
                   onClick={() => handleTokenSelection(option)}
@@ -265,11 +368,11 @@ export default function PayPage() {
                         {option.tokens} Tokens
                       </div>
                       <div className="text-sm text-gray-500">
-                        {option.tokens} Images • ${option.perToken.toFixed(2)}/token
+                        {option.tokens} Images • {region === 'india' ? '₹' : '$'}{option.perToken.toFixed(2)}/token
                       </div>
                     </div>
                     <span className="font-semibold text-purple-600 text-xl">
-                      ${option.price}
+                      {region === 'india' ? option.priceINR : `$${option.price}`}
                     </span>
                   </div>
                   {option.savings > 0 && (
@@ -284,53 +387,101 @@ export default function PayPage() {
             {/* Payment Methods */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Method</h2>
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm relative">
-                {!user ? (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm rounded-lg z-10">
-                    <div className="text-center">
-                      <LogIn className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-600 font-medium">Please log in to continue</p>
-                    </div>
-                  </div>
-                ) : !sdkReady || isChangingOption ? (
-                  <PayPalLoader />
-                ) : (
-                  <PayPalScriptProvider options={initialOptions}>
-                    <ErrorBoundary fallback={
-                      <div className="text-red-500 text-center p-4">
-                        Something went wrong with PayPal integration. Please refresh the page or try again later.
+              {region === 'international' ? (
+                // Existing PayPal integration
+                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm relative">
+                  {!user ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm rounded-lg z-10">
+                      <div className="text-center">
+                        <LogIn className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-gray-600 font-medium">Please log in to continue</p>
                       </div>
-                    }>
-                      <div className="relative">
-                        <div className="mb-6 text-center">
-                          <div className="text-xl font-semibold text-gray-900">
-                            Total Payable: ${selectedTokens.price}
-                          </div>
+                    </div>
+                  ) : !sdkReady || isChangingOption ? (
+                    <PayPalLoader />
+                  ) : (
+                    <PayPalScriptProvider options={initialOptions}>
+                      <ErrorBoundary fallback={
+                        <div className="text-red-500 text-center p-4">
+                          Something went wrong with PayPal integration. Please refresh the page or try again later.
                         </div>
-                        <PayPalButtonWrapper
-                          createOrder={handleCreateOrder}
-                          onApprove={(data: any) => captureOrder(data)}
-                          onError={handleError}
-                          onCancel={handleCancel}
-                          disabled={!user || isProcessing}
-                          selectedTokens={selectedTokens}
-                        />
-                        <p className="text-xs text-gray-500 mt-3 text-center">
-                          * Additional PayPal charges may apply based on your currency or location
-                        </p>
-                        {isProcessing && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded z-50">
-                            <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-                              <span className="text-sm text-gray-600">Processing payment...</span>
+                      }>
+                        <div className="relative">
+                          <div className="mb-6 text-center">
+                            <div className="text-xl font-semibold text-gray-900">
+                              Total Payable: ${selectedTokens.price}
                             </div>
                           </div>
-                        )}
+                          <PayPalButtonWrapper
+                            createOrder={handleCreateOrder}
+                            onApprove={(data: any) => captureOrder(data)}
+                            onError={handleError}
+                            onCancel={handleCancel}
+                            disabled={!user || isProcessing}
+                            selectedTokens={selectedTokens}
+                          />
+                          <p className="text-xs text-gray-500 mt-3 text-center">
+                            * Additional PayPal charges may apply based on your currency or location
+                          </p>
+                          {isProcessing && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded z-50">
+                              <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                                <span className="text-sm text-gray-600">Processing payment...</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </ErrorBoundary>
+                    </PayPalScriptProvider>
+                  )}
+                </div>
+              ) : (
+                // PayU Form for Indian Users
+                <div className="bg-white rounded-lg p-6 border border-gray-200">
+                  <div className="mb-6 text-center">
+                    <div className="text-xl font-semibold text-gray-900">
+                      Total Payable: {selectedTokens.priceINR}
+                    </div>
+                  </div>
+                  <form onSubmit={handlePayUSubmit} className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName" className="text-gray-700">First Name</Label>
+                        <Input
+                          id="firstName"
+                          type="text"
+                          required
+                          className="bg-white text-gray-900"
+                          value={payuForm.firstName}
+                          onChange={(e) => setPayuForm(prev => ({...prev, firstName: e.target.value}))}
+                          placeholder="John"
+                        />
                       </div>
-                    </ErrorBoundary>
-                  </PayPalScriptProvider>
-                )}
-              </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-gray-700">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        required
+                        pattern="[0-9]{10}"
+                        placeholder="10-digit mobile number"
+                        className="bg-white text-gray-900"
+                        value={payuForm.phone}
+                        onChange={(e) => setPayuForm(prev => ({...prev, phone: e.target.value}))}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isProcessing || !user}
+                      className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 font-medium"
+                    >
+                      {isProcessing ? 'Processing...' : `Pay ${selectedTokens.priceINR}`}
+                    </button>
+                  </form>
+                </div>
+              )}
             </div>
           </div>
         </div>
