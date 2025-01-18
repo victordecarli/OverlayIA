@@ -2,17 +2,21 @@
 
 import { useEditor } from '@/hooks/useEditor';
 import { useEffect } from 'react';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { SideNavigation } from '@/components/SideNavigation';
-import { Canvas } from '@/components/Canvas';
 import { EditorLayout } from '@/components/EditorLayout';
+import { SideNavigation } from '@/components/SideNavigation';
 
 export default function EditorPage() {
   const { resetEditor } = useEditor();
 
   useEffect(() => {
-    resetEditor();
-  }, []);
+    // Immediately reset the editor when component mounts
+    resetEditor(true);
+
+    // Also reset when component unmounts
+    return () => {
+      resetEditor(true);
+    };
+  }, [resetEditor]);
 
   return <EditorLayout SideNavComponent={SideNavigation} />;
 }

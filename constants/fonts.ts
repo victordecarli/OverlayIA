@@ -52,7 +52,6 @@ export const FONT_OPTIONS = [
   { name: 'Unbounded', value: 'Unbounded' },
   { name: 'Urbanist', value: 'Urbanist' },
   { name: 'Work Sans', value: 'Work Sans' },
-  { name: 'Yantramanav', value: 'Yantramanav' }
 ].sort((a, b) => a.name.localeCompare(b.name));
 
 export const FONT_WEIGHTS = [

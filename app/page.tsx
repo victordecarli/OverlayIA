@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
@@ -8,11 +9,22 @@ import { Features } from '@/components/Features';
 import { UseCases } from '@/components/UseCases';
 import { ProductHuntBadges } from '@/components/ProductHuntBadges';
 import { FeatureShowcase } from '@/components/FeatureShowcase';
+import { Pricing } from '@/components/Pricing';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
-  
+  const searchParams = useSearchParams();
+  const section = searchParams.get('section');
+
+  useEffect(() => {
+    if (section === 'pricing') {
+      const pricingSection = document.getElementById('pricing');
+      if (pricingSection) {
+        pricingSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [section]);
 
   return (
     <div className="min-h-screen relative flex flex-col" role="region" aria-label="Home page content">
@@ -36,7 +48,7 @@ export default function Home() {
                 <span className="text-purple-400 md:mt-2 block">Like Never Before</span>
               </h1>
               <p className="text-md md:text-lg text-gray-300 mb-8 max-w-xl mx-auto">
-              The all-in-one tool to seamlessly add text and shapes behind images, remove backgrounds, clone objects, and change backgrounds.
+              The all-in-one tool to clone images, place logos, text, shapes, or other images behind your photo, remove backgrounds, and change backgrounds.
               </p>
               <Link 
                 href="/custom-editor"
@@ -59,6 +71,9 @@ export default function Home() {
           {/* Features, Use Cases, and Product Hunt Badges */}
           <Features />
           <UseCases />
+          <section id="pricing">
+            <Pricing />
+          </section>
           <ProductHuntBadges />
           <Footer />
         </main>

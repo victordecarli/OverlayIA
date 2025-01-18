@@ -77,6 +77,8 @@ export function TextEditor() {
         >
           {/* Text Input */}
           <Input
+            id={`text-input-${textSet.id}`}
+            name={`text-input-${textSet.id}`}
             value={textSet.text}
             onChange={(e) => updateTextSet(textSet.id, { text: e.target.value })}
             className={cn(
@@ -92,89 +94,105 @@ export function TextEditor() {
           {/* Font Controls */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Font Family</Label>
-              <Select
-                value={textSet.fontFamily}
-                onValueChange={(value) => updateTextSet(textSet.id, { fontFamily: value })}
-              >
-                <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
-                  <SelectValue placeholder="Select font" />
-                </SelectTrigger>
-                <SelectContent 
-                  className="max-h-[400px] overflow-y-auto bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white w-[280px]"
-                >
-                  <div className="pt-2">
-                    {FONT_OPTIONS
-                      .filter(font => 
-                        font.name.toLowerCase().includes(fontSearch.toLowerCase())
-                      )
-                      .map((font) => (
-                        <SelectItem 
-                          key={font.value} 
-                          value={font.value}
-                          className="focus:bg-gray-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white h-10 text-gray-900 dark:text-white data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-white/10"
-                          style={{ fontFamily: font.value }}
-                        >
-                          {font.name}
-                        </SelectItem>
-                      ))}
-                  </div>
-                </SelectContent>
-              </Select>
+              <Label asChild>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  <Select
+                    value={textSet.fontFamily}
+                    onValueChange={(value) => updateTextSet(textSet.id, { fontFamily: value })}
+                  >
+                    <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
+                      <SelectValue placeholder="Select font" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="max-h-[400px] overflow-y-auto bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white w-[280px]"
+                    >
+                      <div className="pt-2">
+                        {FONT_OPTIONS
+                          .filter(font => 
+                            font.name.toLowerCase().includes(fontSearch.toLowerCase())
+                          )
+                          .map((font) => (
+                            <SelectItem 
+                              key={font.value} 
+                              value={font.value}
+                              className="focus:bg-gray-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white h-10 text-gray-900 dark:text-white data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-white/10"
+                              style={{ fontFamily: font.value }}
+                            >
+                              {font.name}
+                            </SelectItem>
+                          ))}
+                      </div>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </Label>
             </div>
 
             <div>
-              <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Font Weight</Label>
-              <Select
-                value={textSet.fontWeight}
-                onValueChange={(value) => updateTextSet(textSet.id, { fontWeight: value })}
-              >
-                <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
-                  <SelectValue placeholder="Select weight" />
-                </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
-                  {FONT_WEIGHTS.map((weight) => (
-                    <SelectItem 
-                      key={weight.value} 
-                      value={weight.value}
-                      className="focus:bg-gray-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-white/10"
-                    >
-                      {weight.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label asChild>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  <Select
+                    value={textSet.fontWeight}
+                    onValueChange={(value) => updateTextSet(textSet.id, { fontWeight: value })}
+                  >
+                    <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
+                      <SelectValue placeholder="Select weight" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
+                      {FONT_WEIGHTS.map((weight) => (
+                        <SelectItem 
+                          key={weight.value} 
+                          value={weight.value}
+                          className="focus:bg-gray-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-white/10"
+                        >
+                          {weight.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </Label>
             </div>
           </div>
 
           {/* Text Size */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <Label className="text-sm text-gray-600 dark:text-gray-400">Text Size</Label>
-            </div>
+          <div className="space-y-2">
+            <Label asChild>
+              <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                Text Size
+                <span>{textSet.fontSize}px</span>
+              </div>
+            </Label>
             <Slider
               min={12}
               max={2000}
               value={[textSet.fontSize]}
               onValueChange={([value]) => updateTextSet(textSet.id, { fontSize: value })}
+              className="mt-2"
             />
           </div>
 
           {/* Color */}
           <div>
-            <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Color</Label>
-            <ColorInput
-              value={textSet.color} 
-              onChange={(value) => updateTextSet(textSet.id, { color: value })} // or updateShapeSet
-            />
+            <Label asChild>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                <ColorInput
+                  id={`text-color-${textSet.id}`}
+                  value={textSet.color} 
+                  onChange={(value) => updateTextSet(textSet.id, { color: value })}
+                />
+              </div>
+            </Label>
           </div>
 
           {/* Opacity */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <Label className="text-sm text-gray-600 dark:text-gray-400">Opacity</Label>
-              <span className="text-sm text-gray-600 dark:text-gray-400">{Math.round(textSet.opacity * 100)}%</span>
-            </div>
+          <div className="space-y-2">
+            <Label asChild>
+              <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                Opacity
+                <span>{Math.round(textSet.opacity * 100)}%</span>
+              </div>
+            </Label>
             <Slider
               min={0}
               max={1}
@@ -186,11 +204,13 @@ export function TextEditor() {
 
           {/* Position Controls */}
           <div className="space-y-4">
-            <div className="space-y-1">
-              <div className="flex justify-between items-center">
-                <Label className="text-sm text-gray-600 dark:text-gray-400">Horizontal Position</Label>
-                <span className="text-sm text-gray-600 dark:text-gray-400">{textSet.position.horizontal}%</span>
-              </div>
+            <div className="space-y-2">
+              <Label asChild>
+                <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                  Horizontal Position
+                  <span>{textSet.position.horizontal}%</span>
+                </div>
+              </Label>
               <Slider
                 min={0}
                 max={100}
@@ -199,11 +219,13 @@ export function TextEditor() {
               />
             </div>
 
-            <div className="space-y-1">
-              <div className="flex justify-between items-center">
-                <Label className="text-sm text-gray-600 dark:text-gray-400">Vertical Position</Label>
-                <span className="text-sm text-gray-600 dark:text-gray-400">{textSet.position.vertical}%</span>
-              </div>
+            <div className="space-y-2">
+              <Label asChild>
+                <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                  Vertical Position
+                  <span>{textSet.position.vertical}%</span>
+                </div>
+              </Label>
               <Slider
                 min={0}
                 max={100}
@@ -214,11 +236,13 @@ export function TextEditor() {
           </div>
 
           {/* Rotation */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <Label className="text-sm text-gray-600 dark:text-gray-400">Rotation</Label>
-              <span className="text-sm text-gray-600 dark:text-gray-400">{textSet.rotation}°</span>
-            </div>
+          <div className="space-y-2">
+            <Label asChild>
+              <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                Rotation
+                <span>{textSet.rotation}°</span>
+              </div>
+            </Label>
             <Slider
               min={-180}
               max={180}
@@ -229,42 +253,53 @@ export function TextEditor() {
 
           {/* Glow Effect Controls */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label className="text-sm text-gray-600 dark:text-gray-400">Enable Glow</Label>
-              <Switch
-                checked={textSet.glow?.enabled ?? false}
-                onCheckedChange={(checked) => {
-                  const newGlow: GlowEffect = {
-                    enabled: checked,
-                    color: textSet.glow?.color || '#ffffff',
-                    intensity: textSet.glow?.intensity || 20
-                  };
-                  updateTextSet(textSet.id, { glow: newGlow });
-                }}
-              />
+            <div className="flex items-center justify-between gap-4">
+              <Label asChild>
+                <div className="flex items-center justify-between w-full text-sm text-gray-600 dark:text-gray-400">
+                  Enable Glow
+                  <Switch
+                    checked={textSet.glow?.enabled ?? false}
+                    onCheckedChange={(checked) => {
+                      const newGlow: GlowEffect = {
+                        enabled: checked,
+                        color: textSet.glow?.color || '#ffffff',
+                        intensity: textSet.glow?.intensity || 20
+                      };
+                      updateTextSet(textSet.id, { glow: newGlow });
+                    }}
+                  />
+                </div>
+              </Label>
             </div>
 
             {textSet.glow?.enabled && (
               <>
+                {/* Glow Color */}
                 <div>
-                  <Label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">Glow Color</Label>
-              <ColorInput
-                value={textSet.glow.color} 
-                onChange={(value) => {
-                  const newGlow: GlowEffect = {
-                    ...textSet.glow!, 
-                    color: value
-                  };
-                  updateTextSet(textSet.id, { glow: newGlow }); // or updateShapeSet
-                }}
-                />
+                  <Label asChild>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                      <ColorInput
+                        id={`text-glow-${textSet.id}`}
+                        value={textSet.glow.color} 
+                        onChange={(value) => {
+                          const newGlow: GlowEffect = {
+                            ...textSet.glow!, 
+                            color: value
+                          };
+                          updateTextSet(textSet.id, { glow: newGlow });
+                        }}
+                      />
+                    </div>
+                  </Label>
                 </div>
 
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-sm text-gray-600 dark:text-gray-400">Glow Intensity</Label>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{textSet.glow.intensity}</span>
-                  </div>
+                <div className='space-y-2'>
+                  <Label asChild>
+                    <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                      Glow Intensity
+                      <span>{textSet.glow.intensity}</span>
+                    </div>
+                  </Label>
                   <Slider
                     min={0}
                     max={50}

@@ -4,7 +4,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
-
 export const metadata = {
   title: 'Transform Your Images with Cloning, Text Behind, and Background Customization - UnderlayX',
   description: 'The ultimate tool to add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Perfect for creators and designers.',

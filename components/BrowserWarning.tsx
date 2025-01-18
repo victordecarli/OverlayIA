@@ -1,6 +1,6 @@
 'use client';
 
-import { openInBrowser } from '@/utils/browserDetect';
+import { openInBrowser } from '@/lib/browserDetect';
 
 export function BrowserWarning() {
   return (

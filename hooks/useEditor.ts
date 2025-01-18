@@ -59,6 +59,15 @@ interface ClonedForeground {
   rotation: number;
 }
 
+interface BackgroundImage {
+  id: number;
+  url: string;
+  position: { vertical: number; horizontal: number };
+  scale: number;
+  opacity: number;
+  rotation: number;
+}
+
 interface EditorState {
   image: {
     original: string | null;
@@ -83,6 +92,9 @@ interface EditorState {
   };
   clonedForegrounds: ClonedForeground[];
   isBackgroundRemoved: boolean;  // Add this new state
+  backgroundImages: BackgroundImage[];
+  backgroundColor: string | null;
+  foregroundSize: number;  // Add this line
 }
 
 interface EditorActions {
@@ -110,9 +122,30 @@ interface EditorActions {
   updateClonedForegroundTransform: (id: number, updates: Partial<{ position: { x: number; y: number }; size: number; rotation: number }>) => void;
   setIsProcessing: (value: boolean) => void;
   setIsConverting: (value: boolean) => void;
+  addBackgroundImage: (file: File) => Promise<void>;
+  removeBackgroundImage: (id: number) => void;
+  updateBackgroundImage: (id: number, updates: Partial<BackgroundImage>) => void;
+  setBackgroundColor: (color: string | null) => void;
+  updateForegroundSize: (size: number) => void;  // Add this line
 }
 
 // Add helper functions outside of the store
+const createCheckerboardPattern = (): HTMLCanvasElement => {
+  const size = 16;
+  const canvas = document.createElement('canvas');
+  canvas.width = size * 2;
+  canvas.height = size * 2;
+  const ctx = canvas.getContext('2d')!;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size * 2, size * 2);
+  ctx.fillStyle = '#e5e5e5';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillRect(size, size, size, size);
+
+  return canvas;
+};
+
 const loadImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -163,6 +196,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   },
   clonedForegrounds: [],
   isBackgroundRemoved: false,  // Initialize the new state
+  backgroundImages: [],
+  backgroundColor: null,
+  foregroundSize: 100,  // Default size is 100%
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -261,7 +297,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     if (state?.isConverting !== undefined) set({ isConverting: state.isConverting });
     if (state?.isProcessing !== undefined) set({ isProcessing: state.isProcessing });
 
-
     try {
       const fileName = file.name.replace(/\.[^/.]+$/, "");
       set({ originalFileName: fileName });
@@ -285,9 +320,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       set({ isProcessing: true });
 
-      // Process foreground
+      // Process foreground with PNG format to preserve transparency
       const processedBlob = await removeBackground(originalUrl);
-      const foregroundUrl = URL.createObjectURL(processedBlob);
+      // Ensure the blob is treated as PNG
+      const transparentBlob = new Blob([processedBlob], { type: 'image/png' });
+      const foregroundUrl = URL.createObjectURL(transparentBlob);
       
       set(state => ({
         image: {
@@ -312,41 +349,86 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   },
 
   downloadImage: async () => {
-    set({ 
-      isDownloading: true,
-      processingMessage: 'Preparing your masterpiece...'
-    });
-
-    const { 
-      image, 
-      textSets, 
-      shapeSets, 
-      imageEnhancements, 
-      hasTransparentBackground,
-      hasChangedBackground,
-      foregroundPosition,
-      originalFileName 
-    } = get();
-
-    if (!image.original || (!hasTransparentBackground && !image.background) || (hasTransparentBackground && !image.foreground)) return;
-
     try {
+      set({ 
+        isDownloading: true,
+        processingMessage: 'Preparing your masterpiece...'
+      });
+
+      const { 
+        image, 
+        backgroundColor,
+        textSets, 
+        shapeSets, 
+        imageEnhancements, 
+        hasTransparentBackground,
+        hasChangedBackground,
+        foregroundPosition,
+        originalFileName,
+        backgroundImages,  // Add this line
+        foregroundSize
+      } = get();
+
+      // Modified validation check to allow downloads with backgroundColor
+      if (!image.foreground || (!image.background && !backgroundColor && !hasTransparentBackground)) {
+        throw new Error('No image to download');
+      }
+
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Failed to get canvas context');
 
-      // 1. Draw background first
-      const backgroundImage = await loadImage(image.background || image.original);
-      canvas.width = backgroundImage.width;
-      canvas.height = backgroundImage.height;
+      // Set canvas dimensions from foreground image
+      const fgImg = await loadImage(image.foreground);
+      canvas.width = fgImg.width;
+      canvas.height = fgImg.height;
 
+      // Clear canvas with transparency
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Only draw background if it's not meant to be transparent
       if (!hasTransparentBackground) {
-        ctx.filter = filterString(imageEnhancements);
-        ctx.drawImage(backgroundImage, 0, 0);
-        ctx.filter = 'none';
+        if (backgroundColor) {
+          // Fill with background color
+          ctx.fillStyle = backgroundColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        } else if (image.background) {
+          // Draw background image with filters
+          const bgImg = await loadImage(image.background);
+          ctx.filter = filterString(imageEnhancements);
+          ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+          ctx.filter = 'none';
+        }
       }
 
-      // 2. Draw shapes and text
+      // 2. Draw background images
+      for (const bgImage of backgroundImages) {
+        const img = await loadImage(bgImage.url);
+        
+        ctx.save();
+        
+        const x = (canvas.width * bgImage.position.horizontal) / 100;
+        const y = (canvas.height * bgImage.position.vertical) / 100;
+        
+        ctx.translate(x, y);
+        ctx.rotate((bgImage.rotation * Math.PI) / 180);
+        ctx.globalAlpha = bgImage.opacity;
+
+        const baseSize = Math.min(canvas.width, canvas.height);
+        const scale = (baseSize * bgImage.scale) / 100;
+        
+        ctx.drawImage(
+          img,
+          -scale / 2,
+          -scale / 2,
+          scale,
+          scale
+        );
+        
+        ctx.restore();
+      }
+
+      // 3. Draw shapes and text
       // Draw shapes
       shapeSets.forEach(shapeSet => {
         ctx.save();
@@ -418,7 +500,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         ctx.restore();
       });
 
-      // 3. Draw foreground LAST and ONCE
+      // 4. Draw foreground LAST and ONCE
       if (image.foreground) {
         const fgImg = await loadImage(image.foreground);
         ctx.filter = 'none';
@@ -429,8 +511,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           canvas.height / fgImg.height
         );
         
-        const newWidth = fgImg.width * scale;
-        const newHeight = fgImg.height * scale;
+        const sizeMultiplier = foregroundSize / 100;
+        const newWidth = fgImg.width * scale * sizeMultiplier;
+        const newHeight = fgImg.height * scale * sizeMultiplier;
         
         const x = (canvas.width - newWidth) / 2;
         const y = (canvas.height - newHeight) / 2;
@@ -484,12 +567,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         }
       }
 
-      // Create blob and download
+      // Create blob with PNG format to preserve transparency
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
           blob => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
-          'image/png',
-          1.0  // Always use highest quality
+          'image/png'  // Always use PNG for transparency support
         );
       });
 
@@ -511,34 +593,59 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       setTimeout(() => set({ processingMessage: '' }), 2000);
 
     } catch (error) {
-      console.error('Error downloading image:', error);
+      console.error('Download error:', error);
       set({ 
-        processingMessage: 'Download failed. Please try again.',
-        isDownloading: false 
+        isDownloading: false,
+        processingMessage: 'Download failed. Please try again.' 
       });
     }
   },
 
-  resetEditor: (clearImage = true) => set((state) => ({
-    textSets: [],
-    shapeSets: [],
-    imageEnhancements: {
-      brightness: 100,
-      contrast: 100,
-      saturation: 100,
-      fade: 0,
-      exposure: 0,
-      highlights: 0,
-      shadows: 0,
-      sharpness: 0,
-    },
-    clonedForegrounds: [], // Clear clones on reset
-    image: clearImage ? {
-      original: null,
-      background: null,
-      foreground: null
-    } : state.image
-  })),
+  resetEditor: (clearImage = true) => set((state) => {
+    // Clean up existing object URLs to prevent memory leaks
+    if (clearImage) {
+      if (state.image.original) URL.revokeObjectURL(state.image.original);
+      if (state.image.background) URL.revokeObjectURL(state.image.background);
+      if (state.image.foreground) URL.revokeObjectURL(state.image.foreground);
+      
+      // Clean up background images URLs
+      state.backgroundImages.forEach(img => {
+        URL.revokeObjectURL(img.url);
+      });
+    }
+
+    return {
+      textSets: [],
+      shapeSets: [],
+      imageEnhancements: {
+        brightness: 100,
+        contrast: 100,
+        saturation: 100,
+        fade: 0,
+        exposure: 0,
+        highlights: 0,
+        shadows: 0,
+        sharpness: 0,
+      },
+      clonedForegrounds: [],
+      hasTransparentBackground: false,
+      hasChangedBackground: false,
+      isBackgroundRemoved: false,
+      foregroundPosition: { x: 0, y: 0 },
+      processingMessage: '',
+      isProcessing: false,
+      isConverting: false,
+      isDownloading: false,
+      backgroundImages: [], // Add this line to clear background images
+      image: clearImage ? {
+        original: null,
+        background: null,
+        foreground: null
+      } : state.image,
+      loadedFonts: new Set()
+    };
+  }),
+
   setExportQuality: (quality) => set({ exportQuality: quality }),
   updateImageEnhancements: (enhancements) => set({ imageEnhancements: enhancements }),
   removeBackground: async () => {
@@ -562,6 +669,12 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     const { image } = get();
     if (!image.original) return;
 
+    // Clean up background image URLs before resetting
+    const state = get();
+    state.backgroundImages.forEach(img => {
+      URL.revokeObjectURL(img.url);
+    });
+
     set(state => ({
       image: {
         ...state.image,
@@ -570,7 +683,10 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       hasTransparentBackground: false,
       hasChangedBackground: false,
       isBackgroundRemoved: false,
-      foregroundPosition: { x: 0, y: 0 }
+      foregroundPosition: { x: 0, y: 0 },
+      backgroundImages: [],
+      backgroundColor: null,  // Reset background color
+      foregroundSize: 100
     }));
   },
 
@@ -647,4 +763,50 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   })),
   setIsProcessing: (value: boolean) => set({ isProcessing: value }),
   setIsConverting: (value: boolean) => set({ isConverting: value }),
+  addBackgroundImage: async (file: File) => {
+    const { backgroundImages } = get();
+    if (backgroundImages.length >= 2) {
+      throw new Error('Maximum of 2 background images allowed');
+    }
+
+    const url = URL.createObjectURL(file);
+    set((state) => ({
+      backgroundImages: [
+        ...state.backgroundImages,
+        {
+          id: Date.now(),
+          url,
+          position: { vertical: 50, horizontal: 50 },
+          scale: 50,
+          opacity: 1,
+          rotation: 0
+        }
+      ]
+    }));
+  },
+
+  removeBackgroundImage: (id) => set((state) => ({
+    backgroundImages: state.backgroundImages.filter(img => img.id !== id)
+  })),
+
+  updateBackgroundImage: (id, updates) => set((state) => ({
+    backgroundImages: state.backgroundImages.map(img =>
+      img.id === id ? { ...img, ...updates } : img
+    )
+  })),
+  setBackgroundColor: (color) => {
+    const { image } = get();
+    
+    set(state => ({
+      backgroundColor: color,
+      // Reset background image if color is selected
+      image: {
+        ...state.image,
+        background: color ? null : image.original
+      },
+      hasChangedBackground: true
+    }));
+  },
+  
+  updateForegroundSize: (size) => set({ foregroundSize: size }),
 }));

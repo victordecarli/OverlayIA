@@ -8,10 +8,12 @@ interface ColorInputProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  id?: string; // Add optional id prop
 }
 
-export function ColorInput({ value, onChange, className }: ColorInputProps) {
+export function ColorInput({ value, onChange, className, id }: ColorInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const uniqueId = id || `color-${Math.random().toString(36).substr(2, 9)}`;
 
   return (
     <div className="relative flex items-center gap-2">
@@ -29,6 +31,8 @@ export function ColorInput({ value, onChange, className }: ColorInputProps) {
         <input
           ref={inputRef}
           type="color"
+          id={`${uniqueId}-picker`}
+          name={`${uniqueId}-picker`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
@@ -37,6 +41,8 @@ export function ColorInput({ value, onChange, className }: ColorInputProps) {
       </div>
       <Input
         type="text"
+        id={`${uniqueId}-text`}
+        name={`${uniqueId}-text`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={cn(

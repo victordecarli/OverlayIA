@@ -4,13 +4,29 @@ import { useEffect, useRef, useMemo, useCallback } from 'react';
 import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 export function CanvasPreview() {
-  const { image, textSets, shapeSets, imageEnhancements, hasTransparentBackground, foregroundPosition, hasChangedBackground, clonedForegrounds } = useEditor();
+  const { 
+    image, 
+    textSets, 
+    shapeSets, 
+    imageEnhancements, 
+    hasTransparentBackground, 
+    foregroundPosition, 
+    hasChangedBackground, 
+    clonedForegrounds,
+    backgroundImages,  // Add this line
+    backgroundColor,
+    foregroundSize
+  } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
   const fgImageRef = useRef<HTMLImageElement | null>(null);
+  const bgImagesRef = useRef<Map<number, HTMLImageElement>>(new Map()); // Add this line
   const renderRequestRef = useRef<number | undefined>(undefined);
+  const { toast } = useToast();
+
 
   // Memoize the filter string
   const filterString = useMemo(() => `
@@ -19,6 +35,36 @@ export function CanvasPreview() {
     saturate(${imageEnhancements.saturation}%)
     opacity(${100 - imageEnhancements.fade}%)
   `, [imageEnhancements]);
+
+  // Add this new function to handle background image loading
+  const loadBackgroundImage = useCallback((url: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.src = url;
+    });
+  }, []);
+
+  // Add this effect to handle background images loading
+  useEffect(() => {
+    const loadImages = async () => {
+      const newBgImages = new Map();
+      
+      for (const bgImage of backgroundImages) {
+        if (!bgImagesRef.current.has(bgImage.id)) {
+          const img = await loadBackgroundImage(bgImage.url);
+          newBgImages.set(bgImage.id, img);
+        } else {
+          newBgImages.set(bgImage.id, bgImagesRef.current.get(bgImage.id)!);
+        }
+      }
+      
+      bgImagesRef.current = newBgImages;
+      render();
+    };
+
+    loadImages();
+  }, [backgroundImages, loadBackgroundImage]);
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;
@@ -36,21 +82,52 @@ export function CanvasPreview() {
       canvas.width = bgImageRef.current!.width;
       canvas.height = bgImageRef.current!.height;
 
-      // Clear canvas
+      // Clear canvas with transparency
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw background only if not transparent
-      if (!hasTransparentBackground) {
-        ctx.filter = filterString;
-        ctx.drawImage(bgImageRef.current!, 0, 0);
-        ctx.filter = 'none';
-      } else {
-        // Create checkerboard pattern for transparency
+      // First, handle background color if set
+      if (backgroundColor) {
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else if (hasTransparentBackground) {
         const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
         if (pattern) {
           ctx.fillStyle = pattern;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
+      } else if (image.background) {
+        // Draw background image only if no color is set
+        ctx.filter = filterString;
+        ctx.drawImage(bgImageRef.current!, 0, 0);
+        ctx.filter = 'none';
+      }
+
+      // Draw background images
+      for (const bgImage of backgroundImages) {
+        const img = bgImagesRef.current.get(bgImage.id);
+        if (!img) continue;
+        
+        ctx.save();
+        
+        const x = (canvas.width * bgImage.position.horizontal) / 100;
+        const y = (canvas.height * bgImage.position.vertical) / 100;
+        
+        ctx.translate(x, y);
+        ctx.rotate((bgImage.rotation * Math.PI) / 180);
+        ctx.globalAlpha = bgImage.opacity;
+
+        const baseSize = Math.min(canvas.width, canvas.height);
+        const scale = (baseSize * bgImage.scale) / 100;
+        
+        ctx.drawImage(
+          img,
+          -scale / 2,
+          -scale / 2,
+          scale,
+          scale
+        );
+        
+        ctx.restore();
       }
 
       // Draw shapes with consistent scaling
@@ -135,6 +212,7 @@ export function CanvasPreview() {
   
           ctx.fillText(textSet.text, 0, 0);
         } catch (error) {
+          toast({variant:'destructive', title: "Something went wrong. Please try again."});
           console.warn(`Failed to render text: ${textSet.text}`, error);
         } finally {
           ctx.restore();
@@ -151,8 +229,9 @@ export function CanvasPreview() {
           canvas.height / fgImageRef.current.height
         );
         
-        const newWidth = fgImageRef.current.width * scale;
-        const newHeight = fgImageRef.current.height * scale;
+        const sizeMultiplier = foregroundSize / 100;
+        const newWidth = fgImageRef.current.width * scale * sizeMultiplier;
+        const newHeight = fgImageRef.current.height * scale * sizeMultiplier;
         
         const x = (canvas.width - newWidth) / 2;
         const y = (canvas.height - newHeight) / 2;
@@ -204,7 +283,7 @@ export function CanvasPreview() {
         });
       }
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize]);
 
   // Cleanup animation frame on unmount
   useEffect(() => {
@@ -212,6 +291,7 @@ export function CanvasPreview() {
       if (renderRequestRef.current) {
         cancelAnimationFrame(renderRequestRef.current);
       }
+      bgImagesRef.current.clear(); // Clean up loaded images on unmount
     };
   }, []);
 
@@ -236,7 +316,7 @@ export function CanvasPreview() {
         render();
       };
     }
-  }, [image.background, image.foreground, hasTransparentBackground, foregroundPosition]);
+  }, [image.background, image.foreground, hasTransparentBackground, foregroundPosition, foregroundSize]); // Add foregroundSize here
 
   useEffect(() => {
     // Load all fonts used in text sets
@@ -256,7 +336,16 @@ export function CanvasPreview() {
   // Re-render on text, shape, imageEnhancements, and foregroundPosition changes
   useEffect(() => {
     render();
-  }, [textSets, shapeSets, imageEnhancements, foregroundPosition, clonedForegrounds, hasChangedBackground]);
+  }, [
+    textSets, 
+    shapeSets, 
+    imageEnhancements, 
+    foregroundPosition, 
+    clonedForegrounds, 
+    hasChangedBackground, 
+    backgroundColor,
+    foregroundSize  // Add foregroundSize here
+  ]);
 
   return (
     <div className="relative w-full h-full">
