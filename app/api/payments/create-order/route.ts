@@ -4,6 +4,7 @@ import { getPayPalClient } from '@/lib/paypal-client';
 import { getFreshUserProfile } from '@/lib/supabase-utils';
 
 const TOKEN_PRICES = {
+  5: 1,
   10: 2,
   25: 4,
   50: 7,

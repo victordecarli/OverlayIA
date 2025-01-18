@@ -49,7 +49,6 @@ import {
   Unbounded,
   Urbanist,
   Work_Sans,
-  Yantramanav,
   Oswald,
   Lato,
   Open_Sans
@@ -372,10 +371,4 @@ export const urbanist = Urbanist({
   subsets: ['latin'],
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   variable: '--font-urbanist'
-});
-
-export const yantramanav = Yantramanav({
-  subsets: ['latin'],
-  weight: ['100', '300', '400', '500', '700', '900'],
-  variable: '--font-yantramanav'
 });

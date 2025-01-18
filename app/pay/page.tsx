@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,9 +9,11 @@ import { Home, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { PaymentStatusDialog } from '@/components/PaymentStatusDialog';
 import { useToast } from "@/hooks/use-toast"
+import { debounce } from 'lodash'; // Add this import
 
 
 const TOKEN_OPTIONS = [
+  { tokens: 5, price: 1, savings: 0, perToken: 0.20 },
   { tokens: 10, price: 2, savings: 0, perToken: 0.20 },
   { tokens: 25, price: 4, savings: 20, perToken: 0.16 },
   { tokens: 50, price: 7, savings: 30, perToken: 0.14 },
@@ -61,6 +63,7 @@ export default function PayPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'error' | null>(null);
   const [sdkReady, setSdkReady] = useState(false);
+  const [isChangingOption, setIsChangingOption] = useState(false);
   const router = useRouter();
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -73,6 +76,9 @@ export default function PayPage() {
       if (option) {
         setSelectedTokens(option);
       }
+    } else {
+      // Default to 50 tokens if no selection
+      setSelectedTokens(TOKEN_OPTIONS[3]);
     }
   }, [searchParams]);
 
@@ -167,6 +173,28 @@ export default function PayPage() {
     "disable-funding": "card,credit"  // Add this line to disable card and credit options
   };
 
+  // Debounced selection handler
+  const debouncedSetSelection = useCallback(
+    debounce((option) => {
+      setSelectedTokens(option);
+      setIsChangingOption(false);
+    }, 300),
+    []
+  );
+
+  // Update token selection handler
+  const handleTokenSelection = (option: typeof TOKEN_OPTIONS[0]) => {
+    setIsChangingOption(true);
+    debouncedSetSelection(option);
+  };
+
+  // Clean up the debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSetSelection.cancel();
+    };
+  }, [debouncedSetSelection]);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Simple Header */}
@@ -206,9 +234,11 @@ export default function PayPage() {
               {TOKEN_OPTIONS.map((option) => (
                 <button
                   key={option.tokens}
-                  onClick={() => setSelectedTokens(option)}
+                  onClick={() => handleTokenSelection(option)}
+                  disabled={isChangingOption}
                   className={cn(
                     "w-full p-4 rounded-lg border text-left transition-all",
+                    isChangingOption ? "opacity-50 cursor-not-allowed" : "",
                     selectedTokens.tokens === option.tokens
                       ? "border-purple-500 bg-purple-50"
                       : "border-gray-200 hover:border-gray-300 bg-white"
@@ -247,7 +277,7 @@ export default function PayPage() {
                       <p className="text-gray-600 font-medium">Please log in to continue</p>
                     </div>
                   </div>
-                ) : !sdkReady ? (
+                ) : !sdkReady || isChangingOption ? (
                   <PayPalLoader />
                 ) : (
                   <PayPalScriptProvider options={initialOptions}>
@@ -257,6 +287,11 @@ export default function PayPage() {
                       </div>
                     }>
                       <div className="relative">
+                        <div className="mb-6 text-center">
+                          <div className="text-xl font-semibold text-gray-900">
+                            Total Payable: ${selectedTokens.price}
+                          </div>
+                        </div>
                         <PayPalButtonWrapper
                           createOrder={handleCreateOrder}
                           onApprove={(data: any) => captureOrder(data.orderID)}
@@ -265,6 +300,9 @@ export default function PayPage() {
                           disabled={!user || isProcessing}
                           selectedTokens={selectedTokens}
                         />
+                        <p className="text-xs text-gray-500 mt-3 text-center">
+                          * Additional PayPal charges may apply based on your currency or location
+                        </p>
                         {isProcessing && (
                           <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded z-50">
                             <div className="flex items-center gap-2">

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 export const TOKEN_OPTIONS = [
+  { tokens: 5, price: 1, savings: 0, perToken: 0.20 },
   { tokens: 10, price: 2, savings: 0, perToken: 0.20 },
   { tokens: 25, price: 4, savings: 20, perToken: 0.16 },
   { tokens: 50, price: 7, savings: 30, perToken: 0.14 },

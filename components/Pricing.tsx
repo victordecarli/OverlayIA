@@ -6,6 +6,7 @@ import { AuthDialog } from './AuthDialog';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TOKEN_OPTIONS } from './TokenPurchaseDialog';
+import { cn } from '@/lib/utils';
 
 const features = {
   free: [
@@ -30,6 +31,7 @@ export function Pricing() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
+  const [selectedOption, setSelectedOption] = useState(TOKEN_OPTIONS[3]); // Default to $7 plan (50 tokens)
 
   const handleBuyTokensClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,8 +39,7 @@ export function Pricing() {
       setShowAuthDialog(true);
       return;
     }
-    // Use push with absolute path
-    router.push('/pay', { scroll: true });
+    router.push(`/pay?tokens=${selectedOption.tokens}`);
   };
 
   const handleStartCreating = () => {
@@ -106,7 +107,16 @@ export function Pricing() {
               {/* Token Cards - More Compact Layout */}
               <div className="max-w-sm mx-auto space-y-3">
                 {TOKEN_OPTIONS.map((option) => (
-                  <div key={option.tokens} className="p-3 bg-zinc-900/50 rounded-lg border border-white/5">
+                  <div 
+                    key={option.tokens} 
+                    onClick={() => setSelectedOption(option)}
+                    className={cn(
+                      "p-3 bg-zinc-900/50 rounded-lg border cursor-pointer transition-all",
+                      selectedOption.tokens === option.tokens 
+                        ? "border-purple-400 bg-purple-500/10" 
+                        : "border-white/5 hover:border-white/20"
+                    )}
+                  >
                     {/* Use the same structure as before but with TOKEN_OPTIONS data */}
                     <div className="flex justify-between items-center">
                       <div>
