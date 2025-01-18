@@ -59,8 +59,12 @@ export async function POST(req: Request) {
             value: price.toString()
           }
         }]
-      }]
+      }],
+      application_context: {
+        shipping_preference: "NO_SHIPPING" // Disable shipping address
+      }
     });
+    
     const order = await client.execute(request);
     
     return NextResponse.json({
