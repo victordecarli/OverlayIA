@@ -13,22 +13,27 @@ const TOKEN_PRICES = {
 
 type TokenAmount = keyof typeof TOKEN_PRICES;
 
+// Add this helper function at the top
+function getBaseUrl(req: Request) {
+  const host = req.headers.get('host') || 'localhost:3000';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  return `${protocol}://${host}`;
+}
+
 export async function POST(req: Request) {
   const nonce = generateNonce();
+  const baseUrl = getBaseUrl(req);
   
   const headers = new Headers({
     'Content-Security-Policy': [
-      "default-src 'self'",
-      `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://*.paypal.com https://*.paypalobjects.com`,
-      "frame-src 'self' https://*.paypal.com",
-      "connect-src 'self' https://*.paypal.com https://*.paypalobjects.com",
+      "default-src 'self' https://*.paypal.com",
+      "script-src 'self' 'unsafe-inline' https://*.paypal.com https://*.paypalobjects.com",
+      "frame-src 'self' https://*.paypal.com https://www.paypal.com",
+      "connect-src 'self' https://*.paypal.com https://api.paypal.com",
+      "form-action 'self' https://*.paypal.com",
       "style-src 'self' 'unsafe-inline' https://*.paypal.com",
       "img-src 'self' data: https: blob: https://*.paypal.com",
-      "font-src 'self' data: https://*.paypalobjects.com",
-      "base-uri 'self'",
-      "form-action 'self' https://*.paypal.com",
-      "frame-ancestors 'none'",
-      "upgrade-insecure-requests"
+      "frame-ancestors 'none'"
     ].join('; '),
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -83,7 +88,10 @@ export async function POST(req: Request) {
         }]
       }],
       application_context: {
-        shipping_preference: "NO_SHIPPING" // Disable shipping address
+        shipping_preference: "NO_SHIPPING",
+        user_action: "PAY_NOW",
+        return_url: `${baseUrl}/pay?success=true`,
+        cancel_url: `${baseUrl}/pay?success=false`
       }
     });
     
