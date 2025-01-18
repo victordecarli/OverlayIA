@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import paypal from '@paypal/checkout-server-sdk';
 import { getPayPalClient } from '@/lib/paypal-client';
 import { getFreshUserProfile } from '@/lib/supabase-utils';
+import { generateNonce } from '@/lib/nonce';
 
 const TOKEN_PRICES = {
   5: 1,
@@ -13,6 +14,27 @@ const TOKEN_PRICES = {
 type TokenAmount = keyof typeof TOKEN_PRICES;
 
 export async function POST(req: Request) {
+  const nonce = generateNonce();
+  
+  const headers = new Headers({
+    'Content-Security-Policy': [
+      "default-src 'self'",
+      `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://*.paypal.com https://*.paypalobjects.com`,
+      "frame-src 'self' https://*.paypal.com",
+      "connect-src 'self' https://*.paypal.com https://*.paypalobjects.com",
+      "style-src 'self' 'unsafe-inline' https://*.paypal.com",
+      "img-src 'self' data: https: blob: https://*.paypal.com",
+      "font-src 'self' data: https://*.paypalobjects.com",
+      "base-uri 'self'",
+      "form-action 'self' https://*.paypal.com",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests"
+    ].join('; '),
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  });
+
   try {
     const { tokenAmount, userID } = await req.json();
     
@@ -21,14 +43,14 @@ export async function POST(req: Request) {
     if (!userProfile) {
       return NextResponse.json(
         { error: 'User not found' },
-        { status: 404 }
+        { status: 404, headers }
       );
     }
 
     if (!tokenAmount || !TOKEN_PRICES[tokenAmount as TokenAmount]) {
       return NextResponse.json(
         { error: 'Invalid token amount' },
-        { status: 400 }
+        { status: 400, headers }
       );
     }
 
@@ -68,8 +90,9 @@ export async function POST(req: Request) {
     const order = await client.execute(request);
     
     return NextResponse.json({
-      id: order.result.id
-    });
+      id: order.result.id,
+      nonce: nonce
+    }, { headers });
   } catch (error) {
     console.error('Detailed PayPal Error:', {
       error,
@@ -79,7 +102,7 @@ export async function POST(req: Request) {
     
     return NextResponse.json(
       { error: 'Error creating order', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      { status: 500, headers }
     );
   }
 }

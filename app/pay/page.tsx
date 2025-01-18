@@ -103,6 +103,13 @@ export default function PayPage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
+      
+      // Update PayPal script with nonce
+      const scriptElement = document.querySelector('[data-namespace="paypal_sdk"]');
+      if (scriptElement) {
+        scriptElement.setAttribute('nonce', data.nonce);
+      }
+      
       return data.id;
     } catch (error) {
       toast({variant:'destructive', title: "Something went wrong"});
