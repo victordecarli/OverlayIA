@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import paypal from '@paypal/checkout-server-sdk';
 import { getPayPalClient } from '@/lib/paypal-client';
 import { getFreshUserProfile } from '@/lib/supabase-utils';
+import { generateNonce } from '@/lib/nonce';
 
 const TOKEN_PRICES = {
   5: 1,
@@ -12,7 +13,33 @@ const TOKEN_PRICES = {
 
 type TokenAmount = keyof typeof TOKEN_PRICES;
 
+// Add this helper function at the top
+function getBaseUrl(req: Request) {
+  const host = req.headers.get('host') || 'localhost:3000';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  return `${protocol}://${host}`;
+}
+
 export async function POST(req: Request) {
+  const nonce = generateNonce();
+  const baseUrl = getBaseUrl(req);
+  
+  const headers = new Headers({
+    'Content-Security-Policy': [
+      "default-src 'self' https://*.paypal.com",
+      "script-src 'self' 'unsafe-inline' https://*.paypal.com https://*.paypalobjects.com",
+      "frame-src 'self' https://*.paypal.com https://www.paypal.com",
+      "connect-src 'self' https://*.paypal.com https://api.paypal.com",
+      "form-action 'self' https://*.paypal.com",
+      "style-src 'self' 'unsafe-inline' https://*.paypal.com",
+      "img-src 'self' data: https: blob: https://*.paypal.com",
+      "frame-ancestors 'none'"
+    ].join('; '),
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  });
+
   try {
     const { tokenAmount, userID } = await req.json();
     
@@ -21,14 +48,14 @@ export async function POST(req: Request) {
     if (!userProfile) {
       return NextResponse.json(
         { error: 'User not found' },
-        { status: 404 }
+        { status: 404, headers }
       );
     }
 
     if (!tokenAmount || !TOKEN_PRICES[tokenAmount as TokenAmount]) {
       return NextResponse.json(
         { error: 'Invalid token amount' },
-        { status: 400 }
+        { status: 400, headers }
       );
     }
 
@@ -61,15 +88,22 @@ export async function POST(req: Request) {
         }]
       }],
       application_context: {
-        shipping_preference: "NO_SHIPPING" // Disable shipping address
+        user_action: "PAY_NOW",
+        return_url: `${baseUrl}/pay`,
+        cancel_url: `${baseUrl}/pay`,
+        brand_name: "UnderLayX",
+        payment_method: {
+          payee_preferred: "IMMEDIATE_PAYMENT_REQUIRED"
+        }
       }
     });
     
     const order = await client.execute(request);
     
     return NextResponse.json({
-      id: order.result.id
-    });
+      id: order.result.id,
+      nonce: nonce
+    }, { headers });
   } catch (error) {
     console.error('Detailed PayPal Error:', {
       error,
@@ -79,7 +113,7 @@ export async function POST(req: Request) {
     
     return NextResponse.json(
       { error: 'Error creating order', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      { status: 500, headers }
     );
   }
 }

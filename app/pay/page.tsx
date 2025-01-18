@@ -21,7 +21,7 @@ const TOKEN_OPTIONS = [
 
 function PayPalButtonWrapper({ createOrder, onApprove, onError, onCancel, disabled, selectedTokens }: any) {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
-
+  
   if (isPending) {
     return <PayPalLoader />;
   }
@@ -38,10 +38,20 @@ function PayPalButtonWrapper({ createOrder, onApprove, onError, onCancel, disabl
     <div className="relative">
       <PayPalButtons
         createOrder={createOrder}
-        onApprove={onApprove}
+        onApprove={async (data, actions) => {
+          if (actions.order) {
+            try {
+              await actions.order.capture();
+              onApprove(data);
+            } catch (err) {
+              console.error('PayPal capture error:', err);
+              onError(err);
+            }
+          }
+        }}
         onError={onError}
         onCancel={onCancel}
-        style={{layout: "vertical", shape: "rect", label: "paypal" }}
+        style={{ layout: "vertical", shape: "rect", label: "paypal" }}
         disabled={disabled}
         forceReRender={[selectedTokens.tokens]}
       />
@@ -103,6 +113,8 @@ export default function PayPage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
+      
+      // No need to handle nonce here anymore
       return data.id;
     } catch (error) {
       toast({variant:'destructive', title: "Something went wrong"});
@@ -125,7 +137,7 @@ export default function PayPage() {
     setIsProcessing(false);
   };
 
-  async function captureOrder(orderID: string) {
+  async function captureOrder(data: any) {
     if (!user) {
       router.push('/');
       return;
@@ -139,7 +151,7 @@ export default function PayPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orderID,
+          orderID: data.orderID,
           userID: user.id,
           tokenAmount: selectedTokens.tokens
         })
@@ -167,10 +179,13 @@ export default function PayPage() {
   }
 
   const initialOptions = {
-    "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
+    "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
     currency: "USD",
     intent: "capture",
-    "disable-funding": "card,credit"  // Add this line to disable card and credit options
+    "disable-funding": "card,credit",
+    "enable-funding": "paypal",
+    components: "buttons",
+    commit: true // Add this to enable immediate payment
   };
 
   // Debounced selection handler
@@ -294,7 +309,7 @@ export default function PayPage() {
                         </div>
                         <PayPalButtonWrapper
                           createOrder={handleCreateOrder}
-                          onApprove={(data: any) => captureOrder(data.orderID)}
+                          onApprove={(data: any) => captureOrder(data)}
                           onError={handleError}
                           onCancel={handleCancel}
                           disabled={!user || isProcessing}
