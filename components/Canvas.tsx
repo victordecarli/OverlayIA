@@ -313,9 +313,9 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
               <div className="absolute inset-0 flex items-center justify-center z-50">
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
-                  <p className="text-white text-sm font-bold">{getLoadingMessage()}</p>
+                  <p className="text-white text-sm font-extrabold">{getLoadingMessage()}</p>
                   {isProcessing && (
-                    <p className="text-white/70 text-xs max-w-sm text-center px-4">
+                    <p className="text-white/70 text-xs max-w-sm text-center px-4 font-bold">
                       If this is your first upload, it might take a little longer as we fetch and prepare necessary data. Future uploads will be much faster!
                     </p>
                   )}
