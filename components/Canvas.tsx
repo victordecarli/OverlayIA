@@ -129,7 +129,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       // Reset the input value right after getting the file
       e.target.value = '';
       
-      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image/webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
+      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
 
@@ -149,7 +149,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       return;
     }
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image/webp', 'image.heic', 'image.heic', 'image.heif', 'image/heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heic', 'image.heif', 'image/heif'];
     const fileType = file.type.toLowerCase();
     const fileName = file.name.toLowerCase();
 
@@ -230,6 +230,13 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
 
   return (
     <>
+      {isProcessing && (
+        <div className="w-full text-center mb-2">
+          <p className="text-gray-600 dark:text-gray-400 text-[12px]">
+            * If this is your first upload, it might take a little longer as we fetch and prepare necessary data. Future uploads will be much faster!
+          </p>
+        </div>
+      )}
       <div className={cn(
         "absolute inset-0 flex items-center justify-center",
         "p-4 sm:p-6",
@@ -314,11 +321,6 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
                   <p className="text-white text-sm font-extrabold">{getLoadingMessage()}</p>
-                  {isProcessing && (
-                    <p className="text-white/70 text-xs max-w-sm text-center px-4 font-bold">
-                      If this is your first upload, it might take a little longer as we fetch and prepare necessary data. Future uploads will be much faster!
-                    </p>
-                  )}
                 </div>
               </div>
             )}
