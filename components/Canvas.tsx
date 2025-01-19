@@ -11,9 +11,10 @@ import { AuthDialog } from './AuthDialog';
 import { cn } from '@/lib/utils';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { useIsMobile } from '@/hooks/useIsMobile'; // Add this import
-import { incrementGenerationCount, decrementTokenBalance } from '@/lib/supabase-utils';
+import { incrementGenerationCount, checkProAccess, FREE_GENERATIONS_LIMIT, getFreshUserProfile } from '@/lib/supabase-utils';
 import { TokenPurchaseDialog } from './TokenPurchaseDialog';
 import { useToast } from '@/hooks/use-toast';
+import { ProPlanDialog } from './ProPlanDialog';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -37,6 +38,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showTokenDialog, setShowTokenDialog] = useState(false);
+  const [showProPlanDialog, setShowProPlanDialog] = useState(false);
   const { user } = useAuth();
   const { isPanelOpen } = useEditorPanel();
   const isMobile = useIsMobile(); // Add this hook
@@ -62,19 +64,29 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       setIsProcessing(true);
       setProcessingMessage('Analyzing your image, please wait...');
       
-      try {
-        await decrementTokenBalance(user.id);
-      } catch (error) {
-        if (error instanceof Error && error.message === 'No available tokens') {
-          setShowTokenDialog(true);
-          return;
-        }
-        throw error;
+      const profile = await getFreshUserProfile(user.id);
+      if (!profile) throw new Error('Could not fetch user profile');
+
+      // Check if user has pro access
+      const hasPro = await checkProAccess(user.id);
+      console.log(hasPro)
+      // If not pro, check free generations limit
+      if (!hasPro && profile.free_generations_used >= FREE_GENERATIONS_LIMIT) {
+        setShowProPlanDialog(true);
+        setIsProcessing(false);
+        return;
       }
 
       await handleImageUpload(file);
+      await incrementGenerationCount(user);
+
     } catch (error) {
-      toast({variant:'destructive', title: "Error processing image. Please try again."});
+      toast({
+        variant: "destructive",
+        title: "Error processing image",
+        description: "Something went wrong. Please try again."
+      });
+      console.error('Error in handleFileProcess:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -338,6 +350,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       <TokenPurchaseDialog 
         isOpen={showTokenDialog}
         onClose={() => setShowTokenDialog(false)}
+      />
+
+      <ProPlanDialog 
+        isOpen={showProPlanDialog}
+        onClose={() => setShowProPlanDialog(false)}
       />
     </>
   );

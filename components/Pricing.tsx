@@ -1,218 +1,164 @@
 'use client';
 
-import { Check, X } from 'lucide-react';
+import { Check } from 'lucide-react';
+import Link from 'next/link';
+import { CountrySwitch } from './CountrySwitch';
+import { usePricing } from '@/contexts/PricingContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { isSubscriptionActive } from '@/lib/utils';
 import { AuthDialog } from './AuthDialog';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { TokenOption, INTERNATIONAL_TOKEN_OPTIONS, INDIAN_TOKEN_OPTIONS } from '@/lib/constants';
-import { cn } from '@/lib/utils';
 
 const features = {
   free: [
-    { name: 'Place Images Behind the Main Image', included: true, description: 'Add images behind your main image' },
-    { name: 'Clone Image', included: true, description: 'Clone and duplicate image elements' },
-    { name: 'Remove Background', included: true, description: 'Remove image backgrounds automatically' },
-    { name: 'Change Background', included: true, description: 'Change image backgrounds easily' },
-    { name: 'Text Behind Image', included: true, description: 'Add text behind your images' },
-    { name: 'Shapes Behind Image', included: true, description: 'Place shapes behind your images' },
+    "10 Free Generations",
+    "Images Behind the Main Subject",
+    "Clone Image Elements",
+    "Remove Backgrounds",
+    "Change Backgrounds",
+    "Add Text Behind Images",
+    "Shapes Behind Images"
   ],
-  paid: [
-    { name: 'Place Images Behind the Main Image', included: true },
-    { name: 'Clone Image', included: true },
-    { name: 'Remove Background', included: true },
-    { name: 'Change Background', included: true },
-    { name: 'Text Behind Image', included: true },
-    { name: 'Shapes Behind Image', included: true },
-  ],
+  pro: [
+    "Images Behind the Main Subject",
+    "Clone Image Elements",
+    "Remove Backgrounds",
+    "Change Backgrounds",
+    "Add Text Behind Images",
+    "Shapes Behind Images"
+  ]
 };
 
 export function Pricing() {
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const { selectedCountry, getPrice } = usePricing();
   const { user } = useAuth();
-  const router = useRouter();
-  const [selectedOption, setSelectedOption] = useState<TokenOption>(INTERNATIONAL_TOKEN_OPTIONS[3]); // Default to $7 plan (50 tokens)
-  const [region, setRegion] = useState<'international' | 'india'>('international');
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [subscriptionInfo, setSubscriptionInfo] = useState<{
+    expires_at: string | null;
+  } | null>(null);
+  const currencySymbol = selectedCountry === 'India' ? '₹' : '$';
 
-  const handleBuyTokensClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!user) {
-      setShowAuthDialog(true);
-      return;
+  useEffect(() => {
+    async function fetchSubscriptionInfo() {
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('expires_at')
+          .eq('id', user.id)
+          .single();
+        
+        setSubscriptionInfo(data);
+      }
     }
-    router.push(`/pay?tokens=${selectedOption.tokens}&region=${region}`);
-  };
 
-  const handleStartCreating = () => {
-    router.push('/custom-editor');
-  };
+    fetchSubscriptionInfo();
+  }, [user]);
 
-  const tokenOptions = region === 'international' ? INTERNATIONAL_TOKEN_OPTIONS : INDIAN_TOKEN_OPTIONS;
+  const isProActive = subscriptionInfo?.expires_at && isSubscriptionActive(subscriptionInfo.expires_at);
 
-  const handleTokenSelection = (option: TokenOption) => {
-    setSelectedOption(option);
+  const renderActionButton = (plan: 'free' | 'pro') => {
+    if (!user) {
+      return (
+        <button
+          onClick={() => setShowAuthDialog(true)}
+          className={`block w-full py-3 px-6 text-center ${
+            plan === 'pro' 
+              ? 'bg-purple-600 hover:bg-purple-700' 
+              : 'bg-white/10 hover:bg-white/20'
+          } text-white rounded-lg font-medium transition-colors`}
+        >
+          Login to Start
+        </button>
+      );
+    }
+
+    if (isProActive) {
+      return (
+        <div className="text-center py-3 px-6 bg-purple-600/20 text-purple-400 rounded-lg font-medium">
+          Pro Plan Active
+        </div>
+      );
+    }
+
+    return (
+      <Link
+        href={plan === 'pro' ? '/pay' : '/custom-editor'}
+        className={`block w-full py-3 px-6 text-center ${
+          plan === 'pro' 
+            ? 'bg-purple-600 hover:bg-purple-700' 
+            : 'bg-white/10 hover:bg-white/20'
+        } text-white rounded-lg font-medium transition-colors`}
+      >
+        {plan === 'pro' ? 'Get Started' : 'Start Free'}
+      </Link>
+    );
   };
 
   return (
-    <>
-      <section className="relative py-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-black/50 to-black/50 backdrop-blur-xl border-t border-white/5" />
-        <div className="container px-4 mx-auto relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-gray-400">Choose the plan that works best for you</p>
-          </div>
-          
-          {/* Region Selection */}
-          <div className="flex justify-center gap-4 mb-8">
-            <button
-              onClick={() => setRegion('international')}
-              className={`px-4 py-2 rounded-lg ${
-                region === 'international' 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-700 text-gray-300'
-              }`}
-            >
-              International
-            </button>
-            <button
-              onClick={() => setRegion('india')}
-              className={`px-4 py-2 rounded-lg ${
-                region === 'india' 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-700 text-gray-300'
-              }`}
-            >
-              India
-            </button>
-          </div>
+    <div className="py-24 px-4 bg-zinc-950/50">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold text-white mb-4">Simple, Transparent Pricing</h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            No subscriptions. No auto-debits. Just pay for what you need, when you need it.
+          </p>
+        </div>
 
-          <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
-            {/* Free Plan */}
-            <div className="bg-[#141414] border border-white/10 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-4">Free Plan</h3>
-              <p className="text-purple-400 text-lg mb-6">Get 5 free image generations</p>
-              
-              <div className="space-y-4 mb-8">
-                {features.free.map((feature) => (
-                  <div key={feature.name} className="flex items-center gap-3">
-                    {feature.included ? (
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    ) : (
-                      <X className="w-5 h-5 text-red-500 flex-shrink-0" />
-                    )}
-                    <div>
-                      <div className="text-gray-300">{feature.name}</div>
-                      <div className="text-sm text-gray-500">{feature.description}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              {user ? (
-                <button 
-                  onClick={handleStartCreating}
-                  className="w-full bg-purple-600 text-white rounded-lg py-3 px-4 hover:bg-purple-700 transition-colors"
-                >
-                  Start Creating
-                </button>
-              ) : (
-                <button 
-                  onClick={() => setShowAuthDialog(true)}
-                  className="w-full bg-purple-600 text-white rounded-lg py-3 px-4 hover:bg-purple-700 transition-colors"
-                >
-                  Sign up with Google
-                </button>
-              )}
-              <p className="text-sm text-gray-400 text-center mt-4">No credit card required</p>
+        <CountrySwitch />
+
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Free Plan */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
+            <h3 className="text-2xl font-bold text-white mb-2">Free Plan</h3>
+            <div className="flex items-baseline mb-6">
+              <span className="text-4xl font-bold text-white">{currencySymbol}0</span>
+              <span className="text-gray-400 ml-2">/forever</span>
             </div>
-
-            {/* Token-Based Plan */}
-            <div className="bg-[#141414] border border-white/10 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-4">Pro Plan</h3>
-              <p className="text-purple-400 text-lg mb-2">Pay-as-you-go tokens</p>
-              <div className="space-y-2 mb-6">
-                <p className="text-gray-400 text-sm">No Subscription, No Expiration - Buy tokens only when you need them</p>
-              </div>
-              
-              {/* Token Cards - More Compact Layout */}
-              <div className="max-w-sm mx-auto space-y-3">
-                {tokenOptions.map((option) => (
-                  <div 
-                    key={option.tokens} 
-                    onClick={() => handleTokenSelection(option)}
-                    className={cn(
-                      "p-3 bg-zinc-900/50 rounded-lg border cursor-pointer transition-all",
-                      selectedOption.tokens === option.tokens 
-                        ? "border-purple-400 bg-purple-500/10" 
-                        : "border-white/5 hover:border-white/20"
-                    )}
-                  >
-                    {/* Use the same structure as before but with TOKEN_OPTIONS data */}
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h4 className="text-white font-medium">{option.tokens} Tokens</h4>
-                        <p className="text-xs text-gray-400">
-                          {option.tokens} Images • {region === 'india' ? '₹' : '$'}{option.perToken.toFixed(2)}/token
-                        </p>
-                        {option.savings > 0 && (
-                          <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full">
-                            {option.savings === 30 ? 'Best Value! ' : ''}Save {option.savings}%
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-purple-400">{region === 'india' ? option.priceINR : `$${option.price}`}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Buy Button */}
-              <div className="mt-6 mb-8 max-w-sm mx-auto">
-                <button 
-                  type="button"
-                  onClick={handleBuyTokensClick}
-                  className="w-full bg-purple-600 text-white rounded-lg py-3 px-4 hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black relative z-10"
-                >
-                  {user ? 'Buy Tokens Now' : 'Sign in to Buy Tokens'}
-                </button>
-                <p className="text-center text-sm text-gray-400 mt-2">
-                  Tokens never expire • Use anytime
-                </p>
-              </div>
-
-              {/* Key Features */}
-              <div className="border-t border-white/10 pt-6">
-                <h4 className="text-sm font-medium text-gray-400 mb-4">All Features Included:</h4>
-                <div className="space-y-3">
-                  {features.free.map((feature) => (
-                    <div key={feature.name} className="flex items-center gap-3">
-                      <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      <div className="text-sm">
-                        <div className="text-gray-300">{feature.name}</div>
-                        <div className="text-xs text-gray-500">{feature.description}</div>
-                      </div>
-                    </div>
-                  ))}
+            <p className="text-gray-400 mb-6">
+              Try our basic features with 10 free generations. Perfect for casual users.
+            </p>
+            {renderActionButton('free')}
+            <div className="space-y-4 mt-8">
+              {features.free.map((feature, index) => (
+                <div key={index} className="flex items-center gap-3 text-gray-300">
+                  <Check className="w-5 h-5 text-purple-500 flex-shrink-0" />
+                  <span>{feature}</span>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              {user && (
-                  <p className="text-sm text-purple-300 mt-6">
-                    If you have existing tokens, purchasing more will add to your current balance
-                  </p>
-                )}
+          {/* Pro Plan */}
+          <div className="bg-white/5 border border-purple-500/20 rounded-2xl p-8 backdrop-blur-sm relative">
+            <div className="absolute -top-4 right-4 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+              Popular
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Pro Monthly Plan</h3>
+            <div className="flex items-baseline mb-6">
+              <span className="text-4xl font-bold text-white">{currencySymbol}{getPrice(6)}</span>
+              <span className="text-gray-400 ml-2">/month</span>
+            </div>
+            <p className="text-gray-400 mb-6">
+              Unlimited Features. No Subscriptions. Enjoy full access for a month—and renew anytime.
+            </p>
+            {renderActionButton('pro')}
+            <div className="space-y-4 mt-8">
+              {features.pro.map((feature, index) => (
+                <div key={index} className="flex items-center gap-3 text-gray-300">
+                  <Check className="w-5 h-5 text-purple-500 flex-shrink-0" />
+                  <span>{feature}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <AuthDialog
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
       />
-    </>
+    </div>
   );
 }

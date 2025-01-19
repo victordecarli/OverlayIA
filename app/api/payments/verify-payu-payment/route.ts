@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import { validatePayUResponse } from '@/lib/payu';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { addMonths } from 'date-fns';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
-    // In development, skip hash validation if status is success
     const isValidHash = validatePayUResponse(body);
 
     if (!isValidHash) {
@@ -17,7 +16,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Step 2: Verify Payment Status
     if (body.status !== 'success' || body.unmappedstatus !== 'captured') {
       console.error('Payment not successful:', { status: body.status, unmapped: body.unmappedstatus });
       return NextResponse.json(
@@ -26,13 +24,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Step 3: Process verified payment
-    const { txnid, amount, email, productinfo } = body;
+    const { txnid, amount, email } = body;
 
     // Get user from email
     const { data: userData, error: userError } = await supabaseAdmin
       .from('profiles')
-      .select('id, tokens_balance')
+      .select('id')
       .eq('email', email)
       .single();
 
@@ -40,26 +37,26 @@ export async function POST(request: Request) {
       throw new Error('User not found');
     }
 
-    // Extract token amount from productinfo (format: "X Tokens")
-    const tokenAmount = parseInt(productinfo.split(' ')[0]);
+    // Calculate expiration date
+    const expiresAt = addMonths(new Date(), 1);
 
-    // Step 4: Insert into user_tokens table
+    // Insert into purchase_history
     const { error: insertError } = await supabaseAdmin
-      .from('user_tokens')
+      .from('purchase_history')
       .insert({
         user_id: userData.id,
-        tokens_purchased: tokenAmount,
         amount_paid: parseFloat(amount),
-        purchase_date: new Date().toISOString(),
-      });
+        payment_type: 'PAYU',
+        currency: 'INR'
+    });
 
     if (insertError) throw insertError;
 
-    // Step 5: Update token balance
+    // Update profiles table with new expiration date
     const { error: updateError } = await supabaseAdmin
       .from('profiles')
       .update({ 
-        tokens_balance: (userData.tokens_balance || 0) + tokenAmount
+        expires_at: expiresAt.toISOString()
       })
       .eq('id', userData.id);
 
@@ -67,8 +64,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       status: 'success',
-      transactionId: txnid,
-      tokenAmount
+      transactionId: txnid
     });
 
   } catch (error) {

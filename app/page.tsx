@@ -7,7 +7,6 @@ import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import { Features } from '@/components/Features';
 import { UseCases } from '@/components/UseCases';
-import { ProductHuntBadges } from '@/components/ProductHuntBadges';
 import { FeatureShowcase } from '@/components/FeatureShowcase';
 import { Pricing } from '@/components/Pricing';
 
@@ -47,13 +46,13 @@ export default function Home() {
                 <br/>
                 <span className="text-purple-400 md:mt-2 block">Like Never Before</span>
               </h1>
-              <p className="text-md md:text-lg text-gray-300 mb-8 max-w-xl mx-auto">
+              <p className="text-md md:text-md text-gray-300 mb-8 max-w-xl mx-auto">
               The all-in-one tool to clone images, place logos, text, shapes, or other images behind your photo, remove backgrounds, and change backgrounds.
               </p>
               <Link 
                 href="/custom-editor"
                 onClick={() => setIsLoading(true)}
-                className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
+                className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xl font-semibold transition-all mb-8"
               >
                 {isLoading ? (
                   <>
@@ -64,8 +63,42 @@ export default function Home() {
                   "Start Creating"
                 )}
               </Link>
+              
+              {/* Product Hunt Badges */}
+              <div className="flex flex-row justify-center items-center gap-4 mt-6">
+                {[
+                  {
+                    href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
+                    src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44"
+                  },
+                  {
+                    href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx",
+                    src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily"
+                  },
+                  {
+                    href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
+                    src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164"
+                  }
+                ].map((badge, index) => (
+                  <a 
+                    key={index}
+                    href={badge.href}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={badge.src}
+                      alt="UnderlayX - Product Hunt Badge"
+                      width={150}
+                      height={32}
+                      className="h-18 w-auto"
+                    />
+                  </a>
+                ))}
+              </div>
             </div>
           </section>
+
           {/* Feature Showcase */}
           <FeatureShowcase />
           {/* Features, Use Cases, and Product Hunt Badges */}
@@ -74,7 +107,6 @@ export default function Home() {
           <section id="pricing">
             <Pricing />
           </section>
-          <ProductHuntBadges />
           <Footer />
         </main>
       </div>
