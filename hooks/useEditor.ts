@@ -294,6 +294,31 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   }),
 
   handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean }) => {
+    // First, reset the editor state while preserving certain flags
+    set(state => ({
+      ...state,
+      textSets: [],
+      shapeSets: [],
+      imageEnhancements: {
+        brightness: 100,
+        contrast: 100,
+        saturation: 100,
+        fade: 0,
+        exposure: 0,
+        highlights: 0,
+        shadows: 0,
+        sharpness: 0,
+      },
+      clonedForegrounds: [],
+      hasTransparentBackground: false,
+      hasChangedBackground: false,
+      isBackgroundRemoved: false,
+      foregroundPosition: { x: 0, y: 0 },
+      backgroundImages: [],
+      backgroundColor: null,
+      foregroundSize: 100,
+    }));
+
     if (state?.isConverting !== undefined) set({ isConverting: state.isConverting });
     if (state?.isProcessing !== undefined) set({ isProcessing: state.isProcessing });
 
@@ -301,12 +326,18 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const fileName = file.name.replace(/\.[^/.]+$/, "");
       set({ originalFileName: fileName });
 
+      // Clean up previous object URLs
+      const currentState = get();
+      if (currentState.image.original) URL.revokeObjectURL(currentState.image.original);
+      if (currentState.image.background) URL.revokeObjectURL(currentState.image.background);
+      if (currentState.image.foreground) URL.revokeObjectURL(currentState.image.foreground);
+
       const originalUrl = URL.createObjectURL(file);
       set(state => ({
         image: {
           ...state.image,
           original: originalUrl,
-          background: originalUrl // Set both original and background
+          background: originalUrl
         }
       }));
 
