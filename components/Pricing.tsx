@@ -90,7 +90,7 @@ export function Pricing() {
             : 'bg-white/10 hover:bg-white/20'
         } text-white rounded-lg font-medium transition-colors`}
       >
-        {plan === 'pro' ? 'Get Started' : 'Start Free'}
+        {plan === 'pro' ? 'Upgrade to Pro' : 'Start Free'}
       </Link>
     );
   };

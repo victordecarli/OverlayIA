@@ -253,9 +253,11 @@ export function Navbar() {
                   </button>
                   
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10">
+                    <div className="absolute right-0 mt-2 w-60 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10">
                       <div className="px-4 py-2 text-sm border-b border-gray-200 dark:border-white/10">
-                        <div className="text-gray-700 dark:text-gray-300">{user.email}</div>
+                        <div className="text-gray-700 dark:text-gray-300 truncate">
+                          {user.email}
+                        </div>
                         {generationInfo && (
                           <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
                             {generationInfo.expires_at && isSubscriptionActive(generationInfo.expires_at) ? (
@@ -267,7 +269,7 @@ export function Navbar() {
                               <>
                                 <div>Free Plan</div>
                                 <div>
-                                  Free generations: {Math.max(0, FREE_GENERATIONS_LIMIT - generationInfo.free_generations_used)}
+                                  Free generations left: {Math.max(0, FREE_GENERATIONS_LIMIT - generationInfo.free_generations_used)}
                                 </div>
                               </>
                             )}
@@ -355,7 +357,7 @@ export function Navbar() {
                           </div>
                         ) : (
                           <div className="flex justify-between items-center">
-                            <span>Free generations:</span>
+                            <span>Free generations left:</span>
                             <span className="font-medium">
                               {Math.max(0, FREE_GENERATIONS_LIMIT - generationInfo.free_generations_used)}
                             </span>
