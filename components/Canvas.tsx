@@ -128,8 +128,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       const file = e.target.files[0];
       // Reset the input value right after getting the file
       e.target.value = '';
-      
-      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
+      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image/webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
 
@@ -149,7 +148,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       return;
     }
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.heic', 'image.heic', 'image.heif', 'image/heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image/webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
     const fileType = file.type.toLowerCase();
     const fileName = file.name.toLowerCase();
 
