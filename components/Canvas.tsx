@@ -232,7 +232,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       {isProcessing && (
         <div className="w-full text-center mb-2">
           <p className="text-gray-600 dark:text-gray-400 text-[12px]">
-            * If this is your first upload, it might take a little longer as we fetch and prepare necessary data. Future uploads will be much faster!
+            * If this is your first upload, it might take a little longer. Future uploads will be much faster!
           </p>
         </div>
       )}
