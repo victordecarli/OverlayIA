@@ -5,23 +5,30 @@ import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from '@pa
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
-import { Home, LogIn } from 'lucide-react';
+import { Home, LogIn, CreditCard, Phone, User } from 'lucide-react';
 import Link from 'next/link';
 import { PaymentStatusDialog } from '@/components/PaymentStatusDialog';
 import { useToast } from "@/hooks/use-toast"
 import { debounce } from 'lodash'; // Add this import
-import { TokenOption, INTERNATIONAL_TOKEN_OPTIONS, INDIAN_TOKEN_OPTIONS } from '@/lib/constants';
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { AuthDialog } from '@/components/AuthDialog';
+import { usePricing } from '@/contexts/PricingContext';
 
-const TOKEN_OPTIONS = [
-  { tokens: 5, price: 1, savings: 0, perToken: 0.20 },
-  { tokens: 10, price: 2, savings: 0, perToken: 0.20 },
-  { tokens: 25, price: 4, savings: 20, perToken: 0.16 },
-  { tokens: 50, price: 7, savings: 30, perToken: 0.14 },
-];
+const PLAN_OPTIONS = {
+  international: {
+    price: 6,
+    currency: 'USD',
+    symbol: '$'
+  },
+  india: {
+    price: 99,
+    currency: 'INR',
+    symbol: '₹'
+  }
+};
 
-function PayPalButtonWrapper({ createOrder, onApprove, onError, onCancel, disabled, selectedTokens }: any) {
+function PayPalButtonWrapper({ createOrder, onApprove, onError, onCancel, disabled }: any) {
   const [{ isPending, isRejected }] = usePayPalScriptReducer();
   
   if (isPending) {
@@ -55,7 +62,6 @@ function PayPalButtonWrapper({ createOrder, onApprove, onError, onCancel, disabl
         onCancel={onCancel}
         style={{ layout: "vertical", shape: "rect", label: "paypal" }}
         disabled={disabled}
-        forceReRender={[selectedTokens.tokens]}
       />
     </div>
   );
@@ -70,43 +76,45 @@ function PayPalLoader() {
   );
 }
 
+// Add phone validation function
+const validatePhone = (phone: string): boolean => {
+  const phoneRegex = /^[6-9]\d{9}$/;
+  return phoneRegex.test(phone);
+};
+
 export default function PayPage() {
-  const [selectedTokens, setSelectedTokens] = useState<TokenOption>(INTERNATIONAL_TOKEN_OPTIONS[3]);
+  const { selectedCountry, setSelectedCountry } = usePricing();
+  const [region, setRegion] = useState<'international' | 'india'>(
+    selectedCountry === 'India' ? 'india' : 'international'
+  );
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'error' | null>(null);
   const [sdkReady, setSdkReady] = useState(false);
   const [isChangingOption, setIsChangingOption] = useState(false);
-  const [region, setRegion] = useState<'international' | 'india'>('international');
   const [payuForm, setPayuForm] = useState({
     firstName: '',
     phone: '',
   });
+  const [phoneError, setPhoneError] = useState('');
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth(); // Add isLoading here
   const searchParams = useSearchParams();
   const { toast } = useToast();
-
-  // Get appropriate token options based on region
-  const tokenOptions = region === 'international' ? INTERNATIONAL_TOKEN_OPTIONS : INDIAN_TOKEN_OPTIONS;
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   useEffect(() => {
-    const tokenParam = searchParams.get('tokens');
+    // Get the saved country preference from localStorage
+    const savedCountry = localStorage.getItem('selectedCountry') as 'India' | 'International';
+    if (savedCountry) {
+      setSelectedCountry(savedCountry);
+    }
+  }, [setSelectedCountry]);
+
+  useEffect(() => {
     const regionParam = searchParams.get('region') as 'international' | 'india';
     
     if (regionParam) {
       setRegion(regionParam);
-    }
-
-    // Update selected tokens based on region
-    if (tokenParam) {
-      const options = regionParam === 'india' ? INDIAN_TOKEN_OPTIONS : INTERNATIONAL_TOKEN_OPTIONS;
-      const option = options.find(opt => opt.tokens === Number(tokenParam));
-      if (option) {
-        setSelectedTokens(option);
-      }
-    } else {
-      // Set default based on region
-      setSelectedTokens(regionParam === 'india' ? INDIAN_TOKEN_OPTIONS[1] : INTERNATIONAL_TOKEN_OPTIONS[3]);
     }
   }, [searchParams]);
 
@@ -119,20 +127,31 @@ export default function PayPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // If user is not logged in, show auth dialog
+    if (!isLoading && !user) {
+      setShowAuthDialog(true);
+    }
+  }, [user, isLoading]);
+
+  // Add this effect to sync region with selectedCountry
+  useEffect(() => {
+    const newRegion = selectedCountry === 'India' ? 'india' : 'international';
+    setRegion(newRegion);
+  }, [selectedCountry]);
+
   const handleCreateOrder = async () => {
     try {
       const response = await fetch('/api/payments/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          tokenAmount: selectedTokens.tokens,
           userID: user?.id
         })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       
-      // No need to handle nonce here anymore
       return data.id;
     } catch (error) {
       toast({variant:'destructive', title: "Something went wrong"});
@@ -171,7 +190,7 @@ export default function PayPage() {
         body: JSON.stringify({
           orderID: data.orderID,
           userID: user.id,
-          tokenAmount: selectedTokens.tokens
+          plan: 'pro_monthly'
         })
       });
       
@@ -211,8 +230,8 @@ export default function PayPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...payuForm,
-          amount: selectedTokens.price,
-          tokenAmount: selectedTokens.tokens,
+          amount: PLAN_OPTIONS[region].price,
+          plan: 'pro_monthly',
           userID: user.id,
         })
       });
@@ -257,27 +276,22 @@ export default function PayPage() {
     intent: "capture",
   };
 
-  // Debounced selection handler
-  const debouncedSetSelection = useCallback(
-    debounce((option) => {
-      setSelectedTokens(option);
-      setIsChangingOption(false);
-    }, 300),
-    []
-  );
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Update token selection handler
-  const handleTokenSelection = (option: TokenOption) => {
-    setIsChangingOption(true);
-    debouncedSetSelection(option);
+  // Update region change handler to also update pricing context
+  const handleRegionChange = (newRegion: 'international' | 'india') => {
+    setRegion(newRegion);
+    setSelectedCountry(newRegion === 'india' ? 'India' : 'International');
   };
-
-  // Clean up the debounce on unmount
-  useEffect(() => {
-    return () => {
-      debouncedSetSelection.cancel();
-    };
-  }, [debouncedSetSelection]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -296,7 +310,7 @@ export default function PayPage() {
               <span className="text-sm text-gray-600">{user.email}</span>
               <div className="relative w-8 h-8 rounded-full overflow-hidden">
                 <img
-                  src={user.user_metadata.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
+                  src={user.user_metadata.avatar_url || ''}
                   alt="User avatar"
                   className="object-cover"
                 />
@@ -309,97 +323,70 @@ export default function PayPage() {
       {/* Main Content */}
       <div className="pt-24">
         <div className="container max-w-6xl mx-auto py-12 px-4">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Purchase Tokens</h1>
-          
-          {/* Region Toggle */}
-          <div className="mb-8">
-            <div className="flex justify-center gap-4">
+          {!user ? (
+            <div className="max-w-md mx-auto text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Please log in to continue
+              </h2>
+              <p className="text-gray-600 mb-6">
+                You need to be logged in to purchase a Pro Monthly Plan.
+              </p>
               <button
-                onClick={() => {
-                  setRegion('international');
-                  setSelectedTokens(INTERNATIONAL_TOKEN_OPTIONS[3]);
-                }}
-                className={cn(
-                  "px-6 py-2 rounded-lg font-medium transition-all",
-                  region === 'international' 
-                    ? "bg-purple-600 text-white" 
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                )}
+                onClick={() => setShowAuthDialog(true)}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
               >
-                International (USD)
-              </button>
-              <button
-                onClick={() => {
-                  setRegion('india');
-                  setSelectedTokens(INDIAN_TOKEN_OPTIONS[1]);
-                }}
-                className={cn(
-                  "px-6 py-2 rounded-lg font-medium transition-all",
-                  region === 'india' 
-                    ? "bg-purple-600 text-white" 
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                )}
-              >
-                India (INR)
+                <LogIn className="w-5 h-5" />
+                <span>Log In</span>
               </button>
             </div>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Token Options */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Select Package</h2>
-              {tokenOptions.map((option) => (
-                <button
-                  key={option.tokens}
-                  onClick={() => handleTokenSelection(option)}
-                  disabled={isChangingOption}
-                  className={cn(
-                    "w-full p-4 rounded-lg border text-left transition-all",
-                    isChangingOption ? "opacity-50 cursor-not-allowed" : "",
-                    selectedTokens.tokens === option.tokens
-                      ? "border-purple-500 bg-purple-50"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
-                  )}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <div className="font-medium text-gray-900 text-lg">
-                        {option.tokens} Tokens
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {option.tokens} Images • {region === 'india' ? '₹' : '$'}{option.perToken.toFixed(2)}/token
-                      </div>
-                    </div>
-                    <span className="font-semibold text-purple-600 text-xl">
-                      {region === 'india' ? option.priceINR : `$${option.price}`}
-                    </span>
-                  </div>
-                  {option.savings > 0 && (
-                    <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full">
-                      {option.savings === 30 ? 'Best Value! ' : ''}Save {option.savings}%
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
+          ) : (
+            <>
+              <h1 className="text-3xl font-bold text-gray-900 mb-8">Pro Monthly Plan</h1>
+              {/* Reordered Region Toggle */}
+              <div className="mb-8">
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={() => handleRegionChange('india')}
+                    className={cn(
+                      "px-6 py-2 rounded-lg font-medium transition-all",
+                      region === 'india' 
+                        ? "bg-purple-600 text-white" 
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    )}
+                  >
+                    India (₹)
+                  </button>
+                  <button
+                    onClick={() => handleRegionChange('international')}
+                    className={cn(
+                      "px-6 py-2 rounded-lg font-medium transition-all",
+                      region === 'international' 
+                        ? "bg-purple-600 text-white" 
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    )}
+                  >
+                    International ($)
+                  </button>
+                </div>
+              </div>
 
-            {/* Payment Methods */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Method</h2>
-              {region === 'international' ? (
-                // Existing PayPal integration
-                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm relative">
-                  {!user ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/95 backdrop-blur-sm rounded-lg z-10">
-                      <div className="text-center">
-                        <LogIn className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600 font-medium">Please log in to continue</p>
-                      </div>
+              <div className="max-w-md mx-auto">
+                {/* Payment Section */}
+                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Pro Monthly Plan
+                    </h2>
+                    <div className="text-3xl font-bold text-purple-600 mt-2">
+                      {PLAN_OPTIONS[region].symbol}{PLAN_OPTIONS[region].price}
                     </div>
-                  ) : !sdkReady || isChangingOption ? (
-                    <PayPalLoader />
-                  ) : (
+                    <p className="text-gray-600 mt-2">
+                      Unlimited access for one month
+                    </p>
+                  </div>
+
+                  {region === 'international' ? (
+                    // PayPal payment section
                     <PayPalScriptProvider options={initialOptions}>
                       <ErrorBoundary fallback={
                         <div className="text-red-500 text-center p-4">
@@ -407,18 +394,12 @@ export default function PayPage() {
                         </div>
                       }>
                         <div className="relative">
-                          <div className="mb-6 text-center">
-                            <div className="text-xl font-semibold text-gray-900">
-                              Total Payable: ${selectedTokens.price}
-                            </div>
-                          </div>
                           <PayPalButtonWrapper
                             createOrder={handleCreateOrder}
                             onApprove={(data: any) => captureOrder(data)}
                             onError={handleError}
                             onCancel={handleCancel}
                             disabled={!user || isProcessing}
-                            selectedTokens={selectedTokens}
                           />
                           <p className="text-xs text-gray-500 mt-3 text-center">
                             * Additional PayPal charges may apply based on your currency or location
@@ -434,58 +415,101 @@ export default function PayPage() {
                         </div>
                       </ErrorBoundary>
                     </PayPalScriptProvider>
+                  ) : (
+                    // Enhanced PayU form section for Indian users
+                    <div className="bg-white rounded-lg">
+                      <form onSubmit={handlePayUSubmit} className="space-y-6">
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="firstName" className="text-gray-700 flex items-center gap-2">
+                              <User className="w-4 h-4" />
+                              <span>Full Name</span>
+                            </Label>
+                            <Input
+                              id="firstName"
+                              type="text"
+                              required
+                              autoComplete="off"
+                              className="bg-white text-gray-900 border-gray-200"
+                              value={payuForm.firstName}
+                              onChange={(e) => setPayuForm(prev => ({...prev, firstName: e.target.value}))}
+                              placeholder="Enter your full name"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="phone" className="text-gray-700 flex items-center gap-2">
+                              <Phone className="w-4 h-4" />
+                              <span>Phone Number</span>
+                            </Label>
+                            <Input
+                              id="phone"
+                              type="tel"
+                              required
+                              autoComplete="off"
+                              className={cn(
+                                "bg-white text-gray-900 border-gray-200",
+                                phoneError && "border-red-500"
+                              )}
+                              value={payuForm.phone}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                setPayuForm(prev => ({...prev, phone: value}));
+                                setPhoneError(validatePhone(value) ? '' : 'Please enter a valid 10-digit mobile number');
+                              }}
+                              placeholder="10-digit mobile number"
+                            />
+                            {phoneError && (
+                              <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+                            )}
+                            <p className="text-gray-500 text-xs mt-1">
+                              Enter the phone number to receive transaction details
+                            </p>
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <button
+                            type="submit"
+                            disabled={isProcessing || !user || !!phoneError || !validatePhone(payuForm.phone)}
+                            className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:hover:bg-purple-600 font-medium flex items-center justify-center gap-2"
+                          >
+                            <CreditCard className="w-5 h-5" />
+                            {isProcessing ? 'Processing...' : `Pay ₹${PLAN_OPTIONS[region].price}`}
+                          </button>
+                          <div className="text-center">
+                            <p className="text-xs text-gray-500 flex items-center justify-center gap-2">
+                              <span>Secure payment via</span>
+                              <span className="font-medium">UPI</span>
+                              <span>•</span>
+                              <span className="font-medium">Cards</span>
+                              <span>•</span>
+                              <span className="font-medium">NetBanking</span>
+                              <span>& more</span>
+                            </p>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
                   )}
                 </div>
-              ) : (
-                // PayU Form for Indian Users
-                <div className="bg-white rounded-lg p-6 border border-gray-200">
-                  <div className="mb-6 text-center">
-                    <div className="text-xl font-semibold text-gray-900">
-                      Total Payable: {selectedTokens.priceINR}
-                    </div>
-                  </div>
-                  <form onSubmit={handlePayUSubmit} className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName" className="text-gray-700">First Name</Label>
-                        <Input
-                          id="firstName"
-                          type="text"
-                          required
-                          className="bg-white text-gray-900"
-                          value={payuForm.firstName}
-                          onChange={(e) => setPayuForm(prev => ({...prev, firstName: e.target.value}))}
-                          placeholder="John"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-gray-700">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        required
-                        pattern="[0-9]{10}"
-                        placeholder="10-digit mobile number"
-                        className="bg-white text-gray-900"
-                        value={payuForm.phone}
-                        onChange={(e) => setPayuForm(prev => ({...prev, phone: e.target.value}))}
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={isProcessing || !user}
-                      className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 font-medium"
-                    >
-                      {isProcessing ? 'Processing...' : `Pay ${selectedTokens.priceINR}`}
-                    </button>
-                  </form>
-                </div>
-              )}
-            </div>
-          </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Add AuthDialog */}
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={() => {
+          setShowAuthDialog(false);
+          // If user is still not logged in, redirect to home
+          if (!user) {
+            router.push('/');
+          }
+        }}
+        returnUrl="/pay"
+      />
+      
       <PaymentStatusDialog 
         isOpen={paymentStatus !== null}
         status={paymentStatus || 'error'}
@@ -520,3 +544,4 @@ class ErrorBoundary extends React.Component<
     return this.props.children;
   }
 }
+

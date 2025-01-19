@@ -36,10 +36,10 @@ export default function PaymentSuccessPage() {
           throw new Error(data.error || 'Payment verification failed');
         }
 
-        // Show success message
+        // Updated success message
         toast({
           title: "Payment successful!",
-          description: `${data.tokenAmount} tokens have been added to your account.`,
+          description: "Your Pro Monthly Plan is now active.",
         });
 
         // Redirect to editor
@@ -52,7 +52,7 @@ export default function PaymentSuccessPage() {
         toast({
           variant: "destructive",
           title: "Payment verification failed",
-          description: "Please contact support if your tokens are not credited.",
+          description: "Please contact support if your Pro access is not activated.",
         });
         
         // Redirect to pay page on error
@@ -86,7 +86,7 @@ export default function PaymentSuccessPage() {
         <p className="text-gray-600 mb-6">
           {isProcessing 
             ? 'Please wait while we verify your payment...'
-            : 'Your tokens have been added to your account.'}
+            : 'Your Pro Monthly Plan has been activated.'}
         </p>
         {isProcessing && (
           <div className="flex justify-center">

@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/next';
+import { PricingProvider } from '@/contexts/PricingContext';
 
 
 export const metadata = {
@@ -47,18 +48,20 @@ export default function RootLayout({
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
       </head>
       <body className={`${inter.className} bg-[#0A0A0A] min-h-screen`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
-        <Analytics />
+        <PricingProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+          <Analytics />
+        </PricingProvider>
+        <GoogleAnalytics gaId="G-LWYW0Q03ZL" />
       </body>
-      <GoogleAnalytics gaId="G-LWYW0Q03ZL" />
     </html>
   );
 }

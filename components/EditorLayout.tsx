@@ -10,17 +10,18 @@ import { useAuth } from '@/hooks/useAuth';
 import { AuthDialog } from '@/components/AuthDialog';
 import { useState, useRef, useEffect } from 'react';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
-import { getUserGenerationInfo } from '@/lib/supabase-utils';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabaseClient';
+import { isSubscriptionActive } from '@/lib/utils';
+import { FREE_GENERATIONS_LIMIT } from '@/lib/supabase-utils';  // Add this import
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
 }
 
-interface GenerationInfo {
+interface UserInfo {
+  expires_at: string | null;
   free_generations_used: number;
-  tokens_balance: number;
-  tokens_expire_on: string;  // Add this field
 }
 
 export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
@@ -38,9 +39,8 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { isPanelOpen } = useEditorPanel();
-  const [generationInfo, setGenerationInfo] = useState<GenerationInfo | null>(null);
   const { toast } = useToast();
-
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   // Add click outside handler
   useEffect(() => {
@@ -54,22 +54,27 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Add this effect to fetch generation info when user menu is opened
   useEffect(() => {
-    async function fetchGenerationInfo() {
-      if (user && showUserMenu) {
+    async function fetchUserInfo() {
+      if (user) {
         try {
-          const info = await getUserGenerationInfo(user);
-          setGenerationInfo(info);
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('expires_at, free_generations_used')
+            .eq('id', user.id)
+            .single();
+
+          if (data) {
+            setUserInfo(data);
+          }
         } catch (error) {
-          toast({variant:'destructive', title: "Something went wrong"});
-          console.error('Error fetching generation info:', error);
+          console.error('Error fetching user info:', error);
         }
       }
     }
 
-    fetchGenerationInfo();
-  }, [user, showUserMenu]);
+    fetchUserInfo();
+  }, [user]); // Remove showUserMenu dependency, only fetch when user changes
 
   // Unified state check for all button actions
   const isActionDisabled = isProcessing || isConverting || isDownloading;
@@ -131,13 +136,20 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
                     onClick={() => setShowUserMenu(!showUserMenu)}
                     className="relative flex items-center"
                   >
-                    <div className="w-8 h-8 relative rounded-full overflow-hidden">
-                      <img
-                        src={user.user_metadata.avatar_url}
-                        alt="User avatar"
-                        sizes="32px"
-                        className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
-                      />
+                    <div className="relative">
+                      {userInfo?.expires_at && isSubscriptionActive(userInfo.expires_at) && (
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none">
+                          Pro
+                        </div>
+                      )}
+                      <div className="w-8 h-8 relative rounded-full overflow-hidden">
+                        <img
+                          src={user.user_metadata.avatar_url}
+                          alt="User avatar"
+                          sizes="32px"
+                          className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
+                        />
+                      </div>
                     </div>
                   </button>
                   
@@ -145,19 +157,21 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
                     <div className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10">
                       <div className="px-4 py-2 text-sm border-b border-gray-200 dark:border-white/10">
                         <div className="text-gray-700 dark:text-gray-300">{user.email}</div>
-                        {generationInfo && (
-                          <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                            <div>
-                              Tokens balance: {generationInfo.tokens_balance}
-                              {generationInfo.tokens_expire_on && (
-                                <div className="text-xs text-gray-500">
-                                  Expires: {new Date(generationInfo.tokens_expire_on).toLocaleDateString()}
+                        {userInfo && (
+                          <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                            {userInfo.expires_at && isSubscriptionActive(userInfo.expires_at) ? (
+                              <>
+                                <div className="text-purple-600 font-medium">Pro Plan Active</div>
+                                <div>Expires: {new Date(userInfo.expires_at).toLocaleDateString()}</div>
+                              </>
+                            ) : (
+                              <>
+                                <div>Free Plan</div>
+                                <div>
+                                  Free generations: {Math.max(0, FREE_GENERATIONS_LIMIT - userInfo.free_generations_used)}
                                 </div>
-                              )}
-                            </div>
-                            <div>
-                              Free tokens used: {generationInfo.free_generations_used} / 5
-                            </div>
+                              </>
+                            )}
                           </div>
                         )}
                       </div>

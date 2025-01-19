@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const orderData = {
       txnid: generateTxnId(),
       amount: amount.toString(),
-      productinfo: `${tokenAmount} Tokens`,
+      productinfo: `pro_monthly`,
       firstname: firstName,
       email: userData.email,
       phone: phone,

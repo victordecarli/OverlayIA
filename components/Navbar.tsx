@@ -8,8 +8,11 @@ import { User } from '@supabase/supabase-js';
 import { UserMenu } from './UserMenu';
 import { AuthDialog } from './AuthDialog';
 import { supabase } from '@/lib/supabaseClient';
-import { getUserGenerationInfo } from '@/lib/supabase-utils';
 import { useToast } from '@/hooks/use-toast';
+import { FREE_GENERATIONS_LIMIT } from '@/lib/supabase-utils';
+import { isSubscriptionActive } from '@/lib/utils';
+
+// Remove getUserGenerationInfo import
 
 interface NavigationItem {
   href: string;
@@ -19,9 +22,10 @@ interface NavigationItem {
   onClick?: (e: React.MouseEvent) => void;
 }
 
+// Remove UserInfo interface as it's not needed
 interface GenerationInfo {
+  expires_at: string | null;
   free_generations_used: number;
-  tokens_balance: number;
 }
 
 export function Navbar() {
@@ -71,20 +75,30 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    async function fetchGenerationInfo() {
-      if (user && showUserMenu) {
+    async function fetchSubscriptionInfo() {
+      if (user) {
         try {
-          const info = await getUserGenerationInfo(user);
-          setGenerationInfo(info);
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('expires_at, free_generations_used')
+            .eq('id', user.id)
+            .single();
+
+          if (error) throw error;
+
+          setGenerationInfo({
+            expires_at: data?.expires_at,
+            free_generations_used: data?.free_generations_used || 0
+          });
         } catch (error) {
           toast({variant:'destructive', title: "Something went wrong"});
-          console.error('Error fetching generation info:', error);
+          console.error('Error fetching subscription info:', error);
         }
       }
     }
 
-    fetchGenerationInfo();
-  }, [user, showUserMenu]);
+    fetchSubscriptionInfo();
+  }, [user]);
 
   const handlePricingClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -221,13 +235,20 @@ export function Navbar() {
                     onClick={() => setShowUserMenu(!showUserMenu)}
                     className="relative flex items-center"
                   >
-                    <div className="w-8 h-8 relative rounded-full overflow-hidden">
-                      <img
-                        src={user.user_metadata.avatar_url}
-                        alt="User avatar"
-                        sizes="32px"
-                        className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
-                      />
+                    <div className="relative">
+                      {generationInfo?.expires_at && isSubscriptionActive(generationInfo.expires_at) && (
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none">
+                          Pro
+                        </div>
+                      )}
+                      <div className="w-8 h-8 relative rounded-full overflow-hidden">
+                        <img
+                          src={user.user_metadata.avatar_url}
+                          alt="User avatar"
+                          sizes="32px"
+                          className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
+                        />
+                      </div>
                     </div>
                   </button>
                   
@@ -237,12 +258,19 @@ export function Navbar() {
                         <div className="text-gray-700 dark:text-gray-300">{user.email}</div>
                         {generationInfo && (
                           <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                            <div>
-                              Tokens balance: {generationInfo.tokens_balance}
-                            </div>
-                            <div>
-                              Free tokens used: {generationInfo.free_generations_used} / 5
-                            </div>
+                            {generationInfo.expires_at && isSubscriptionActive(generationInfo.expires_at) ? (
+                              <>
+                                <div className="text-purple-600 font-medium">Pro Plan Active</div>
+                                <div>Expires: {new Date(generationInfo.expires_at).toLocaleDateString()}</div>
+                              </>
+                            ) : (
+                              <>
+                                <div>Free Plan</div>
+                                <div>
+                                  Free generations: {Math.max(0, FREE_GENERATIONS_LIMIT - generationInfo.free_generations_used)}
+                                </div>
+                              </>
+                            )}
                           </div>
                         )}
                       </div>
@@ -313,13 +341,26 @@ export function Navbar() {
                     {generationInfo && (
                       <div className="bg-white/5 rounded-lg p-3 text-sm text-gray-300">
                         <div className="flex justify-between items-center mb-2">
-                          <span>Tokens balance:</span>
-                          <span className="font-medium">{generationInfo.tokens_balance}</span>
+                          <span>Status:</span>
+                          <span className="font-medium">
+                            {generationInfo.expires_at && isSubscriptionActive(generationInfo.expires_at) ? 'Pro Plan Active' : 'Free Plan'}
+                          </span>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span>Free tokens used:</span>
-                          <span className="font-medium">{generationInfo.free_generations_used} / 5</span>
-                        </div>
+                        {generationInfo.expires_at && isSubscriptionActive(generationInfo.expires_at) ? (
+                          <div className="flex justify-between items-center mb-2">
+                            <span>Expires:</span>
+                            <span className="font-medium">
+                              {new Date(generationInfo.expires_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex justify-between items-center">
+                            <span>Free generations:</span>
+                            <span className="font-medium">
+                              {Math.max(0, FREE_GENERATIONS_LIMIT - generationInfo.free_generations_used)}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

@@ -2,11 +2,12 @@ import { NextResponse } from 'next/server';
 import paypal from '@paypal/checkout-server-sdk';
 import { getPayPalClient } from '@/lib/paypal-client';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { addMonths } from 'date-fns';
 
 export async function POST(req: Request) {
   try {
-    const { orderID, userID, tokenAmount } = await req.json();
-    if (!orderID || !userID || !tokenAmount) {
+    const { orderID, userID } = await req.json();
+    if (!orderID || !userID) {
       return NextResponse.json(
         { error: 'Missing required parameters' },
         { status: 400 }
@@ -22,57 +23,35 @@ export async function POST(req: Request) {
         capture.result.purchase_units[0].payments.captures[0].amount.value
       );
 
-      try {
-        // Step 1: Insert into user_tokens table
-        const { error: insertError } = await supabaseAdmin
-          .from('user_tokens')
-          .insert({
-            user_id: userID,
-            tokens_purchased: tokenAmount,
-            amount_paid: amountPaid,
-            purchase_date: new Date().toISOString()
-          });
+      // Calculate expiration date
+      const expiresAt = addMonths(new Date(), 1);
 
-        if (insertError) throw insertError;
-
-        // Step 2: Get current token balance
-        const { data: profile, error: profileError } = await supabaseAdmin
-          .from('profiles')
-          .select('tokens_balance')
-          .eq('id', userID)
-          .single();
-
-        if (profileError) throw profileError;
-
-        // Step 3: Update tokens_balance in profiles
-        const { error: updateError } = await supabaseAdmin
-          .from('profiles')
-          .update({ 
-            tokens_balance: (profile?.tokens_balance || 0) + tokenAmount 
-          })
-          .eq('id', userID);
-
-        if (updateError) throw updateError;
-
-        return NextResponse.json({
-          status: 'success',
-          orderID: capture.result.id
-        });
-      } catch (error) {
-        console.error('Critical: Payment successful but token allocation failed:', {
-          error,
-          userID,
-          orderID: capture.result.id,
-          tokenAmount,
-          amountPaid
+      // Insert into purchase_history
+      const { error: insertError } = await supabaseAdmin
+        .from('purchase_history')
+        .insert({
+          user_id: userID,
+          amount_paid: amountPaid,
+          payment_type: 'PAYPAL',
+          currency: 'USD'
         });
 
-        return NextResponse.json({
-          status: 'success',
-          orderID: capture.result.id,
-          message: 'Payment processed but token allocation delayed. Please contact support if tokens are not received within 5 minutes.'
-        });
-      }
+      if (insertError) throw insertError;
+
+      // Update profiles table with new expiration date
+      const { error: updateError } = await supabaseAdmin
+        .from('profiles')
+        .update({ 
+          expires_at: expiresAt.toISOString()
+        })
+        .eq('id', userID);
+
+      if (updateError) throw updateError;
+
+      return NextResponse.json({
+        status: 'success',
+        orderID: capture.result.id
+      });
     }
 
     throw new Error('Payment not completed');

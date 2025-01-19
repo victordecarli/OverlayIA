@@ -2,18 +2,9 @@ import { NextResponse } from 'next/server';
 import paypal from '@paypal/checkout-server-sdk';
 import { getPayPalClient } from '@/lib/paypal-client';
 import { getFreshUserProfile } from '@/lib/supabase-utils';
-import { generateNonce } from '@/lib/nonce';
 
-const TOKEN_PRICES = {
-  5: 1,
-  10: 2,
-  25: 4,
-  50: 7,
-};
+const PRO_PLAN_PRICE = 6; // $6 USD for Pro Monthly Plan
 
-type TokenAmount = keyof typeof TOKEN_PRICES;
-
-// Add this helper function at the top
 function getBaseUrl(req: Request) {
   const host = req.headers.get('host') || 'localhost:3000';
   const protocol = host.includes('localhost') ? 'http' : 'https';
@@ -21,7 +12,6 @@ function getBaseUrl(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const nonce = generateNonce();
   const baseUrl = getBaseUrl(req);
   
   const headers = new Headers({
@@ -41,7 +31,7 @@ export async function POST(req: Request) {
   });
 
   try {
-    const { tokenAmount, userID } = await req.json();
+    const { userID } = await req.json();
     
     // Validate user exists before creating order
     const userProfile = await getFreshUserProfile(userID);
@@ -52,14 +42,6 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!tokenAmount || !TOKEN_PRICES[tokenAmount as TokenAmount]) {
-      return NextResponse.json(
-        { error: 'Invalid token amount' },
-        { status: 400, headers }
-      );
-    }
-
-    const price = TOKEN_PRICES[tokenAmount as TokenAmount];
     const client = getPayPalClient();
     const request = new paypal.orders.OrdersCreateRequest();
     request.prefer("return=representation");
@@ -68,22 +50,22 @@ export async function POST(req: Request) {
       purchase_units: [{
         amount: {
           currency_code: 'USD',
-          value: price.toString(),
+          value: PRO_PLAN_PRICE.toString(),
           breakdown: {
             item_total: {
               currency_code: 'USD',
-              value: price.toString()
+              value: PRO_PLAN_PRICE.toString()
             }
           }
         },
-        description: `${tokenAmount} Image Generation Tokens`,
+        description: `Pro Monthly Plan`,
         items: [{
-          name: `Image Generation Tokens`,
-          description: `Package of ${tokenAmount} tokens`,
+          name: `UnderlayX Pro Monthly Plan`,
+          description: `Unlimited access for one month`,
           quantity: '1',
           unit_amount: {
             currency_code: 'USD',
-            value: price.toString()
+            value: PRO_PLAN_PRICE.toString()
           }
         }]
       }],
@@ -101,18 +83,12 @@ export async function POST(req: Request) {
     const order = await client.execute(request);
     
     return NextResponse.json({
-      id: order.result.id,
-      nonce: nonce
+      id: order.result.id
     }, { headers });
   } catch (error) {
-    console.error('Detailed PayPal Error:', {
-      error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
-    });
-    
+    console.error('PayPal Error:', error);
     return NextResponse.json(
-      { error: 'Error creating order', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Error creating order' },
       { status: 500, headers }
     );
   }
