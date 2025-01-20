@@ -5,7 +5,10 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { amount, tokenAmount, userID, firstName, phone } = body;
+    const { userID, firstName, phone } = body;
+
+    // PayU payments in INR
+    const amount = 149;
 
     // Ensure we have the base URL
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
