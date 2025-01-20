@@ -610,7 +610,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       const timestamp = Math.floor(Date.now() / 1000); // Get current time in seconds
-      link.download = `UnderlayX_${timestamp}.png`;  // Always use PNG extension
+      link.download = `UnderlayXAI_${timestamp}.png`;  // Always use PNG extension
       link.href = url;
       document.body.appendChild(link);
       link.click();

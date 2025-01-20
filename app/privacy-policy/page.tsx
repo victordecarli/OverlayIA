@@ -13,7 +13,7 @@ export default function Privacy() {
         <div className="max-w-3xl mx-auto">
           <div className="bg-black/20 backdrop-blur-sm p-8 rounded-xl border border-gray-800">
             <p className="text-gray-300 mb-6">
-              UnderlayX ("the Service") respects your privacy and is committed to protecting your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you use our Service.
+              UnderlayX AI ("the Service") respects your privacy and is committed to protecting your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you use our Service.
             </p>
 
             {[

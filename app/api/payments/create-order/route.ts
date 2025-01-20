@@ -60,7 +60,7 @@ export async function POST(req: Request) {
         },
         description: `Pro Monthly Plan`,
         items: [{
-          name: `UnderlayX Pro Monthly Plan`,
+          name: `UnderlayX AI Pro Monthly Plan`,
           description: `Unlimited access for one month`,
           quantity: '1',
           unit_amount: {
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
         user_action: "PAY_NOW",
         return_url: `${baseUrl}/pay`,
         cancel_url: `${baseUrl}/pay`,
-        brand_name: "UnderLayX",
+        brand_name: "UnderLayX AI",
         payment_method: {
           payee_preferred: "IMMEDIATE_PAYMENT_REQUIRED"
         }

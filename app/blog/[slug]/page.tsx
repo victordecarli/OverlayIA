@@ -25,7 +25,7 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || [];
 
   return {
-    title: `${post.title} | UnderlayX Blog`,
+    title: `${post.title} | UnderlayX AI Blog`,
     description: post.description,
     openGraph: {
       title: post.title,

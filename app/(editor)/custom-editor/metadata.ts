@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'UnderlayX: Edit Images with Cloning, Text Behind, and Background Customization',
+  title: 'UnderlayX AI: Edit Images with Cloning, Text Behind, and Background Customization',
   description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
   keywords: [
     'text behind image',
@@ -16,23 +16,23 @@ export const metadata: Metadata = {
     'online image editor'
   ].join(', '),
   openGraph: {
-    title: 'UnderlayX: Edit Images with Cloning, Text Behind, and Background Customization',
+    title: 'UnderlayX AI: Edit Images with Cloning, Text Behind, and Background Customization',
     description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
     url: 'https://underlayx.com/custom-editor',
-    siteName: 'UnderlayX',
+    siteName: 'UnderlayX AI',
     images: [
       {
         url: 'https://underlayx.com/og-image.png', // Add your OG image path
         width: 1200,
         height: 630,
-        alt: 'UnderlayX Editor Preview'
+        alt: 'UnderlayX AI Editor Preview'
       }
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'UnderlayX: Edit Images with Cloning, Text Behind, and Background Customization',
+    title: 'UnderlayX AI: Edit Images with Cloning, Text Behind, and Background Customization',
     description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
     images: ['https://underlayx.com/og-image.png'], // Add your Twitter card image path
   },

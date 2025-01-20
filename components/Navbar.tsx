@@ -176,7 +176,7 @@ export function Navbar() {
         <div className="max-w-2xl mx-auto bg-[#141414] backdrop-blur-xl border border-white/5 rounded-full shadow-xl">
           <div className="px-8 py-3 flex items-center justify-between">
             <Link href="/" className="text-xl font-bold text-white hover:text-gray-200 transition-colors">
-              UnderlayX
+              UnderlayX AI
             </Link>
 
             {/* Desktop Menu */}

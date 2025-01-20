@@ -136,11 +136,19 @@ export function Pricing() {
             </div>
             <h3 className="text-2xl font-bold text-white mb-2">Pro Monthly Plan</h3>
             <div className="flex items-baseline mb-6">
-              <span className="text-4xl font-bold text-white">{currencySymbol}{getPrice(6)}</span>
+              <span className="text-4xl font-bold text-white">
+                <span className="line-through text-gray-500 text-3xl mr-2">
+                  {currencySymbol}{selectedCountry === 'India' ? '149' : '10'}
+                </span>
+                {currencySymbol}{getPrice(6)}
+              </span>
               <span className="text-gray-400 ml-2">/month</span>
             </div>
             <p className="text-gray-400 mb-6">
               Unlimited Features. No Subscriptions. Enjoy full access for a month—and renew anytime.
+              <span className="block mt-2 text-purple-400">
+                Limited time offer - Save {selectedCountry === 'India' ? '₹50' : '$3'} today!
+              </span>
             </p>
             {renderActionButton('pro')}
             <div className="space-y-4 mt-8">
