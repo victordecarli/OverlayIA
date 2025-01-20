@@ -5,24 +5,24 @@ import Link from 'next/link';
 export default function FAQ() {
   const faqs = [
     {
-      question: "What is UnderlayX?",
-      answer: "UnderlayX is a free online tool designed for creative image editing. It allows you to clone images, add text and shapes behind objects, customize backgrounds, and download high-quality edits, all from your browser."
+      question: "What is UnderlayX AI?",
+      answer: "UnderlayX AI is a free online tool designed for creative image editing. It allows you to clone images, add text and shapes behind objects, customize backgrounds, and download high-quality edits, all from your browser."
     },
     {
-      question: "Do I need to create an account to use UnderlayX?",
-      answer: "Yes, you need to sign up with Google to access UnderlayX and unlock its full suite of features."
+      question: "Do I need to create an account to use UnderlayX AI?",
+      answer: "Yes, you need to sign up with Google to access UnderlayX AI and unlock its full suite of features."
     },
     {
-      question: "Does UnderlayX store my images or personal data?",
-      answer: "No, UnderlayX operates fully client-side. Your images and edits are processed locally on your device and are never uploaded or stored on our servers."
+      question: "Does UnderlayX AI store my images or personal data?",
+      answer: "No, UnderlayX AI operates fully client-side. Your images and edits are processed locally on your device and are never uploaded or stored on our servers."
     },
     {
-      question: "Is UnderlayX free to use?",
-      answer: "Yes, UnderlayX is free to use. Premium features and options will be introduced soon for even more functionality."
+      question: "Is UnderlayX AI free to use?",
+      answer: "Yes, UnderlayX AI is free to use. Premium features and options will be introduced soon for even more functionality."
     },
     {
-      question: "What features does UnderlayX offer?",
-      answer: "UnderlayX provides powerful editing tools, including cloning images, customizing backgrounds, adding text behind images, placing shapes behind objects, and downloading high-resolution edits."
+      question: "What features does UnderlayX AI offer?",
+      answer: "UnderlayX AI provides powerful editing tools, including cloning images, customizing backgrounds, adding text behind images, placing shapes behind objects, and downloading high-resolution edits."
     },
     {
       question: "How do I place text behind an image?",
@@ -41,36 +41,36 @@ export default function FAQ() {
       answer: <span>Changing the background of an image is quick and easy. Visit <Link href="https://www.underlayx.com/change-background" className="text-blue-400 hover:underline">Change Background</Link>.</span>
     },
     {
-      question: "How do I clone images using UnderlayX?",
+      question: "How do I clone images using UnderlayX AI?",
       answer: <span>Cloning images is straightforward. Just visit <Link href="https://www.underlayx.com/clone-image" className="text-blue-400 hover:underline">Clone Image</Link>.</span>
     },
     {
-      question: "Can I customize backgrounds with UnderlayX?",
+      question: "Can I customize backgrounds with UnderlayX AI?",
       answer: "Yes, you can easily remove, change, or customize backgrounds to fit your creative needs."
     },
     {
-      question: "Does UnderlayX support high-resolution downloads?",
+      question: "Does UnderlayX AI support high-resolution downloads?",
       answer: "Absolutely! All your edited images can be downloaded in high resolution to ensure the best quality."
     },
     {
-      question: "Do I need any design experience to use UnderlayX?",
-      answer: "Not at all! UnderlayX is user-friendly and designed for everyone, from beginners to professionals."
+      question: "Do I need any design experience to use UnderlayX AI?",
+      answer: "Not at all! UnderlayX AI is user-friendly and designed for everyone, from beginners to professionals."
     },
     {
-      question: "Is there a limit to how many images I can edit on UnderlayX?",
+      question: "Is there a limit to how many images I can edit on UnderlayX AI?",
       answer: "No, you can edit as many images as you like without any restrictions."
     },
     {
-      question: "Does UnderlayX work on all devices?",
-      answer: "Yes, UnderlayX is a web-based tool designed to work on any device with an internet connection and a modern browser."
+      question: "Does UnderlayX AI work on all devices?",
+      answer: "Yes, UnderlayX AI is a web-based tool designed to work on any device with an internet connection and a modern browser."
     },
     {
       question: "How do I report a bug or request a feature?",
       answer: "You can contact me at dailifyofficial@gmail.com."
     },
     {
-      question: "Does UnderlayX work offline?",
-      answer: "No, UnderlayX requires an internet connection to function, as it is a web-based tool."
+      question: "Does UnderlayX AI work offline?",
+      answer: "No, UnderlayX AI requires an internet connection to function, as it is a web-based tool."
     }
   ];
 

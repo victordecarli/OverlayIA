@@ -85,7 +85,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
         <div className="px-4 h-16 flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
             <a href="/" className="flex items-center gap-2 text-gray-900 dark:text-white hover:opacity-80 transition-opacity">
-              <span className="text-xl font-semibold hidden sm:inline">UnderlayX</span>
+              <span className="text-xl font-semibold hidden sm:inline">UnderlayX AI</span>
               <div className="flex items-center flex-col">
                 <Home className="sm:hidden w-5 h-5" />
                 <span className="sm:hidden text-xs mt-0.5 text-gray-600 dark:text-gray-400">Home</span>
