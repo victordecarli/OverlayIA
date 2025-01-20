@@ -22,7 +22,7 @@ const PLAN_OPTIONS = {
     symbol: '$'
   },
   india: {
-    price: 99,
+    price: 149,
     currency: 'INR',
     symbol: '₹'
   }

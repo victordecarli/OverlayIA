@@ -1,7 +1,6 @@
 'use client';
 
 import { create } from 'zustand';
-import { removeBackground } from '@imgly/background-removal';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 import { uploadFile } from '@/lib/upload';  // Add this import
@@ -351,12 +350,30 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       set({ isProcessing: true });
 
-      // Process foreground with PNG format to preserve transparency
-      const processedBlob = await removeBackground(originalUrl);
-      // Ensure the blob is treated as PNG
-      const transparentBlob = new Blob([processedBlob], { type: 'image/png' });
-      const foregroundUrl = URL.createObjectURL(transparentBlob);
-      
+      // Call our API endpoint with the file
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/remove-background', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to remove background');
+      }
+
+      // Fetch the processed image and create a local blob URL
+      const processedImageResponse = await fetch(data.url);
+      if (!processedImageResponse.ok) {
+        throw new Error('Failed to fetch processed image');
+      }
+
+      const processedBlob = await processedImageResponse.blob();
+      const foregroundUrl = URL.createObjectURL(processedBlob);
+
       set(state => ({
         image: {
           ...state.image,
@@ -370,7 +387,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     } catch (error) {
       console.error('Error processing image:', error);
       set({ 
-        processingMessage: 'Oops! Something went wrong. Please try again.',
+        processingMessage: error instanceof Error ? error.message : 'Oops! Something went wrong. Please try again.',
         isProcessing: false,
         isConverting: false
       });

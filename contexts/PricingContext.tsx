@@ -28,8 +28,8 @@ export function PricingProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getPrice = (basePrice: number) => {
-    // For India, use fixed price of 99
-    return selectedCountry === 'India' ? 99 : basePrice;
+    // For India, use fixed price of 149
+    return selectedCountry === 'India' ? 149 : basePrice;
   };
 
   return (
