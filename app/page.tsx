@@ -41,8 +41,8 @@ export default function Home() {
 
         <main className="pt-24" role="main" aria-label="Main content">
           {/* Hero Section */}
-          <section className="container mx-auto px-4 py-4 md:py-10"> {/* Changed from md:py-24 to md:py-16 */}
-            <div className="max-w-4xl mx-auto text-center mb-16">
+          <section className="container mx-auto px-4 py-4 md:py-8"> {/* Changed from md:py-10 to md:py-8 */}
+            <div className="max-w-4xl mx-auto text-center mb-8"> {/* Changed from mb-16 to mb-8 */}
               <h1 className="text-3xl md:text-6xl font-bold text-white mb-6 leading-tight">
                 Transform Your Images
                 <br/>
@@ -55,7 +55,7 @@ export default function Home() {
               <Link 
                 href="/custom-editor"
                 onClick={() => setIsLoading(true)}
-                className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xl font-semibold transition-all mb-8"
+                className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xl font-semibold transition-all mb-4" /* Changed from mb-8 to mb-4 */
               >
                 {isLoading ? (
                   <>
