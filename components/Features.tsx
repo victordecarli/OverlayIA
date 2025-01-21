@@ -1,49 +1,34 @@
 export const Features = () => {
   const features = [
     {
-      title: "Add Shapes Behind Objects",
-      description: "Effortlessly place shapes to create depth and make your images stand out.",
-      icon: "🔷"
+      title: "Clone Objects in Images",
+      description: "Easily clone objects within your image and create multiple versions without altering the background.",
+      icon: "🔄"
     },
     {
-      title: "Place Text Behind Objects",
-      description: "Use AI to position text perfectly behind objects for a professional finish.",
-      icon: "✨"
+      title: "Place Logos or Images Behind Main Image",
+      description: "Effortlessly insert logos, product images, or other graphics behind the main image to enhance the composition.",
+      icon: "🎯"
     },
     {
-      title: "Create Stunning Glow Effects",
-      description: "Add glowing highlights to your images to make them visually striking.",
-      icon: "💡"
-    },
-    {
-      title: "Customize Design Elements",
-      description: "Personalize every detail with a wide range of font styles, colors, and design options.",
+      title: "Change Backgrounds & Move Objects",
+      description: "Seamlessly change the background of your images or reposition objects to achieve the perfect look.",
       icon: "🎨"
     },
     {
-      title: "High-Quality Downloads",
-      description: "Save your creations in premium quality, ready for any use.",
-      icon: "📥"
+      title: "Remove Backgrounds",
+      description: "Quickly remove the background of your images with precision for a clean, professional look.",
+      icon: "✂️"
     },
     {
-      title: "YouTube Thumbnails",
-      description: "Design thumbnails that grab attention and drive clicks effortlessly.",
-      icon: "🎥"
+      title: "Add Text Behind Images",
+      description: "Place text behind images to create depth and a unique, polished visual effect.",
+      icon: "✍️"
     },
     {
-      title: "Social Media Posts",
-      description: "Craft engaging posts for Instagram, TikTok, Facebook, and beyond in seconds.",
-      icon: "📱"
-    },
-    {
-      title: "Professional Marketing",
-      description: "Build standout visuals for campaigns, promotions, and creative projects.",
-      icon: "📈"
-    },
-    {
-      title: "Enhanced Photography",
-      description: "Elevate your photos with professional-grade effects and enhancements.",
-      icon: "📸"
+      title: "Add Shapes Behind Images",
+      description: "Insert shapes behind objects for added dimension and creative flair.",
+      icon: "🔷"
     }
   ];
 

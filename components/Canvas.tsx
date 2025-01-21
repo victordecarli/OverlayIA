@@ -1,11 +1,12 @@
 'use client';
 
+import { useCallback } from 'react';
 import { useEditor } from '@/hooks/useEditor';
 import { Upload } from 'lucide-react';
 import { CanvasPreview } from './CanvasPreview';
 import { convertHeicToJpeg } from '@/lib/image-utils';
 import { ConfirmDialog } from './ConfirmDialog';
-import { useState, useRef, useCallback, useEffect } from 'react'; // Add useRef, useCallback, useEffect
+import { useState, useRef, useEffect } from 'react'; // Add useRef, useCallback, useEffect
 import { useAuth } from '@/hooks/useAuth';
 import { AuthDialog } from './AuthDialog';
 import { cn } from '@/lib/utils';
@@ -55,30 +56,30 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   }, []);
 
   const handleFileProcess = async (file: File) => {
-    if (!user) {
-      setShowAuthDialog(true);
-      return;
-    }
-
     try {
       setIsProcessing(true);
       setProcessingMessage('Analyzing your image, please wait...');
       
-      const profile = await getFreshUserProfile(user.id);
-      if (!profile) throw new Error('Could not fetch user profile');
+      // Only check limits for authenticated users
+      if (user) {
+        const profile = await getFreshUserProfile(user.id);
+        if (!profile) throw new Error('Could not fetch user profile');
 
-      // Check if user has pro access
-      const hasPro = await checkProAccess(user.id);
-      console.log(hasPro)
-      // If not pro, check free generations limit
-      if (!hasPro && profile.free_generations_used >= FREE_GENERATIONS_LIMIT) {
-        setShowProPlanDialog(true);
-        setIsProcessing(false);
-        return;
+        const hasPro = await checkProAccess(user.id);
+        if (!hasPro && profile.free_generations_used >= FREE_GENERATIONS_LIMIT) {
+          setShowProPlanDialog(true);
+          setIsProcessing(false);
+          return;
+        }
       }
 
-      await handleImageUpload(file);
-      await incrementGenerationCount(user);
+      // Pass authentication status to handleImageUpload
+      await handleImageUpload(file, { isAuthenticated: !!user });
+      
+      // Only increment count for authenticated users
+      if (user) {
+        await incrementGenerationCount(user);
+      }
 
     } catch (error) {
       toast({
@@ -119,11 +120,6 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   };
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!user) {
-      setShowAuthDialog(true);
-      return;
-    }
-
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
       // Reset the input value right after getting the file
@@ -143,12 +139,9 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!user) {
-      setShowAuthDialog(true);
-      return;
-    }
+    
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image/webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
+    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
     const fileType = file.type.toLowerCase();
     const fileName = file.name.toLowerCase();
 
@@ -220,11 +213,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   }, []);
 
   const handleUploadClick = (e: React.MouseEvent<HTMLElement>) => {
-    if (!user) {
-      e.preventDefault();
-      setShowAuthDialog(true);
-      return;
-    }
+    // No longer need to check auth here
   };
 
   return (
@@ -232,9 +221,15 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       <div className={cn(
         "absolute inset-0 flex items-center justify-center",
         "p-4 sm:p-6",
-        isMobile && "mt-2", // Add small top margin on mobile
-        isPanelOpen && isMobile && "mb-4" // Add bottom margin when panel is open on mobile
+        isMobile && "mt-2",
+        isPanelOpen && isMobile && "mb-4"
       )}>
+        {image.original && !user && (
+          <div className="absolute top-0 left-0 right-0 z-10 bg-purple-600/90 text-white px-4 py-2 text-center text-sm font-medium backdrop-blur-sm">
+            💡 You&apos;re using the Basic AI Model. Sign up for Best Results and HD Downloads!
+          </div>
+        )}
+        
         {!image.original ? (
           <div 
             onDrop={handleDrop}
@@ -306,7 +301,9 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
               : 
               isPanelOpen ? 
                 'h-[calc(68vh-12rem)]' : 
-                'h-[calc(100vh-14rem)]'
+                'h-[calc(100vh-14rem)]',
+            // Add padding top when showing the notification
+            !user && "pt-10"
           )}>
             {(isProcessing || isConverting) && (
               <div className="absolute inset-0 flex items-center justify-center z-50">

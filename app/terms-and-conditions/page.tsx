@@ -9,7 +9,7 @@ export default function Terms() {
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 text-center">
           Terms and Conditions
         </h1>
-        <p className="text-gray-400 text-center mb-12">Effective Date: January 12, 2024</p>
+        <p className="text-gray-400 text-center mb-12">Effective Date: January 21, 2024</p>
         <div className="max-w-3xl mx-auto">
           <div className="bg-black/20 backdrop-blur-sm p-8 rounded-xl border border-gray-800">
             <p className="text-gray-300 mb-6">
@@ -35,14 +35,17 @@ export default function Terms() {
                 title: "4. Data Privacy and Security",
                 content: ["UnderlayX AI does not store any images or personal data on its servers. All images and data are processed on your device's browser.",
                 "We do not track or store personal data. Any data (such as images) provided by you is processed locally and deleted once you exit the page or download the processed image.",
-                "We use Google Analytics for tracking app usage statistics, but this data is anonymous and not tied to any personal information."]
+                "Third-Party Integrations:",
+                "• We use PayU for payments within India, requiring a phone number to send transaction SMS. This information is passed to PayU securely but is not stored in our database.",
+                "• We use Replicate API to process images. Images are sent to their API for processing, and results are returned without being stored by us. Replicate deletes any input or output files after one hour."]
               },
               {
                 title: "5. User Responsibilities",
-                content: ["You agree to:",
-                "• Use the Service only for lawful purposes.",
-                "• Not use the Service in a way that violates any applicable laws or regulations.",
-                "• Not interfere with the normal operation of the Service or attempt to gain unauthorized access to any features."]
+                content: ["We encourage you to explore your creativity and have fun using UnderlayX AI! To keep the platform enjoyable and safe for everyone, we ask that you:",
+                "• Use the Service responsibly and in ways that inspire creativity.",
+                "• Avoid uploading or creating content that could harm others or violate any laws, such as offensive, explicit, or illegal material.",
+                "• Respect intellectual property rights and ensure the content you create does not infringe on the rights of others.",
+                "• Help us maintain smooth operations by using the platform as intended and avoiding unauthorized activities."]
               },
               {
                 title: "6. Limitations of Liability",

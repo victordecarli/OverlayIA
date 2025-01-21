@@ -18,7 +18,7 @@ const features = {
     "Remove Backgrounds",
     "Change Backgrounds",
     "Add Text Behind Images",
-    "Shapes Behind Images"
+    "Shapes Behind Images",
   ],
   pro: [
     "Images Behind the Main Subject",
@@ -26,7 +26,9 @@ const features = {
     "Remove Backgrounds",
     "Change Backgrounds",
     "Add Text Behind Images",
-    "Shapes Behind Images"
+    "Shapes Behind Images",
+    "The first 50 images you process will use the advanced AI model",
+    "The next 50 images will use the moderate AI model"
   ]
 };
 
@@ -116,7 +118,7 @@ export function Pricing() {
               <span className="text-gray-400 ml-2">/forever</span>
             </div>
             <p className="text-gray-400 mb-6">
-              Try our basic features with 2 free generations.
+              Try premium features with 2 free generations.
             </p>
             {renderActionButton('free')}
             <div className="space-y-4 mt-8">
@@ -145,9 +147,9 @@ export function Pricing() {
               <span className="text-gray-400 ml-2">/month</span>
             </div>
             <p className="text-gray-400 mb-6">
-              Unlimited Features. No Subscriptions. Enjoy full access for a month—and renew anytime.
+              Unlimited Creations. No Subscriptions. Enjoy full access for a month—and renew anytime.
               <span className="block mt-2 text-purple-400">
-                Limited time offer - Save {selectedCountry === 'India' ? '₹50' : '$4'} today!
+                Limited time offer - Save {selectedCountry === 'India' ? '₹100' : '$4'} today!
               </span>
             </p>
             {renderActionButton('pro')}
@@ -158,6 +160,10 @@ export function Pricing() {
                   <span>{feature}</span>
                 </div>
               ))}
+              <div className="mt-6 text-sm text-gray-400/70">
+                <p className="font-medium mb-1">Note:</p>
+                <p> After 100 images, the output will have lower image quality to maintain service affordability. If you'd like to continue using the advanced AI model beyond the first 100 images, please contact us at dailifyofficial@gmail.com for more information.</p>
+              </div>
             </div>
           </div>
         </div>

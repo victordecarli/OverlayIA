@@ -1,10 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useMemo, useCallback } from 'react';
+import { useEffect, useRef, useMemo, useCallback, useState } from 'react';
 import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { QualityDialog } from '@/components/QualityDialog';
+import { AuthDialog } from '@/components/AuthDialog';  // Add this import
 
 export function CanvasPreview() {
   const { 
@@ -18,7 +21,8 @@ export function CanvasPreview() {
     clonedForegrounds,
     backgroundImages,  // Add this line
     backgroundColor,
-    foregroundSize
+    foregroundSize,
+    shouldShowQualityDialog
   } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
@@ -26,7 +30,10 @@ export function CanvasPreview() {
   const bgImagesRef = useRef<Map<number, HTMLImageElement>>(new Map()); // Add this line
   const renderRequestRef = useRef<number | undefined>(undefined);
   const { toast } = useToast();
-
+  const { user } = useAuth();
+  const [showQualityDialog, setShowQualityDialog] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState<(() => void) | null>(null);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   // Memoize the filter string
   const filterString = useMemo(() => `
@@ -347,23 +354,64 @@ export function CanvasPreview() {
     foregroundSize  // Add foregroundSize here
   ]);
 
+  const handleLowQualityDownload = useCallback(() => {
+    useEditor.getState().downloadImage(false);
+    useEditor.setState({ shouldShowQualityDialog: false });
+  }, []);
+
+  const handleSignUp = useCallback(() => {
+    useEditor.setState({ shouldShowQualityDialog: false });
+    setShowAuthDialog(true);
+  }, []);
+
+  // Listen for download events and show dialog for unauthenticated users
+  useEffect(() => {
+    const unsubscribe = useEditor.subscribe((state) => {
+      if (state.isDownloading) {
+        if (!user) {
+          // Show quality dialog for unauthenticated users
+          useEditor.setState({ 
+            isDownloading: false,
+            shouldShowQualityDialog: true 
+          });
+        }
+        // Authenticated users proceed with download
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
   return (
-    <div className="relative w-full h-full">
-      <div className={cn(
-        "absolute inset-0",
-        "flex items-center justify-center",
-        "overflow-hidden"
-      )}>
-        <canvas
-          ref={canvasRef}
-          className={cn(
-            "max-w-full max-h-full",
-            "object-contain",
-            "rounded-xl" // Rounded corners for canvas
-          )}
-        />
+    <>
+      <div className="relative w-full h-full">
+        <div className={cn(
+          "absolute inset-0",
+          "flex items-center justify-center",
+          "overflow-hidden"
+        )}>
+          <canvas
+            ref={canvasRef}
+            className={cn(
+              "max-w-full max-h-full",
+              "object-contain",
+              "rounded-xl" // Rounded corners for canvas
+            )}
+          />
+        </div>
       </div>
-    </div>
+      <QualityDialog
+        isOpen={shouldShowQualityDialog}
+        onClose={() => useEditor.setState({ shouldShowQualityDialog: false })}
+        onDownloadLowQuality={handleLowQualityDownload}
+        onSignUp={handleSignUp}
+      />
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={() => setShowAuthDialog(false)}
+        returnUrl={typeof window !== 'undefined' ? window.location.pathname : ''}
+      />
+    </>
   );
 }
 
