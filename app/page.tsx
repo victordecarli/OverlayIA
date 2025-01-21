@@ -51,6 +51,7 @@ export default function Home() {
               <p className="text-md md:text-md text-gray-300 mb-8 max-w-xl mx-auto">
               The all-in-one tool to clone images, place logos, text, shapes, or other images behind your photo, remove backgrounds, and change backgrounds.
               </p>
+              <p className="text-sm text-gray-400 mb-4">7,400+ images generated</p>
               <Link 
                 href="/custom-editor"
                 onClick={() => setIsLoading(true)}
@@ -67,49 +68,50 @@ export default function Home() {
                   "Start creating for free"
                 )}
               </Link>
-              
-              {/* Product Hunt Badges */}
-              <div className="flex flex-row justify-center items-center gap-4 mt-6">
-                {[
-                  {
-                    href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
-                    src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44"
-                  },
-                  {
-                    href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx",
-                    src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily"
-                  },
-                  {
-                    href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
-                    src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164"
-                  }
-                ].map((badge, index) => (
-                  <a 
-                    key={index}
-                    href={badge.href}
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      src={badge.src}
-                      alt="UnderlayX - Product Hunt Badge"
-                      width={150}
-                      height={32}
-                      className="h-18 w-auto"
-                    />
-                  </a>
-                ))}
-              </div>
             </div>
           </section>
 
           {/* Feature Showcase */}
           <FeatureShowcase />
-          {/* Features, Use Cases, and Product Hunt Badges */}
           <Features />
           <UseCases />
           <section id="pricing">
             <Pricing />
+          </section>
+          
+          {/* Product Hunt Badges Section */}
+          <section className="container mx-auto px-4 py-12">
+            <div className="flex flex-row justify-center items-center gap-4">
+              {[
+                {
+                  href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
+                  src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44"
+                },
+                {
+                  href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx",
+                  src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily"
+                },
+                {
+                  href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
+                  src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164"
+                }
+              ].map((badge, index) => (
+                <a 
+                  key={index}
+                  href={badge.href}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={badge.src}
+                    alt="UnderlayX - Product Hunt Badge"
+                    width={150}
+                    height={32}
+                    className="h-18 w-auto"
+                  />
+                </a>
+              ))}
+            </div>
           </section>
           <Footer />
         </main>
