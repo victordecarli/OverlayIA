@@ -59,7 +59,7 @@ export function Footer() {
                 Vineer
               </a>
             </p>
-            <p className="text-gray-400 text-sm">
+            {/* <p className="text-gray-400 text-sm">
               Open source on{' '}
               <a 
                 href="https://github.com/nagavineerpasam/UnderlayX"
@@ -69,7 +69,7 @@ export function Footer() {
               >
                 GitHub
               </a>
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
