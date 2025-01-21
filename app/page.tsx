@@ -9,12 +9,14 @@ import { Features } from '@/components/Features';
 import { UseCases } from '@/components/UseCases';
 import { FeatureShowcase } from '@/components/FeatureShowcase';
 import { Pricing } from '@/components/Pricing';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
   const searchParams = useSearchParams();
   const section = searchParams.get('section');
+  const { user } = useAuth();
 
   useEffect(() => {
     if (section === 'pricing') {
@@ -56,11 +58,13 @@ export default function Home() {
               >
                 {isLoading ? (
                   <>
-                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
                     Loading...
                   </>
+                ) : user ? (
+                  "Open the app"
                 ) : (
-                  "Start Creating"
+                  "Start creating for free"
                 )}
               </Link>
               

@@ -57,6 +57,9 @@ export function ProPlanDialog({ isOpen, onClose }: ProPlanDialogProps) {
     onClose();
   };
 
+  const getOriginalPrice = () => selectedCountry === 'India' ? 199 : 10;
+  const getDiscountedPrice = () => selectedCountry === 'India' ? 99 : 6;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] bg-zinc-900 border-zinc-800">
@@ -82,7 +85,14 @@ export function ProPlanDialog({ isOpen, onClose }: ProPlanDialogProps) {
                 <div className="text-sm text-gray-400">Unlimited generations • All features</div>
               </div>
               <div className="text-right">
-                <span className="font-semibold text-purple-400 text-xl">{currencySymbol}{getPrice(6)}</span>
+                <div className="flex items-center gap-2 justify-end">
+                  <span className="line-through text-gray-500 text-lg">
+                    {currencySymbol}{getOriginalPrice()}
+                  </span>
+                  <span className="font-semibold text-purple-400 text-xl">
+                    {currencySymbol}{getDiscountedPrice()}
+                  </span>
+                </div>
                 <div className="text-sm text-gray-400">/month</div>
               </div>
             </div>
@@ -97,7 +107,7 @@ export function ProPlanDialog({ isOpen, onClose }: ProPlanDialogProps) {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                Full access to all features
+                Unlimited generations
               </div>
             </div>
           </div>

@@ -1,9 +1,10 @@
 'use client';
 
 import { create } from 'zustand';
-import { convertHeicToJpeg } from '@/lib/image-utils';
+import { convertHeicToJpeg, optimizeImage } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 import { uploadFile } from '@/lib/upload';  // Add this import
+
 
 interface GlowEffect {
   enabled: boolean;
@@ -94,6 +95,7 @@ interface EditorState {
   backgroundImages: BackgroundImage[];
   backgroundColor: string | null;
   foregroundSize: number;  // Add this line
+  shouldShowQualityDialog: boolean;
 }
 
 interface EditorActions {
@@ -101,8 +103,8 @@ interface EditorActions {
   updateTextSet: (id: number, updates: Partial<TextSet>) => void;
   removeTextSet: (id: number) => void;
   duplicateTextSet: (id: number) => void;
-  handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean }) => Promise<void>;
-  downloadImage: () => Promise<void>;  // Remove quality parameter
+  handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean }) => Promise<void>;
+  downloadImage: (isAuthenticated: boolean) => Promise<void>;  // Remove quality parameter
   resetEditor: (clearImage?: boolean) => void;
   addShapeSet: (type: string) => void;
   updateShapeSet: (id: number, updates: Partial<ShapeSet>) => void;
@@ -198,6 +200,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   backgroundImages: [],
   backgroundColor: null,
   foregroundSize: 100,  // Default size is 100%
+  shouldShowQualityDialog: false,
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -292,7 +295,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     };
   }),
 
-  handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean }) => {
+  handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean }) => {
     // First, reset the editor state while preserving certain flags
     set(state => ({
       ...state,
@@ -348,11 +351,15 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         file = await convertHeicToJpeg(file);
       }
 
+      // Use isAuthenticated from params instead of user
+      const fileToUpload = state?.isAuthenticated ? file : await optimizeImage(file);
+
       set({ isProcessing: true });
 
-      // Call our API endpoint with the file
+      // Call our API endpoint with the optimized or original file
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', fileToUpload);
+      formData.append('isAuthenticated', String(!!state?.isAuthenticated));
 
       const response = await fetch('/api/remove-background', {
         method: 'POST',
@@ -396,12 +403,18 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }
   },
 
-  downloadImage: async () => {
+  downloadImage: async (isAuthenticated: boolean) => {
     try {
+      const state = get();
+      if (state.isDownloading) return; // Prevent multiple downloads
+
       set({ 
         isDownloading: true,
         processingMessage: 'Preparing your masterpiece...'
       });
+
+      // Add delay to ensure dialog appears before any processing
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       const { 
         image, 
@@ -412,8 +425,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         hasTransparentBackground,
         hasChangedBackground,
         foregroundPosition,
-        originalFileName,
-        backgroundImages,  // Add this line
+        backgroundImages,
         foregroundSize
       } = get();
 
@@ -615,37 +627,35 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         }
       }
 
-      // Create blob with PNG format to preserve transparency
+      // Create blob with JPEG format for unauthenticated users
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
-          blob => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
-          'image/png'  // Always use PNG for transparency support
+          blob => blob ? resolve(blob) : reject(new Error('Something went wrong')),
+          isAuthenticated ? 'image/png' : 'image/jpeg',
+          isAuthenticated ? 1 : 0.5  // Lower quality for unauthenticated users
         );
       });
 
-      // Download logic
+      // Perform the download
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      const timestamp = Math.floor(Date.now() / 1000); // Get current time in seconds
-      link.download = `UnderlayXAI_${timestamp}.png`;  // Always use PNG extension
+      const timestamp = Math.floor(Date.now() / 1000);
+      link.download = isAuthenticated ? `UnderlayXAI_${timestamp}.png` : `UnderlayXAI_${timestamp}.jpg`;  // Use .jpg extension
       link.href = url;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      set({ 
-        isDownloading: false,
-        processingMessage: 'Download complete!' 
-      });
-      setTimeout(() => set({ processingMessage: '' }), 2000);
-
+      set({ isDownloading: false });
     } catch (error) {
       console.error('Download error:', error);
       set({ 
         isDownloading: false,
         processingMessage: 'Download failed. Please try again.' 
       });
+    } finally {
+      set({ isDownloading: false });
     }
   },
 

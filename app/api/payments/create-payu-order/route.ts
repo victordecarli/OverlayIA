@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const { userID, firstName, phone } = body;
 
     // PayU payments in INR
-    const amount = 149;
+    const amount = 99;
 
     // Ensure we have the base URL
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL;

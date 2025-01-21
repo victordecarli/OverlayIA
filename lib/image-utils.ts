@@ -28,13 +28,37 @@ export function getImageFormat(file: File): string {
   return file.type.split('/')[1];
 }
 
-export const optimizeImage = async (file: File, quality: number = 0.8): Promise<File> => {
+
+export const optimizeImage = async (file: File): Promise<File> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
     
     img.onload = () => {
       URL.revokeObjectURL(url);
+
+      // Set maximum width or height to resize the image
+      const maxDimension = 800; // Adjust this value to suit your needs
+      const width = img.width;
+      const height = img.height;
+
+      // Calculate the aspect ratio and resize the image proportionally
+      let newWidth = width;
+      let newHeight = height;
+      
+      if (width > height) {
+        if (width > maxDimension) {
+          newWidth = maxDimension;
+          newHeight = (maxDimension / width) * height;
+        }
+      } else {
+        if (height > maxDimension) {
+          newHeight = maxDimension;
+          newWidth = (maxDimension / height) * width;
+        }
+      }
+
+      // Create a canvas and resize the image
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) {
@@ -42,10 +66,11 @@ export const optimizeImage = async (file: File, quality: number = 0.8): Promise<
         return;
       }
 
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-      
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+      // Compress and convert to Blob with low quality
       canvas.toBlob(
         (blob) => {
           if (blob) {
@@ -55,9 +80,10 @@ export const optimizeImage = async (file: File, quality: number = 0.8): Promise<
           }
         },
         'image/jpeg',
-        quality
+        0.4 // Ensure this is set to low quality for compression
       );
     };
+
     img.onerror = reject;
     img.src = url;
   });

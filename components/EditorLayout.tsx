@@ -79,6 +79,14 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   // Unified state check for all button actions
   const isActionDisabled = isProcessing || isConverting || isDownloading;
 
+  const handleDownload = () => {
+    if (user) {
+      downloadImage(true);
+    } else {
+      useEditor.setState({ shouldShowQualityDialog: true });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-white/10">
@@ -109,7 +117,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
                   <span className="text-xs mt-0.5 text-gray-600 dark:text-gray-400">Upload</span>
                 </button>
                 <button
-                  onClick={() => downloadImage()}
+                  onClick={handleDownload}
                   disabled={isActionDisabled}
                   className={cn(
                     "flex flex-col items-center px-2",
