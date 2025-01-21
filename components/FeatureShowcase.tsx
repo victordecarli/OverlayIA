@@ -6,7 +6,7 @@ import Link from 'next/link';
 const fashion = [
   {
     title: 'Clone objects',
-    image: '/lotion.png',
+    image: '/clones.jpeg',
     altText: 'Clone objects in image'
   },
   {
