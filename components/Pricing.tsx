@@ -27,8 +27,7 @@ const features = {
     "Change Backgrounds",
     "Add Text Behind Images",
     "Shapes Behind Images",
-    "The first 50 images you process will use the advanced AI model",
-    "The next 50 images will use the moderate AI model"
+    "50 stunning HD images processed with cutting-edge AI technology",
   ]
 };
 
@@ -147,7 +146,9 @@ export function Pricing() {
               <span className="text-gray-400 ml-2">/month</span>
             </div>
             <p className="text-gray-400 mb-6">
-              Unlimited Creations. No Subscriptions. Enjoy full access for a month—and renew anytime.
+              Enjoy all advanced features for a month.
+              <br />
+              No subscriptions needed. Renew anytime to continue creating.
               <span className="block mt-2 text-purple-400">
                 Limited time offer - Save {selectedCountry === 'India' ? '₹100' : '$4'} today!
               </span>
@@ -160,10 +161,6 @@ export function Pricing() {
                   <span>{feature}</span>
                 </div>
               ))}
-              <div className="mt-6 text-sm text-gray-400/70">
-                <p className="font-medium mb-1">Note:</p>
-                <p> After 100 images, the output will have lower image quality to maintain service affordability. If you'd like to continue using the advanced AI model beyond the first 100 images, please contact us at dailifyofficial@gmail.com for more information.</p>
-              </div>
             </div>
           </div>
         </div>

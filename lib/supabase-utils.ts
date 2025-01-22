@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 import { User } from '@supabase/supabase-js';
 
-export const FREE_GENERATIONS_LIMIT = 5;
+export const FREE_GENERATIONS_LIMIT = 3;
 
 interface UserProfile {
   id: string;

@@ -68,6 +68,19 @@ interface BackgroundImage {
   rotation: number;
 }
 
+interface PendingImage {
+  id: number;
+  file: File;
+  url: string;
+  processedUrl: string | null;
+  isProcessing: boolean;
+  isInEditor: boolean;
+  originalSize: {
+    width: number;
+    height: number;
+  } | null;
+}
+
 interface EditorState {
   image: {
     original: string | null;
@@ -96,6 +109,7 @@ interface EditorState {
   backgroundColor: string | null;
   foregroundSize: number;  // Add this line
   shouldShowQualityDialog: boolean;
+  pendingImages: PendingImage[];  // Add this line
 }
 
 interface EditorActions {
@@ -123,11 +137,13 @@ interface EditorActions {
   updateClonedForegroundTransform: (id: number, updates: Partial<{ position: { x: number; y: number }; size: number; rotation: number }>) => void;
   setIsProcessing: (value: boolean) => void;
   setIsConverting: (value: boolean) => void;
-  addBackgroundImage: (file: File) => Promise<void>;
+  addBackgroundImage: (file: File, originalSize?: { width: number; height: number } | null, id?: number) => Promise<void>;
   removeBackgroundImage: (id: number) => void;
   updateBackgroundImage: (id: number, updates: Partial<BackgroundImage>) => void;
   setBackgroundColor: (color: string | null) => void;
   updateForegroundSize: (size: number) => void;  // Add this line
+  addPendingImage: (image: PendingImage) => void;
+  updatePendingImage: (id: number, updates: Partial<PendingImage>) => void;
 }
 
 // Add helper functions outside of the store
@@ -201,6 +217,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   backgroundColor: null,
   foregroundSize: 100,  // Default size is 100%
   shouldShowQualityDialog: false,
+  pendingImages: [],  // Initialize the new state
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -356,7 +373,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       set({ isProcessing: true });
 
-      // Call our API endpoint with the optimized or original file
       const formData = new FormData();
       formData.append('file', fileToUpload);
       formData.append('isAuthenticated', String(!!state?.isAuthenticated));
@@ -821,21 +837,29 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   })),
   setIsProcessing: (value: boolean) => set({ isProcessing: value }),
   setIsConverting: (value: boolean) => set({ isConverting: value }),
-  addBackgroundImage: async (file: File) => {
+  addBackgroundImage: async (file: File, originalSize?: { width: number; height: number } | null, id?: number) => {
     const { backgroundImages } = get();
     if (backgroundImages.length >= 2) {
       throw new Error('Maximum of 2 background images allowed');
     }
 
     const url = URL.createObjectURL(file);
+    
+    // Calculate scale that preserves aspect ratio
+    let initialScale = 50; // default value
+    if (originalSize) {
+      const aspectRatio = originalSize.width / originalSize.height;
+      initialScale = aspectRatio > 1 ? 100 : 100 * aspectRatio;
+    }
+
     set((state) => ({
       backgroundImages: [
         ...state.backgroundImages,
         {
-          id: Date.now(),
+          id: id || Date.now(), // Use provided ID or generate new one
           url,
           position: { vertical: 50, horizontal: 50 },
-          scale: 50,
+          scale: initialScale,
           opacity: 1,
           rotation: 0
         }
@@ -843,9 +867,34 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }));
   },
 
-  removeBackgroundImage: (id) => set((state) => ({
-    backgroundImages: state.backgroundImages.filter(img => img.id !== id)
-  })),
+  removeBackgroundImage: (id) => set((state) => {
+    // Find the image to clean up its URL
+    const imageToRemove = state.backgroundImages.find(img => img.id === id);
+    if (imageToRemove) {
+      URL.revokeObjectURL(imageToRemove.url);
+    }
+
+    // Remove from both pendingImages and backgroundImages arrays
+    const filteredBackgroundImages = state.backgroundImages.filter(img => img.id !== id);
+    const filteredPendingImages = state.pendingImages.filter(img => img.id !== id);
+
+    // If all background images are removed, reset related states
+    const shouldResetBackground = filteredBackgroundImages.length === 0;
+
+    return {
+      backgroundImages: filteredBackgroundImages,
+      pendingImages: filteredPendingImages,
+      ...(shouldResetBackground && {
+        hasChangedBackground: false,
+        hasTransparentBackground: false,
+        backgroundColor: null,
+        image: {
+          ...state.image,
+          background: state.image.original
+        }
+      })
+    };
+  }),
 
   updateBackgroundImage: (id, updates) => set((state) => ({
     backgroundImages: state.backgroundImages.map(img =>
@@ -867,4 +916,14 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   },
   
   updateForegroundSize: (size) => set({ foregroundSize: size }),
+
+  addPendingImage: (image: PendingImage) => set(state => ({
+    pendingImages: [...state.pendingImages, image]
+  })),
+
+  updatePendingImage: (id: number, updates: Partial<PendingImage>) => set(state => ({
+    pendingImages: state.pendingImages.map(img =>
+      img.id === id ? { ...img, ...updates } : img
+    )
+  })),
 }));
