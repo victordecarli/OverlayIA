@@ -17,12 +17,12 @@ import { usePricing } from '@/contexts/PricingContext';
 
 const PLAN_OPTIONS = {
   international: {
-    price: 6,
+    price: 3, // Changed from 6
     currency: 'USD',
     symbol: '$'
   },
   india: {
-    price: 99,
+    price: 49, // Changed from 99
     currency: 'INR',
     symbol: '₹'
   }

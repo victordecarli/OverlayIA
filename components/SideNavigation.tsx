@@ -259,6 +259,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
              ) : (
                 <h3 className="text-lg font-semibold">
                   {activeTab === 'remove-background' ? 'Remove Background' : 
+                  activeTab === 'images' ? 'Image overlay' : 
                    activeTab === 'change-background' ? 'Change Background' : 
                    activeTab === 'clone-image' ? 'Clone Image' :
                    activeTab === 'text' ? 'Add Text' :

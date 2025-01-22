@@ -7,8 +7,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { userID, firstName, phone } = body;
 
-    // PayU payments in INR
-    const amount = 99;
+    // PayU payments in INR - Updated price
+    const amount = 49; // Changed from 99
 
     // Ensure we have the base URL
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL;

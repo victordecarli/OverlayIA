@@ -9,8 +9,8 @@ import { UserMenu } from './UserMenu';
 import { AuthDialog } from './AuthDialog';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
-import { FREE_GENERATIONS_LIMIT } from '@/lib/supabase-utils';
 import { isSubscriptionActive } from '@/lib/utils';
+import { AvatarFallback } from './AvatarFallback';
 
 // Remove getUserGenerationInfo import
 
@@ -233,27 +233,38 @@ export function Navbar() {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="relative flex items-center"
+                    className="relative flex items-center z-20" // Added z-20 to ensure button stays above
                   >
                     <div className="relative">
                       {generationInfo?.expires_at && isSubscriptionActive(generationInfo.expires_at) && (
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none">
+                        <div className="absolute -top-2 -translate-y-0.5 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30">
                           Pro
                         </div>
                       )}
-                      <div className="w-8 h-8 relative rounded-full overflow-hidden">
-                        <img
-                          src={user.user_metadata.avatar_url}
-                          alt="User avatar"
-                          sizes="32px"
-                          className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
-                        />
+                      <div className="w-8 h-8 relative rounded-full overflow-hidden ring-2 ring-white/10">
+                        {user.user_metadata.avatar_url ? (
+                          <img
+                            src={user.user_metadata.avatar_url}
+                            alt="User avatar"
+                            sizes="32px"
+                            className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.parentElement?.querySelector('.avatar-fallback')?.classList.remove('hidden');
+                            }}
+                          />
+                        ) : (
+                          <AvatarFallback email={user.email || ''} />
+                        )}
+                        <div className="avatar-fallback hidden">
+                          <AvatarFallback email={user.email || ''} />
+                        </div>
                       </div>
                     </div>
                   </button>
                   
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-60 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10">
+                    <div className="absolute right-0 mt-2 w-60 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10 z-50">
                       <div className="px-4 py-2 text-sm border-b border-gray-200 dark:border-white/10">
                         <div className="text-gray-700 dark:text-gray-300 truncate">
                           {user.email}
@@ -268,9 +279,6 @@ export function Navbar() {
                             ) : (
                               <>
                                 <div>Free Plan</div>
-                                <div>
-                                  Free generations left: {Math.max(0, FREE_GENERATIONS_LIMIT - generationInfo.free_generations_used)}
-                                </div>
                               </>
                             )}
                           </div>
@@ -358,9 +366,6 @@ export function Navbar() {
                         ) : (
                           <div className="flex justify-between items-center">
                             <span>Free generations left:</span>
-                            <span className="font-medium">
-                              {Math.max(0, FREE_GENERATIONS_LIMIT - generationInfo.free_generations_used)}
-                            </span>
                           </div>
                         )}
                       </div>
