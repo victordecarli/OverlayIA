@@ -1,14 +1,11 @@
 import { supabase } from './supabaseClient';
 import { User } from '@supabase/supabase-js';
 
-export const FREE_GENERATIONS_LIMIT = 3;
-
 interface UserProfile {
   id: string;
   email: string;
   avatar_url: string;
   expires_at: string | null;
-  free_generations_used: number;
   generations_count: number;
 }
 
@@ -16,7 +13,7 @@ export async function getFreshUserProfile(userId: string): Promise<UserProfile |
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, avatar_url, expires_at, free_generations_used, generations_count')
+      .select('id, email, avatar_url, expires_at, generations_count')
       .eq('id', userId)
       .single();
     if (error) throw error;
@@ -42,29 +39,15 @@ export async function checkProAccess(userId: string): Promise<boolean> {
   }
 }
 
-// Keep track of free generations for non-pro users
+// Only track generations for authenticated users
 export async function incrementGenerationCount(user: User) {
   try {
     const profile = await getFreshUserProfile(user.id);
     if (!profile) throw new Error('Could not fetch user profile');
 
-    const isPro = await checkProAccess(user.id);
-    
-    // If not pro, check free limit
-    if (!isPro && profile.free_generations_used >= FREE_GENERATIONS_LIMIT) {
-      throw new Error('Free generations limit reached');
-    }
-
-    const updateData = isPro
-      ? { generations_count: (profile.generations_count || 0) + 1 }
-      : {
-          generations_count: (profile.generations_count || 0) + 1,
-          free_generations_used: (profile.free_generations_used || 0) + 1
-        };
-
     const { data, error } = await supabase
       .from('profiles')
-      .update(updateData)
+      .update({ generations_count: (profile.generations_count || 0) + 1 })
       .eq('id', user.id)
       .select()
       .single();

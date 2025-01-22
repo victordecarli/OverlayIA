@@ -9,13 +9,14 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { useState, useRef, useEffect } from 'react'; // Add useRef, useCallback, useEffect
 import { useAuth } from '@/hooks/useAuth';
 import { AuthDialog } from './AuthDialog';
-import { cn } from '@/lib/utils';
+import { cn, isSubscriptionActive } from '@/lib/utils';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { useIsMobile } from '@/hooks/useIsMobile'; // Add this import
-import { incrementGenerationCount, checkProAccess, FREE_GENERATIONS_LIMIT, getFreshUserProfile } from '@/lib/supabase-utils';
+import { incrementGenerationCount } from '@/lib/supabase-utils';
 import { TokenPurchaseDialog } from './TokenPurchaseDialog';
 import { useToast } from '@/hooks/use-toast';
 import { ProPlanDialog } from './ProPlanDialog';
+import { supabase } from '@/lib/supabaseClient';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -45,6 +46,26 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const isMobile = useIsMobile(); // Add this hook
   const { toast } = useToast();
 
+  // Add state for subscription status
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+
+  // Add effect to fetch subscription status
+  useEffect(() => {
+    async function fetchSubscriptionStatus() {
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('expires_at')
+          .eq('id', user.id)
+          .single();
+        
+        setExpiresAt(data?.expires_at || null);
+      }
+    }
+    
+    fetchSubscriptionStatus();
+  }, [user]);
+
   // Add this function inside the Canvas component
   const preloadFonts = useCallback(async (fontFamily: string) => {
     try {
@@ -57,29 +78,14 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
 
   const handleFileProcess = async (file: File) => {
     try {
-      if (!user) {
-        setShowAuthDialog(true);
-        return;
-      }
-
       setIsProcessing(true);
       setProcessingMessage('Analyzing your image, please wait...');
-      
-      // Only check limits for authenticated users
-      if (user) {
-        const profile = await getFreshUserProfile(user.id);
-        if (!profile) throw new Error('Could not fetch user profile');
 
-        const hasPro = await checkProAccess(user.id);
-        if (!hasPro && profile.free_generations_used >= FREE_GENERATIONS_LIMIT) {
-          setShowProPlanDialog(true);
-          setIsProcessing(false);
-          return;
-        }
-      }
-
-      // Pass authentication status to handleImageUpload
-      await handleImageUpload(file, { isAuthenticated: !!user });
+      // Pass authentication status and userId to handleImageUpload
+      await handleImageUpload(file, { 
+        isAuthenticated: !!user, 
+        userId: user?.id 
+      });
       
       // Only increment count for authenticated users
       if (user) {
@@ -167,7 +173,28 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       return 'Converting HEIC to JPEG format...';
     }
     if (isProcessing) {
-      return processingMessage || 'processing...';
+      // Show upgrade message for non-logged in users or users with expired subscription
+      if (!user || !expiresAt || !isSubscriptionActive(expiresAt)) {
+        return (
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-white text-sm font-bold">
+              {processingMessage || 'Processing with Basic AI...'}
+            </p>
+            <div className="flex flex-col items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+              <p className="text-white/90 text-xs">
+                💫 Upgrade to Pro for 2x faster processing & HD quality
+              </p>
+              <button
+                onClick={handleUpgradeClick}
+                className="mt-2 px-3 py-1 text-xs font-medium text-white bg-purple-500/30 hover:bg-purple-500/40 rounded-full transition-colors"
+              >
+                Upgrade Now
+              </button>
+            </div>
+          </div>
+        );
+      }
+      return processingMessage || 'Processing...';
     }
     return 'Loading image...';
   };
@@ -221,6 +248,14 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
     // No longer need to check auth here
   };
 
+  const handleUpgradeClick = () => {
+    if (user) {
+      setShowProPlanDialog(true);
+    } else {
+      setShowAuthDialog(true);
+    }
+  };
+
   return (
     <>
       <div className={cn(
@@ -229,11 +264,26 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
         isMobile && "mt-2",
         isPanelOpen && isMobile && "mb-4"
       )}>
-        {image.original && !user && (
-          <div className="absolute top-0 left-0 right-0 z-10 bg-purple-600/90 text-white px-4 py-2 text-center text-sm font-medium backdrop-blur-sm">
-            💡 You&apos;re using the Basic AI Model. Sign up for Best Results and HD Downloads!
-          </div>
-        )}
+        {/* {image.original && (!user || (expiresAt && !isSubscriptionActive(expiresAt))) && (
+          <>
+            <div className="absolute top-0 left-0 right-0 z-10 flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600/90 to-purple-500/90 backdrop-blur-sm">
+              <div className="text-white text-center">
+                <p className="text-sm font-medium">
+                  ✨ Upgrade to Pro for Premium Features
+                </p>
+                <p className="text-xs text-white/80 mt-0.5">
+                  Faster AI Processing • HD Downloads
+                </p>
+              </div>
+              <button
+                onClick={handleUpgradeClick}
+                className="px-3 py-1 text-xs font-medium text-white bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+              >
+                Upgrade Now
+              </button>
+            </div>
+          </>
+        )} */}
         
         {!image.original ? (
           <div 
@@ -311,10 +361,10 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             !user && "pt-10"
           )}>
             {(isProcessing || isConverting) && (
-              <div className="absolute inset-0 flex items-center justify-center z-50">
-                <div className="flex flex-col items-center gap-2">
+              <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-3">
                   <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
-                  <p className="text-white text-sm font-extrabold">{getLoadingMessage()}</p>
+                  {getLoadingMessage()}
                 </div>
               </div>
             )}

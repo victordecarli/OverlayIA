@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { isSubscriptionActive } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { Sparkles } from "lucide-react";
 
 interface ProPlanDialogProps {
   isOpen: boolean;
@@ -57,15 +58,16 @@ export function ProPlanDialog({ isOpen, onClose }: ProPlanDialogProps) {
     onClose();
   };
 
-  const getOriginalPrice = () => selectedCountry === 'India' ? 199 : 10;
-  const getDiscountedPrice = () => selectedCountry === 'India' ? 99 : 6;
+  const getOriginalPrice = () => selectedCountry === 'India' ? 99 : 6;  // Changed from 199/10
+  const getDiscountedPrice = () => selectedCountry === 'India' ? 49 : 3; // Changed from 99/6
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] bg-zinc-900 border-zinc-800">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white">
-            Upgrade to Pro Plan
+          <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-purple-400" />
+            Upgrade to Pro
           </DialogTitle>
           <DialogDescription className="text-gray-400">
             {getMessage()}
@@ -116,7 +118,9 @@ export function ProPlanDialog({ isOpen, onClose }: ProPlanDialogProps) {
         <div className="mt-6">
           <button
             onClick={handleUpgrade}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-lg py-3 px-4 transition-colors"
+            className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-600 
+                     text-white rounded-lg py-3 px-4 transition-all duration-300 transform hover:scale-[1.02] 
+                     shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30"
           >
             Upgrade Now
           </button>

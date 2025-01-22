@@ -1,19 +1,18 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 
 const fashion = [
   {
-    title: 'Clone objects',
+    title: '',
+    image: '/flowers.jpeg',
+    altText: 'Add logos behind image'
+  },
+  {
+    title: '',
     image: '/clones.jpeg',
     altText: 'Clone objects in image'
   },
-  {
-    title: 'Add logos behind image',
-    image: '/fashion.png',
-    altText: 'Add logos behind image'
-  }
 ];
 
 const human = [
@@ -23,17 +22,17 @@ const human = [
     altText: 'Original human portrait'
   },
   {
-    title: 'Clone images without changing the background',
+    title: '',
     image: '/human4.webp',
     altText: 'human portrait with cloned images'
   },
   {
-    title: 'Insert logos or images behind your image',
+    title: '',
     image: '/human2.webp',
     altText: 'Human portrait with logos inserted behind'
   },
   {
-    title: 'Place multiple images behind your main image',
+    title: '',
     image: '/human3.webp',
     altText: 'Human portrait with multiple background images'
   },

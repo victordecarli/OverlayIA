@@ -3,8 +3,10 @@
 import { create } from 'zustand';
 import { convertHeicToJpeg, optimizeImage } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
-import { uploadFile } from '@/lib/upload';  // Add this import
-
+import { uploadFile } from '@/lib/upload';
+import { removeBackground } from "@imgly/background-removal";
+import { supabase } from '@/lib/supabaseClient'; // Add this import
+import { isSubscriptionActive } from '@/lib/utils';
 
 interface GlowEffect {
   enabled: boolean;
@@ -117,7 +119,7 @@ interface EditorActions {
   updateTextSet: (id: number, updates: Partial<TextSet>) => void;
   removeTextSet: (id: number) => void;
   duplicateTextSet: (id: number) => void;
-  handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean }) => Promise<void>;
+  handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean; userId?: string }) => Promise<void>;
   downloadImage: (isAuthenticated: boolean) => Promise<void>;  // Remove quality parameter
   resetEditor: (clearImage?: boolean) => void;
   addShapeSet: (type: string) => void;
@@ -312,7 +314,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     };
   }),
 
-  handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean }) => {
+  handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean; userId?: string }) => {
     // First, reset the editor state while preserving certain flags
     set(state => ({
       ...state,
@@ -373,30 +375,57 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       set({ isProcessing: true });
 
-      const formData = new FormData();
-      formData.append('file', fileToUpload);
-      formData.append('isAuthenticated', String(!!state?.isAuthenticated));
+      // Different processing based on authentication status and subscription
+      let foregroundUrl;
+      
+      if (state?.isAuthenticated && state.userId) {  // Add userId check
+        // Check if subscription is active before using API
+        const profile = await supabase
+          .from('profiles')
+          .select('expires_at')
+          .eq('id', state.userId)  // Use userId from state
+          .single();
 
-      const response = await fetch('/api/remove-background', {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to remove background');
+        if (profile.data?.expires_at && isSubscriptionActive(profile.data.expires_at)) {
+          // Pro users with active subscription: Use API endpoint
+          const formData = new FormData();
+          formData.append('file', fileToUpload);
+          formData.append('isAuthenticated', 'true');
+    
+          const response = await fetch('/api/remove-background', {
+            method: 'POST',
+            body: formData
+          });
+    
+          const data = await response.json();
+    
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to remove background');
+          }
+    
+          // Fetch the processed image
+          const processedImageResponse = await fetch(data.url);
+          if (!processedImageResponse.ok) {
+            throw new Error('Failed to fetch processed image');
+          }
+    
+          const processedBlob = await processedImageResponse.blob();
+          foregroundUrl = URL.createObjectURL(processedBlob);
+        } else {
+          // Expired subscription: Use client-side removal
+          const imageUrl = URL.createObjectURL(fileToUpload);
+          const imageBlob = await removeBackground(imageUrl);
+          foregroundUrl = URL.createObjectURL(imageBlob);
+          URL.revokeObjectURL(imageUrl);
+        }
+      } else {
+        // Free users: Use client-side removal
+        const imageUrl = URL.createObjectURL(fileToUpload);
+        const imageBlob = await removeBackground(imageUrl);
+        foregroundUrl = URL.createObjectURL(imageBlob);
+        URL.revokeObjectURL(imageUrl);
       }
-
-      // Fetch the processed image and create a local blob URL
-      const processedImageResponse = await fetch(data.url);
-      if (!processedImageResponse.ok) {
-        throw new Error('Failed to fetch processed image');
-      }
-
-      const processedBlob = await processedImageResponse.blob();
-      const foregroundUrl = URL.createObjectURL(processedBlob);
-
+  
       set(state => ({
         image: {
           ...state.image,
@@ -404,9 +433,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         },
         processingMessage: 'All set! Let\'s create something beautiful!'
       }));
-
+  
       setTimeout(() => set({ processingMessage: '' }), 2000);
-
+  
     } catch (error) {
       console.error('Error processing image:', error);
       set({ 
@@ -643,25 +672,43 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         }
       }
 
-      // Create blob with JPEG format for unauthenticated users
+      // Simplified: Always use PNG with max quality
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
-          blob => blob ? resolve(blob) : reject(new Error('Something went wrong')),
-          isAuthenticated ? 'image/png' : 'image/jpeg',
-          isAuthenticated ? 1 : 0.5  // Lower quality for unauthenticated users
+          blob => blob ? resolve(blob) : reject(new Error('Failed to create image')),
+          'image/png',
+          1
         );
       });
 
-      // Perform the download
+      // Create download link and trigger download
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       const timestamp = Math.floor(Date.now() / 1000);
-      link.download = isAuthenticated ? `UnderlayXAI_${timestamp}.png` : `UnderlayXAI_${timestamp}.jpg`;  // Use .jpg extension
+      const filename = `UnderlayXAI_${timestamp}.png`;
+      link.download = filename;
       link.href = url;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+
+      // After successful download, log to Supabase
+      try {
+        const { error } = await supabase
+          .from('downloads')
+          .insert([
+            { 
+              file_format: 'PNG',
+            }
+          ]);
+
+        if (error) {
+          console.error('Failed to log download:', error);
+        }
+      } catch (error) {
+        console.error('Error logging download:', error);
+      }
 
       set({ isDownloading: false });
     } catch (error) {
@@ -838,33 +885,38 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   setIsProcessing: (value: boolean) => set({ isProcessing: value }),
   setIsConverting: (value: boolean) => set({ isConverting: value }),
   addBackgroundImage: async (file: File, originalSize?: { width: number; height: number } | null, id?: number) => {
-    const { backgroundImages } = get();
-    if (backgroundImages.length >= 2) {
-      throw new Error('Maximum of 2 background images allowed');
-    }
+    try {
+      const { backgroundImages } = get();
+      if (backgroundImages.length >= 2) {
+        throw new Error('Maximum of 2 background images allowed');
+      }
 
-    const url = URL.createObjectURL(file);
-    
-    // Calculate scale that preserves aspect ratio
-    let initialScale = 50; // default value
-    if (originalSize) {
-      const aspectRatio = originalSize.width / originalSize.height;
-      initialScale = aspectRatio > 1 ? 100 : 100 * aspectRatio;
-    }
+      const url = URL.createObjectURL(file);
+      
+      // Calculate scale that preserves aspect ratio
+      let initialScale = 50;
+      if (originalSize) {
+        const aspectRatio = originalSize.width / originalSize.height;
+        initialScale = aspectRatio > 1 ? 100 : 100 * aspectRatio;
+      }
 
-    set((state) => ({
-      backgroundImages: [
-        ...state.backgroundImages,
-        {
-          id: id || Date.now(), // Use provided ID or generate new one
-          url,
-          position: { vertical: 50, horizontal: 50 },
-          scale: initialScale,
-          opacity: 1,
-          rotation: 0
-        }
-      ]
-    }));
+      set((state) => ({
+        backgroundImages: [
+          ...state.backgroundImages,
+          {
+            id: id || Date.now(),
+            url,
+            position: { vertical: 50, horizontal: 50 },
+            scale: initialScale,
+            opacity: 1,
+            rotation: 0
+          }
+        ]
+      }));
+    } catch (error) {
+      console.error('Error adding background image:', error);
+      throw error; // Re-throw to handle in the component
+    }
   },
 
   removeBackgroundImage: (id) => set((state) => {

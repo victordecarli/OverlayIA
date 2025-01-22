@@ -3,7 +3,7 @@ import paypal from '@paypal/checkout-server-sdk';
 import { getPayPalClient } from '@/lib/paypal-client';
 import { getFreshUserProfile } from '@/lib/supabase-utils';
 
-const PRO_PLAN_PRICE = 6; // $6 USD for Pro Monthly Plan
+const PRO_PLAN_PRICE = 3; // Changed from 6 USD for Pro Monthly Plan
 
 function getBaseUrl(req: Request) {
   const host = req.headers.get('host') || 'localhost:3000';

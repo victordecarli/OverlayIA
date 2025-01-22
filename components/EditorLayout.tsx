@@ -13,7 +13,7 @@ import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { isSubscriptionActive } from '@/lib/utils';
-import { FREE_GENERATIONS_LIMIT } from '@/lib/supabase-utils';  // Add this import
+import { ProUpgradeButton } from './ProUpgradeButton'; // Add ProUpgradeButton to imports
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
@@ -23,6 +23,16 @@ interface UserInfo {
   expires_at: string | null;
   free_generations_used: number;
 }
+
+// Add the AvatarFallback component at the top level
+const AvatarFallback = ({ email }: { email: string }) => {
+  const initials = email.slice(0, 2).toUpperCase();
+  return (
+    <div className="w-full h-full bg-gray-500 flex items-center justify-center">
+      <span className="text-white text-sm font-medium">{initials}</span>
+    </div>
+  );
+};
 
 export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   const { 
@@ -87,6 +97,8 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
     }
   };
 
+  const shouldShowUpgradeButton = !user || (userInfo?.expires_at && !isSubscriptionActive(userInfo.expires_at));
+
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-white/10">
@@ -133,6 +145,7 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
               </>
             )}
             <div className="flex items-center gap-4 sm:gap-6"> {/* Increased gap between theme toggle and avatar */}
+              {shouldShowUpgradeButton && <ProUpgradeButton variant="nav" />}
               <ThemeToggle />
               {isLoading ? (
                 <div className="w-8 h-8 flex items-center justify-center">
@@ -142,27 +155,38 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="relative flex items-center"
+                    className="relative flex items-center z-20"
                   >
-                    <div className="relative">
+                    <div className="relative pt-2"> {/* Added pt-2 for badge space */}
                       {userInfo?.expires_at && isSubscriptionActive(userInfo.expires_at) && (
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none">
+                        <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30">
                           Pro
                         </div>
                       )}
-                      <div className="w-8 h-8 relative rounded-full overflow-hidden">
-                        <img
-                          src={user.user_metadata.avatar_url}
-                          alt="User avatar"
-                          sizes="32px"
-                          className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
-                        />
+                      <div className="w-8 h-8 relative rounded-full overflow-hidden ring-2 ring-white/10">
+                        {user.user_metadata.avatar_url ? (
+                          <img
+                            src={user.user_metadata.avatar_url}
+                            alt="User avatar"
+                            sizes="32px"
+                            className="cursor-pointer hover:opacity-80 transition-opacity object-cover w-full h-full"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.parentElement?.querySelector('.avatar-fallback')?.classList.remove('hidden');
+                            }}
+                          />
+                        ) : (
+                          <AvatarFallback email={user.email || ''} />
+                        )}
+                        <div className="avatar-fallback hidden">
+                          <AvatarFallback email={user.email || ''} />
+                        </div>
                       </div>
                     </div>
                   </button>
                   
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-60 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10">
+                    <div className="absolute right-0 mt-2 w-60 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10 z-50">
                       <div className="px-4 py-2 text-sm border-b border-gray-200 dark:border-white/10">
                         <div className="text-gray-700 dark:text-gray-300 truncate">
                           {user.email}
@@ -177,9 +201,6 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
                             ) : (
                               <>
                                 <div>Free Plan</div>
-                                <div>
-                                  Free generations left: {Math.max(0, FREE_GENERATIONS_LIMIT - userInfo.free_generations_used)}
-                                </div>
                               </>
                             )}
                           </div>
