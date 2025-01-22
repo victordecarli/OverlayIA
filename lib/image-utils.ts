@@ -38,25 +38,8 @@ export const optimizeImage = async (file: File): Promise<File> => {
       URL.revokeObjectURL(url);
 
       // Set maximum width or height to resize the image
-      const maxDimension = 800; // Adjust this value to suit your needs
       const width = img.width;
       const height = img.height;
-
-      // Calculate the aspect ratio and resize the image proportionally
-      let newWidth = width;
-      let newHeight = height;
-      
-      if (width > height) {
-        if (width > maxDimension) {
-          newWidth = maxDimension;
-          newHeight = (maxDimension / width) * height;
-        }
-      } else {
-        if (height > maxDimension) {
-          newHeight = maxDimension;
-          newWidth = (maxDimension / height) * width;
-        }
-      }
 
       // Create a canvas and resize the image
       const canvas = document.createElement('canvas');
@@ -66,9 +49,9 @@ export const optimizeImage = async (file: File): Promise<File> => {
         return;
       }
 
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
 
       // Compress and convert to Blob with low quality
       canvas.toBlob(

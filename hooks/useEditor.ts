@@ -110,7 +110,6 @@ interface EditorState {
   backgroundImages: BackgroundImage[];
   backgroundColor: string | null;
   foregroundSize: number;  // Add this line
-  shouldShowQualityDialog: boolean;
   pendingImages: PendingImage[];  // Add this line
 }
 
@@ -218,7 +217,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   backgroundImages: [],
   backgroundColor: null,
   foregroundSize: 100,  // Default size is 100%
-  shouldShowQualityDialog: false,
   pendingImages: [],  // Initialize the new state
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
@@ -448,7 +446,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }
   },
 
-  downloadImage: async (isAuthenticated: boolean) => {
+  downloadImage: async () => {
     try {
       const state = get();
       if (state.isDownloading) return; // Prevent multiple downloads

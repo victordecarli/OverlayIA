@@ -65,13 +65,10 @@ export function ProPlanDialog({ isOpen, onClose }: ProPlanDialogProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] bg-zinc-900 border-zinc-800">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
+          <DialogTitle className="text-xl font-bold text-white flex items-center justify-center gap-2">
             <Sparkles className="w-5 h-5 text-purple-400" />
             Upgrade to Pro
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
-            {getMessage()}
-          </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 space-y-4">
@@ -84,7 +81,7 @@ export function ProPlanDialog({ isOpen, onClose }: ProPlanDialogProps) {
             <div className="flex justify-between items-start mb-2">
               <div>
                 <div className="font-medium text-white text-lg">Pro Monthly Plan</div>
-                <div className="text-sm text-gray-400">Unlimited generations • All features</div>
+                <div className="text-sm text-gray-400">Premium features • No auto-renewals</div>
               </div>
               <div className="text-right">
                 <div className="flex items-center gap-2 justify-end">
@@ -98,18 +95,18 @@ export function ProPlanDialog({ isOpen, onClose }: ProPlanDialogProps) {
                 <div className="text-sm text-gray-400">/month</div>
               </div>
             </div>
-            <div className="mt-4 text-sm text-gray-400 space-y-2">
+            <div className="mt-4 text-sm text-gray-400 space-y-2.5">
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                No auto-renewals
+                ✨ Unlimited Creations
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                Pay only when you need it
+                ⚡️ High Speed
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                Unlimited generations
+                🎨 Premium Quality (PNG)
               </div>
             </div>
           </div>

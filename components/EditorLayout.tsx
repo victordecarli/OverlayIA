@@ -89,15 +89,15 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   // Unified state check for all button actions
   const isActionDisabled = isProcessing || isConverting || isDownloading;
 
+  // Modify handleDownload to directly download without quality dialog
   const handleDownload = () => {
-    if (user) {
-      downloadImage(true);
-    } else {
-      useEditor.setState({ shouldShowQualityDialog: true });
-    }
+    downloadImage(true); // Always download without checking authentication
   };
 
-  const shouldShowUpgradeButton = !user || (userInfo?.expires_at && !isSubscriptionActive(userInfo.expires_at));
+  // Modify the shouldShowUpgradeButton logic
+  const shouldShowUpgradeButton = !user || 
+    !userInfo?.expires_at || // Show for free users (no expires_at)
+    !isSubscriptionActive(userInfo.expires_at); // Show for expired pro users
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
