@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     });
 
     const output = await replicate.run(
-      MODELS.basic,
+      isAuthenticated ? MODELS.premium : MODELS.basic,
       {
         input: {
           image: file
