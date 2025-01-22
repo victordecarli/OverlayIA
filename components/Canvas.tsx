@@ -57,6 +57,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
 
   const handleFileProcess = async (file: File) => {
     try {
+      if (!user) {
+        setShowAuthDialog(true);
+        return;
+      }
+
       setIsProcessing(true);
       setProcessingMessage('Analyzing your image, please wait...');
       

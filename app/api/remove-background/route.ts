@@ -25,7 +25,6 @@ export async function POST(req: Request) {
       useFileOutput: false,
     });
 
-    console.log(isAuthenticated);
     const output = await replicate.run(
       isAuthenticated ? MODELS.premium : MODELS.basic,
       {

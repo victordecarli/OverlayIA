@@ -42,7 +42,7 @@ export default function Home() {
         <main className="pt-24" role="main" aria-label="Main content">
           {/* Hero Section */}
           <section className="container mx-auto px-4 py-4 md:py-8"> {/* Changed from md:py-10 to md:py-8 */}
-            <div className="max-w-4xl mx-auto text-center mb-8"> {/* Changed from mb-16 to mb-8 */}
+            <div className="max-w-4xl mx-auto text-center"> {/* Removed mb-4 */}
               <h1 className="text-3xl md:text-6xl font-bold text-white mb-6 leading-tight">
                 Transform Your Images
                 <br/>
@@ -71,16 +71,8 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Feature Showcase */}
-          <FeatureShowcase />
-          <Features />
-          <UseCases />
-          <section id="pricing">
-            <Pricing />
-          </section>
-          
           {/* Product Hunt Badges Section */}
-          <section className="container mx-auto px-4 py-12">
+          <section className="container mx-auto px-4 mb-10"> {/* Removed py-4, added -mt-4 */}
             <div className="flex flex-row justify-center items-center gap-4">
               {[
                 {
@@ -113,6 +105,15 @@ export default function Home() {
               ))}
             </div>
           </section>
+
+          {/* Feature Showcase */}
+          <FeatureShowcase />
+          <Features />
+          <UseCases />
+          <section id="pricing">
+            <Pricing />
+          </section>
+          
           <Footer />
         </main>
       </div>

@@ -12,7 +12,7 @@ import { AuthDialog } from './AuthDialog';
 
 const features = {
   free: [
-    "2 Free Generations",
+    "5 Free Generations",
     "Images Behind the Main Subject",
     "Clone Image Elements",
     "Remove Backgrounds",
@@ -118,7 +118,7 @@ export function Pricing() {
               <span className="text-gray-400 ml-2">/forever</span>
             </div>
             <p className="text-gray-400 mb-6">
-              Try premium features with 2 free generations.
+              Try premium features with 5 free generations.
             </p>
             {renderActionButton('free')}
             <div className="space-y-4 mt-8">
