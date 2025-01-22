@@ -1,3 +1,4 @@
+import { Github } from 'lucide-react';
 import Link from 'next/link';
 
 export function Footer() {
@@ -59,18 +60,20 @@ export function Footer() {
                 Vineer
               </a>
             </p>
-            {/* <p className="text-gray-400 text-sm">
-              Open source on{' '}
-              <a 
-                href="https://github.com/nagavineerpasam/UnderlayX"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors hover:underline"
-              >
-                GitHub
-              </a>
-            </p> */}
           </div>
+        </div>
+
+        {/* Mobile view - Add Github link below 'Created by' */}
+        <div className="md:hidden flex flex-col items-center gap-2 text-sm text-gray-400">
+          <a
+            href="https://github.com/nagavineerpasam/UnderlayX"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          >
+            <Github className="w-4 h-4" />
+            <span>View on GitHub</span>
+          </a>
         </div>
       </div>
     </footer>
