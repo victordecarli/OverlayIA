@@ -390,14 +390,14 @@ export function ImageEditor() {
                         <div>
                           <div className="flex justify-between text-xs mb-1">
                             <span>Position X</span>
-                            <span>{Math.round(backgroundImages[0].position.horizontal)}%</span>
+                            <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.position.horizontal || 0)}%</span>
                           </div>
                           <Slider
-                            value={[backgroundImages[0].position.horizontal]}
+                            value={[backgroundImages.find(img => img.id === pendingImage.id)?.position.horizontal || 0]}
                             onValueChange={([value]) => 
                               updateBackgroundImage(pendingImage.id, { 
                                 position: { 
-                                  ...backgroundImages[0].position, 
+                                  ...backgroundImages.find(img => img.id === pendingImage.id)?.position || { vertical: 50 }, 
                                   horizontal: value 
                                 } 
                               })
@@ -413,14 +413,14 @@ export function ImageEditor() {
                         <div>
                           <div className="flex justify-between text-xs mb-1">
                             <span>Position Y</span>
-                            <span>{Math.round(backgroundImages[0].position.vertical)}%</span>
+                            <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.position.vertical || 0)}%</span>
                           </div>
                           <Slider
-                            value={[backgroundImages[0].position.vertical]}
+                            value={[backgroundImages.find(img => img.id === pendingImage.id)?.position.vertical || 0]}
                             onValueChange={([value]) => 
                               updateBackgroundImage(pendingImage.id, { 
                                 position: { 
-                                  ...backgroundImages[0].position, 
+                                  ...backgroundImages.find(img => img.id === pendingImage.id)?.position || { horizontal: 50 }, 
                                   vertical: value 
                                 } 
                               })
@@ -436,10 +436,10 @@ export function ImageEditor() {
                         <div>
                           <div className="flex justify-between text-xs mb-1">
                             <span>Scale</span>
-                            <span>{Math.round(backgroundImages[0].scale)}%</span>
+                            <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.scale || 0)}%</span>
                           </div>
                           <Slider
-                            value={[backgroundImages[0].scale]}
+                            value={[backgroundImages.find(img => img.id === pendingImage.id)?.scale || 0]}
                             onValueChange={([value]) => 
                               updateBackgroundImage(pendingImage.id, { scale: value })
                             }
@@ -454,10 +454,10 @@ export function ImageEditor() {
                         <div>
                           <div className="flex justify-between text-xs mb-1">
                             <span>Rotation</span>
-                            <span>{Math.round(backgroundImages[0].rotation)}°</span>
+                            <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.rotation || 0)}°</span>
                           </div>
                           <Slider
-                            value={[backgroundImages[0].rotation]}
+                            value={[backgroundImages.find(img => img.id === pendingImage.id)?.rotation || 0]}
                             onValueChange={([value]) => 
                               updateBackgroundImage(pendingImage.id, { rotation: value })
                             }
@@ -472,15 +472,24 @@ export function ImageEditor() {
                         <div>
                           <div className="flex justify-between text-xs mb-1">
                             <span>Opacity</span>
-                            <span>{Math.round(backgroundImages[0].opacity * 100)}%</span>
+                            <span>{Math.round((backgroundImages.find(img => img.id === pendingImage.id)?.opacity || 0) * 100)}%</span>
                           </div>
                           <Slider
-                            value={[backgroundImages[0].opacity * 100]}
+                            value={[(backgroundImages.find(img => img.id === pendingImage.id)?.opacity || 0) * 100]}
                             onValueChange={([value]) => 
                               updateBackgroundImage(pendingImage.id, { opacity: value / 100 })
                             }
                             min={0}
-                            max={100}                            step={1}                            className="my-0.5"                          />                        </div>                      </div>                    </div>                  )}                </div>              )}
+                            max={100}
+                            step={1}
+                            className="my-0.5"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         ))}
