@@ -190,14 +190,17 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   };
 
   const getLoadingMessage = () => {
-    // Consistent message regardless of file type
     if (isProcessing) {
       if (!user || !expiresAt || !isSubscriptionActive(expiresAt)) {
         return (
           <div className="flex flex-col items-center gap-3">
-            <p className="text-white text-sm font-bold">
-              {processingMessage || 'Processing with Basic AI...'}
-            </p>
+            <div className="flex items-center gap-2">
+              <span className="animate-pulse">✨</span>
+              <p className="text-white text-sm font-bold">
+                {processingMessage || 'Analyzing with Basic AI ✨'}
+              </p>
+              <span className="animate-pulse">✨</span>
+            </div>
             <div className="flex flex-col items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
               <p className="text-white/90 text-xs">
                 💫 Upgrade to Pro for 2x faster processing & HD quality
@@ -212,9 +215,21 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
           </div>
         );
       }
-      return processingMessage || 'Processing your image...';
+      return (
+        <div className="flex items-center gap-2">
+          <span className="animate-pulse">✨</span>
+          <p className="text-white text-sm font-bold">
+            {processingMessage || 'Processing with Premium AI ✨'}
+          </p>
+          <span className="animate-pulse">✨</span>
+        </div>
+      );
     }
-    return 'Loading image...';
+    return (
+      <p className="text-white text-sm font-bold">
+        Loading image...
+      </p>
+    );
   };
 
   // Inside useEffect where you handle text changes
@@ -282,26 +297,6 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
         isMobile && "mt-2",
         isPanelOpen && isMobile && "mb-4"
       )}>
-        {/* {image.original && (!user || (expiresAt && !isSubscriptionActive(expiresAt))) && (
-          <>
-            <div className="absolute top-0 left-0 right-0 z-10 flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600/90 to-purple-500/90 backdrop-blur-sm">
-              <div className="text-white text-center">
-                <p className="text-sm font-medium">
-                  ✨ Upgrade to Pro for Premium Features
-                </p>
-                <p className="text-xs text-white/80 mt-0.5">
-                  Faster AI Processing • HD Downloads
-                </p>
-              </div>
-              <button
-                onClick={handleUpgradeClick}
-                className="px-3 py-1 text-xs font-medium text-white bg-white/20 rounded-full hover:bg-white/30 transition-colors"
-              >
-                Upgrade Now
-              </button>
-            </div>
-          </>
-        )} */}
         
         {!image.original ? (
           <div 
@@ -388,7 +383,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
             !user && "pt-10"
           )}>
             {(isProcessing || isConverting) && (
-              <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
+              <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/70 backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
                   {getLoadingMessage()}
