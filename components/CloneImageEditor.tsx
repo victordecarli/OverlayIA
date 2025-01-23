@@ -57,7 +57,7 @@ export function CloneImageEditor() {
                 })}
                 min={-100}
                 max={100}
-                step={1}
+                step={0.1}
               />
             </div>
 
@@ -70,7 +70,7 @@ export function CloneImageEditor() {
                 })}
                 min={-100}
                 max={100}
-                step={1}
+                step={0.1}
               />
             </div>
 

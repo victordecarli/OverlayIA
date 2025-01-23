@@ -2,18 +2,19 @@
 
 import { useEditor } from '@/hooks/useEditor';
 import { Trash2, Plus, ImageOff, ArrowRight, RotateCcw } from 'lucide-react';
-import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { useState, useEffect, useRef } from 'react';
-import { cn, isSubscriptionActive } from '@/lib/utils';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { isSubscriptionActive } from '@/lib/utils';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { getFreshUserProfile, incrementGenerationCount } from '@/lib/supabase-utils';
+import {  incrementGenerationCount } from '@/lib/supabase-utils';
 import { ProPlanDialog } from './ProPlanDialog';
 import { useToast } from '@/hooks/use-toast';
-import { ProUpgradeButton } from './ProUpgradeButton';
 import { removeBackground } from "@imgly/background-removal"; // Add this import
 import { supabase } from '@/lib/supabaseClient';
+
+// Add URL cache using WeakMap to automatically cleanup when files are garbage collected
+const processedImageCache = new WeakMap<File, string>();
 
 interface PendingImage {
   id: number;
@@ -88,12 +89,29 @@ export function ImageEditor() {
     e.target.value = '';
   };
 
+  // Add cleanup function for URLs
+  const cleanupImageUrls = useCallback((pendingImage: PendingImage) => {
+    if (pendingImage.url) {
+      URL.revokeObjectURL(pendingImage.url);
+    }
+    if (pendingImage.processedUrl) {
+      URL.revokeObjectURL(pendingImage.processedUrl);
+    }
+  }, []);
+
   // Modify handleRemoveBackground to cache the processed URL
   const handleRemoveBackground = async (pendingImage: PendingImage) => {
+    // Check cache first
+    const cachedUrl = processedImageCache.get(pendingImage.file);
+    if (cachedUrl) {
+      updatePendingImage(pendingImage.id, { 
+        processedUrl: cachedUrl,
+        isProcessing: false 
+      });
+      return;
+    }
+
     if (pendingImage.processedUrl) {
-      if (!confirm('Background has already been removed. Do you want to process again?')) {
-        return;
-      }
       URL.revokeObjectURL(pendingImage.processedUrl);
     }
 
@@ -102,57 +120,73 @@ export function ImageEditor() {
 
       let processedUrl;
       
-      // Check cache first
-      if (imageCache.current.has(pendingImage.id)) {
-        processedUrl = imageCache.current.get(pendingImage.id);
-      } else {
-        if (user) {
-          // Check if subscription is active
-          const { data } = await supabase
-            .from('profiles')
-            .select('expires_at')
-            .eq('id', user.id)
-            .single();
-
-          const isProActive = data?.expires_at && isSubscriptionActive(data.expires_at);
-
-          if (isProActive) {
-            // Pro users with active subscription: Use API endpoint
-            // ...existing pro API code...
-          } else {
-            // Expired subscription or free user: Use client-side removal
-            const imageUrl = URL.createObjectURL(pendingImage.file);
-            const imageBlob = await removeBackground(imageUrl);
-            processedUrl = URL.createObjectURL(imageBlob);
-            URL.revokeObjectURL(imageUrl);
-          }
-        } else {
-          // Unauthenticated users: Use client-side removal
-          try {
-            const imageUrl = URL.createObjectURL(pendingImage.file);
-            const imageBlob = await removeBackground(imageUrl);
-            processedUrl = URL.createObjectURL(imageBlob);
-            // Clean up the temporary URL
-            URL.revokeObjectURL(imageUrl);
-          } catch (error) {
-            console.error('Client-side background removal failed:', error);
-            throw new Error('Failed to remove background. Please try again.');
-          }
-        }
-
-        // Cache the processed URL
-        imageCache.current.set(pendingImage.id, processedUrl);
-      }
-
-      // Increment generation count only for authenticated users
       if (user) {
-        await incrementGenerationCount(user);
+        const { data } = await supabase
+          .from('profiles')
+          .select('expires_at')
+          .eq('id', user.id)
+          .single();
+
+        const isProActive = data?.expires_at && isSubscriptionActive(data.expires_at);
+
+        if (isProActive) {
+          // Pro users with active subscription: Use API endpoint
+          const formData = new FormData();
+          formData.append('file', pendingImage.file);
+          formData.append('isAuthenticated', 'true');
+    
+          const response = await fetch('/api/remove-background', {
+            method: 'POST',
+            body: formData
+          });
+    
+          if (!response.ok) {
+            throw new Error('Failed to remove background');
+          }
+
+          const responseData = await response.json();
+    
+          // Fetch the processed image
+          const processedImageResponse = await fetch(responseData.url);
+          if (!processedImageResponse.ok) {
+            throw new Error('Failed to fetch processed image');
+          }
+    
+          const processedBlob = await processedImageResponse.blob();
+          processedUrl = URL.createObjectURL(processedBlob);
+        } else {
+          // ...existing client-side removal code...
+          const imageUrl = URL.createObjectURL(pendingImage.file);
+          const imageBlob = await removeBackground(imageUrl);
+          processedUrl = URL.createObjectURL(imageBlob);
+          URL.revokeObjectURL(imageUrl);
+        }
+      } else {
+        // ...existing client-side removal code...
+        try {
+          const imageUrl = URL.createObjectURL(pendingImage.file);
+          const imageBlob = await removeBackground(imageUrl);
+          processedUrl = URL.createObjectURL(imageBlob);
+          // Clean up the temporary URL
+          URL.revokeObjectURL(imageUrl);
+        } catch (error) {
+          console.error('Client-side background removal failed:', error);
+          throw new Error('Failed to remove background. Please try again.');
+        }
       }
+
+      // Cache the processed URL with the file as key
+      processedImageCache.set(pendingImage.file, processedUrl);
 
       updatePendingImage(pendingImage.id, { 
         processedUrl, 
         isProcessing: false 
       });
+
+      // Increment generation count for authenticated users
+      if (user) {
+        await incrementGenerationCount(user);
+      }
 
     } catch (error) {
       console.error('Error removing background:', error);
@@ -170,6 +204,8 @@ export function ImageEditor() {
 
     try {
       const finalUrl = pendingImage.processedUrl || pendingImage.url;
+      
+      // Create a new blob from the image URL
       const response = await fetch(finalUrl);
       if (!response.ok) {
         throw new Error('Failed to fetch image');
@@ -177,10 +213,10 @@ export function ImageEditor() {
 
       const blob = await response.blob();
       const file = new File([blob], pendingImage.file.name, { type: blob.type });
-      
-      const newImageId = pendingImage.id; // Use the same ID for consistency
-      await addBackgroundImage(file, pendingImage.originalSize, newImageId); // Pass the ID
+
+      await addBackgroundImage(file, pendingImage.originalSize, pendingImage.id);
       updatePendingImage(pendingImage.id, { isInEditor: true });
+
     } catch (error) {
       console.error('Error moving image to editor:', error);
       toast({
@@ -191,20 +227,19 @@ export function ImageEditor() {
     }
   };
 
+  // Modify handleReset to preserve processed URLs
   const handleReset = (pendingImageId: number) => {
     const pendingImage = pendingImages.find(img => img.id === pendingImageId);
     if (!pendingImage) return;
 
-    // First remove from background images
+    // Remove from background images but keep the processed URL
     removeBackgroundImage(pendingImage.id);
 
-    // Then update the pending image state
+    // Only update the isInEditor state
     updatePendingImage(pendingImageId, {
-      processedUrl: null,
       isInEditor: false
     });
 
-    // If this was the last background image, reset the background state
     if (backgroundImages.length <= 1) {
       resetBackground();
     }
@@ -226,16 +261,11 @@ export function ImageEditor() {
   // Cleanup URLs when component unmounts
   useEffect(() => {
     return () => {
-      pendingImages.forEach(pendingImage => {
-        URL.revokeObjectURL(pendingImage.url);
-        if (pendingImage.processedUrl) {
-          URL.revokeObjectURL(pendingImage.processedUrl);
-        }
-        imageCache.current.delete(pendingImage.id);
+      pendingImages.forEach(image => {
+        cleanupImageUrls(image);
       });
-      imageCache.current.clear();
     };
-  }, [pendingImages]);
+  }, [pendingImages, cleanupImageUrls]);
 
   return (
     <>

@@ -1,13 +1,13 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: '/private/',
+      disallow: ['/pay'],
     },
     sitemap: 'https://www.underlayx.com/sitemap.xml',
     host: 'https://www.underlayx.com',
-  }
+  };
 }

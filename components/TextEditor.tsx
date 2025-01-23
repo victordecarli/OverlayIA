@@ -35,13 +35,16 @@ export function TextEditor() {
   }, 16);
 
   const handlePositionChange = useCallback((id: number, type: 'horizontal' | 'vertical', value: number) => {
-    debouncedUpdateText(id, {
+    const textSet = textSets.find(set => set.id === id);
+    if (!textSet) return;
+
+    updateTextSet(id, {
       position: {
-        ...textSets.find(set => set.id === id)?.position,
-        [type]: value
+        vertical: type === 'vertical' ? Math.round(value * 10) / 10 : textSet.position.vertical,
+        horizontal: type === 'horizontal' ? Math.round(value * 10) / 10 : textSet.position.horizontal
       }
     });
-  }, [textSets, debouncedUpdateText]);
+  }, [textSets, updateTextSet]);
 
   // Auto-scroll to new text layer
   useEffect(() => {
@@ -214,6 +217,7 @@ export function TextEditor() {
               <Slider
                 min={0}
                 max={100}
+                step={0.1} // Smaller step for smoother updates
                 value={[textSet.position.horizontal]}
                 onValueChange={([value]) => handlePositionChange(textSet.id, 'horizontal', value)}
               />
@@ -229,6 +233,7 @@ export function TextEditor() {
               <Slider
                 min={0}
                 max={100}
+                step={0.1}
                 value={[textSet.position.vertical]}
                 onValueChange={([value]) => handlePositionChange(textSet.id, 'vertical', value)}
               />
