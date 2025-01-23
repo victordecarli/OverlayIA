@@ -12,7 +12,6 @@ import { ProPlanDialog } from './ProPlanDialog';
 import { useToast } from '@/hooks/use-toast';
 import { removeBackground } from "@imgly/background-removal"; // Add this import
 import { supabase } from '@/lib/supabaseClient';
-import { optimizeImage } from '@/lib/image-utils';
 
 // Add URL cache using WeakMap to automatically cleanup when files are garbage collected
 const processedImageCache = new WeakMap<File, string>();
@@ -154,20 +153,13 @@ export function ImageEditor() {
     try {
       updatePendingImage(pendingImage.id, { isProcessing: true });
 
-      let fileToProcess = pendingImage.file;
       let processedUrl;
 
-      // Use cached subscription status
-      if (!user || !userSubscriptionStatus?.isProActive) {
-        fileToProcess = await optimizeImage(pendingImage.file);
-        console.log('Image optimized for background removal');
-      }
-
       if (user && userSubscriptionStatus?.isProActive) {
-        // Pro user path
+        // Pro user path - use API
         console.log('Using pro API endpoint for background removal');
         const formData = new FormData();
-        formData.append('file', fileToProcess);
+        formData.append('file', pendingImage.file);
         formData.append('isAuthenticated', 'true');
 
         const response = await fetch('/api/remove-background', {
@@ -190,7 +182,7 @@ export function ImageEditor() {
       } else {
         // Free user path
         console.log('Using client-side background removal');
-        const imageUrl = URL.createObjectURL(fileToProcess);
+        const imageUrl = URL.createObjectURL(pendingImage.file);
         const imageBlob = await removeBackground(imageUrl);
         processedUrl = URL.createObjectURL(imageBlob);
         URL.revokeObjectURL(imageUrl);
@@ -263,12 +255,34 @@ export function ImageEditor() {
 
   // Cleanup URLs when component unmounts
   useEffect(() => {
+    // Only cleanup when component fully unmounts
     return () => {
+      // Only cleanup images that aren't in editor
       pendingImages.forEach(image => {
-        cleanupImageUrls(image);
+        if (!image.isInEditor) {
+          cleanupImageUrls(image);
+          removeBackgroundImage(image.id);
+        }
       });
     };
-  }, [pendingImages, cleanupImageUrls]);
+  }, []); // Empty dependency array for unmount only
+
+  const getRemoveBackgroundButtonText = (pendingImage: PendingImage) => {
+    if (pendingImage.processedUrl) {
+      return (
+        <>
+          <ImageOff className="w-4 h-4 mr-2" />
+          Reprocess Background
+        </>
+      );
+    }
+    return (
+      <>
+        <ImageOff className="w-4 h-4 mr-2" />
+        Remove Background
+      </>
+    );
+  };
 
   return (
     <>
@@ -323,7 +337,7 @@ export function ImageEditor() {
                     variant="secondary"
                     size="sm"
                     onClick={() => handleRemoveBackground(pendingImage)}
-                    disabled={pendingImage.isProcessing}
+                    disabled={pendingImage.isProcessing || pendingImage.processedUrl !== null}
                     className="w-full h-8"
                   >
                     <ImageOff className="w-4 h-4 mr-2" />

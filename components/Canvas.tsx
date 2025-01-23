@@ -13,7 +13,6 @@ import { cn, isSubscriptionActive } from '@/lib/utils';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { useIsMobile } from '@/hooks/useIsMobile'; // Add this import
 import { incrementGenerationCount } from '@/lib/supabase-utils';
-import { TokenPurchaseDialog } from './TokenPurchaseDialog';
 import { useToast } from '@/hooks/use-toast';
 import { ProPlanDialog } from './ProPlanDialog';
 import { supabase } from '@/lib/supabaseClient';
@@ -105,19 +104,23 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   };
 
   const handleConvertConfirm = async () => {
-    if (!pendingFile || !user) return;
+    if (!pendingFile) return;
 
     try {
       setShowConvertDialog(false);
-      setIsConverting(true);
+      setIsConverting(true); // Set converting state first
+      setProcessingMessage('Converting image format...');
+
       const convertedFile = await convertHeicToJpeg(pendingFile);
-      await handleImageUpload(convertedFile);
-      await incrementGenerationCount(user);  // Pass complete user object
+      await handleFileProcess(convertedFile);
     } catch (error) {
-      toast({variant:'destructive', title: "Error processing image. Please try again."});
+      toast({
+        variant: 'destructive', 
+        title: "Error processing image. Please try again."
+      });
     } finally {
       setPendingFile(null);
-      setIsConverting(false);
+      setIsConverting(false); // Reset converting state
     }
   };
 
@@ -133,13 +136,22 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
-      // Reset the input value right after getting the file
       e.target.value = '';
-      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image/webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
+      
+      const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
 
-      if (validTypes.includes(fileType) || fileName.match(/\.(heic|heif)$/)) {
+      // Check if it's HEIC/HEIF first
+      if (fileType.includes('heic') || fileType.includes('heif') || 
+          fileName.endsWith('.heic') || fileName.endsWith('.heif')) {
+        setPendingFile(file);
+        setShowConvertDialog(true);
+        return;
+      }
+
+      // For other image types
+      if (validTypes.includes(fileType)) {
         await handleFileProcess(file);
       } else {
         alert('Please upload a valid image file (JPG, PNG, WEBP, HEIC, or HEIF)');
@@ -152,11 +164,20 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
     e.stopPropagation();
     
     const file = e.dataTransfer.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp', 'image.heic', 'image/heic', 'image.heif', 'image/heif'];
     const fileType = file.type.toLowerCase();
     const fileName = file.name.toLowerCase();
 
-    if (validTypes.includes(fileType) || fileName.match(/\.(heic|heif)$/)) {
+    // Check if it's HEIC/HEIF first
+    if (fileType.includes('heic') || fileType.includes('heif') || 
+        fileName.endsWith('.heic') || fileName.endsWith('.heif')) {
+      setPendingFile(file);
+      setShowConvertDialog(true);
+      return;
+    }
+
+    // For other image types
+    const validTypes = ['image/jpeg', 'image/png', 'image.webp', 'image.webp'];
+    if (validTypes.includes(fileType)) {
       await handleFileProcess(file);
     } else {
       alert('Please upload a valid image file (JPG, PNG, WEBP, HEIC, or HEIF)');
@@ -169,11 +190,8 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   };
 
   const getLoadingMessage = () => {
-    if (isConverting) {
-      return 'Converting HEIC to JPEG format...';
-    }
+    // Consistent message regardless of file type
     if (isProcessing) {
-      // Show upgrade message for non-logged in users or users with expired subscription
       if (!user || !expiresAt || !isSubscriptionActive(expiresAt)) {
         return (
           <div className="flex flex-col items-center gap-3">
@@ -194,7 +212,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
           </div>
         );
       }
-      return processingMessage || 'Processing...';
+      return processingMessage || 'Processing your image...';
     }
     return 'Loading image...';
   };
@@ -309,29 +327,38 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
               onChange={onFileChange}
               accept="image/jpeg,image/png,image.webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
               className="hidden"
+              disabled={isConverting || isProcessing} // Disable during conversion
             />
             {isMobile ? (
               <div className="flex flex-col items-center gap-4">
                 <p className="text-gray-600 dark:text-gray-400 text-center">
-                  Upload an image to get started
+                  {isConverting ? 'Converting image...' : 'Upload an image to get started'}
                 </p>
                 <label
                   htmlFor="canvas-upload"
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-colors"
-                  onClick={handleUploadClick}
+                  className={cn(
+                    "bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-colors",
+                    (isConverting || isProcessing) && "opacity-50 cursor-not-allowed"
+                  )}
+                  onClick={e => (isConverting || isProcessing) && e.preventDefault()}
                 >
                   <Upload className="w-5 h-5" />
-                  <span>Upload</span>
+                  <span>{isConverting ? 'Converting...' : 'Upload'}</span>
                 </label>
               </div>
             ) : (
               <label
                 htmlFor="canvas-upload"
-                className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl transition-all bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer"
-                onClick={handleUploadClick}
+                className={cn(
+                  "absolute inset-0 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl transition-all bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer",
+                  (isConverting || isProcessing) && "opacity-50 cursor-not-allowed"
+                )}
+                onClick={e => (isConverting || isProcessing) && e.preventDefault()}
               >
                 <div className="text-center space-y-6">
-                  <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">Upload an image to get started</h3>
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">
+                    {isConverting ? 'Converting image format...' : 'Upload an image to get started'}
+                  </h3>
                   <div className="w-20 h-20 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-xl">
                     <Upload className="w-10 h-10 text-gray-400" />
                   </div>
@@ -391,11 +418,6 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       <AuthDialog
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
-      />
-
-      <TokenPurchaseDialog 
-        isOpen={showTokenDialog}
-        onClose={() => setShowTokenDialog(false)}
       />
 
       <ProPlanDialog 

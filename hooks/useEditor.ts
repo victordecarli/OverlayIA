@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import { convertHeicToJpeg, optimizeImage } from '@/lib/image-utils';
+import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 import { uploadFile } from '@/lib/upload';
 import { removeBackground } from "@imgly/background-removal";
@@ -111,6 +111,7 @@ interface EditorState {
   backgroundColor: string | null;
   foregroundSize: number;  // Add this line
   pendingImages: PendingImage[];  // Add this line
+  isProSubscriptionActive: boolean | null;  // Add this line
 }
 
 interface EditorActions {
@@ -260,6 +261,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   backgroundColor: null,
   foregroundSize: 100,  // Default size is 100%
   pendingImages: [],  // Initialize the new state
+  isProSubscriptionActive: null,  // Add this line
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -448,8 +450,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         file = await convertHeicToJpeg(file);
       }
 
-      // Use isAuthenticated from params instead of user
-      const fileToUpload = state?.isAuthenticated ? file : await optimizeImage(file);
+      // Remove optimization step - use original file
+      const fileToUpload = file;
 
       set({ isProcessing: true });
 
@@ -464,7 +466,10 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           .eq('id', state.userId)  // Use userId from state
           .single();
 
-        if (profile.data?.expires_at && isSubscriptionActive(profile.data.expires_at)) {
+        const isProActive = profile.data?.expires_at && isSubscriptionActive(profile.data.expires_at);
+        set({ isProSubscriptionActive: isProActive });
+
+        if (isProActive) {
           // Pro users with active subscription: Use API endpoint
           const formData = new FormData();
           formData.append('file', fileToUpload);
@@ -526,7 +531,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }
   },
 
-  downloadImage: async () => {
+  downloadImage: async (isAuthenticated: boolean) => {
     try {
       const state = get();
       if (state.isDownloading) return; // Prevent multiple downloads
@@ -750,12 +755,21 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         }
       }
 
-      // Simplified: Always use PNG with max quality
+      // Check subscription status
+      let imageFormat = 'image/jpeg';
+      let imageQuality = 0.4;
+      
+      if (isAuthenticated && get().isProSubscriptionActive) {
+        imageFormat = 'image/png';
+        imageQuality = 1;
+      }
+
+      // Create blob with appropriate format
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
           blob => blob ? resolve(blob) : reject(new Error('Failed to create image')),
-          'image/png',
-          1
+          imageFormat,
+          imageQuality
         );
       });
 
@@ -763,7 +777,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       const timestamp = Math.floor(Date.now() / 1000);
-      const filename = `UnderlayXAI_${timestamp}.png`;
+      const extension = imageFormat === 'image/png' ? 'png' : 'jpg';
+      const filename = `UnderlayXAI_${timestamp}.${extension}`;
+      
       link.download = filename;
       link.href = url;
       document.body.appendChild(link);
@@ -777,7 +793,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           .from('downloads')
           .insert([
             { 
-              file_format: 'PNG',
+              file_format: extension.toUpperCase(),
             }
           ]);
 
@@ -834,7 +850,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         background: null,
         foreground: null
       } : state.image,
-      loadedFonts: new Set()
+      loadedFonts: new Set(),
+      isProSubscriptionActive: null,  // Add this line
     };
   }),
 

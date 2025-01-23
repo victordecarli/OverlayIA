@@ -155,7 +155,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
         {/* Bottom Navigation Bar */}
         <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50">
           <div className="flex gap-2 max-w-md mx-auto">
-            {renderTabButton('images', <Images className="w-4 h-4" />, 'Image Overlay')}
+            {renderTabButton('images', <Images className="w-4 h-4" />, 'Smart Overlay')}
             {cloneImageButton}
             {changeBackgroundButton}
             {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
@@ -235,7 +235,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
       <div className="flex h-full bg-white dark:bg-zinc-950">
         {/* Increase the width of the navigation buttons */}
         <div className="w-[80px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2">
-          {renderTabButton('images', <Images className="w-5 h-5" />, 'Image Overlay')}
+          {renderTabButton('images', <Images className="w-5 h-5" />, 'Smart Overlay')}
           {cloneImageButton}
           {changeBackgroundButton}
           {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
@@ -259,7 +259,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
              ) : (
                 <h3 className="text-lg font-semibold">
                   {activeTab === 'remove-background' ? 'Remove Background' : 
-                  activeTab === 'images' ? 'Image overlay' : 
+                  activeTab === 'images' ? 'Smart overlay' : 
                    activeTab === 'change-background' ? 'Change Background' : 
                    activeTab === 'clone-image' ? 'Clone Image' :
                    activeTab === 'text' ? 'Add Text' :
