@@ -181,6 +181,48 @@ const filterString = (enhancements: ImageEnhancements): string => `
   opacity(${100 - enhancements.fade}%)
 `;
 
+const POSITION_UPDATE_DELAY = 8; // Reduced from 16ms
+
+const batchedPositionUpdates = new Map<number, any>();
+const batchTimeout = new Map<number, NodeJS.Timeout>();
+
+const batchUpdate = (id: number, updates: any, updateFn: (id: number, updates: any) => void) => {
+  if (batchTimeout.has(id)) {
+    clearTimeout(batchTimeout.get(id));
+  }
+
+  batchedPositionUpdates.set(id, {
+    ...batchedPositionUpdates.get(id),
+    ...updates
+  });
+
+  batchTimeout.set(id, setTimeout(() => {
+    const batchedUpdates = batchedPositionUpdates.get(id);
+    if (batchedUpdates) {
+      requestAnimationFrame(() => {
+        updateFn(id, batchedUpdates);
+        batchedPositionUpdates.delete(id);
+      });
+    }
+    batchTimeout.delete(id);
+  }, POSITION_UPDATE_DELAY));
+};
+
+const cleanupImageUrls = (state: EditorState) => {
+  if (state.image.original) URL.revokeObjectURL(state.image.original);
+  if (state.image.background) URL.revokeObjectURL(state.image.background);
+  if (state.image.foreground) URL.revokeObjectURL(state.image.foreground);
+  
+  state.backgroundImages.forEach(img => {
+    URL.revokeObjectURL(img.url);
+  });
+
+  state.pendingImages.forEach(img => {
+    if (img.url) URL.revokeObjectURL(img.url);
+    if (img.processedUrl) URL.revokeObjectURL(img.processedUrl);
+  });
+};
+
 export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   image: {
     original: null,
@@ -228,7 +270,10 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       fontWeight: '700',
       fontSize: 600,
       color: '#FFFFFF',
-      position: { vertical: 50, horizontal: 50 },
+      position: { 
+        vertical: 50, 
+        horizontal: 50 
+      },
       opacity: 1,
       rotation: 0
     }]
@@ -238,33 +283,51 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     const state = get();
     
     try {
-      if (updates.fontFamily) {
-        const weightsToLoad = ['400', '700'];
-        const fontLoadPromises = weightsToLoad.map(weight => 
-          document.fonts.load(`${weight} 16px ${updates.fontFamily}`)
-        );
+      if (updates.position) {
+        // Ensure position updates include both properties
+        const currentText = state.textSets.find(set => set.id === id);
+        if (!currentText) return;
 
-        await Promise.all(fontLoadPromises);
+        const newPosition = {
+          vertical: updates.position.vertical ?? currentText.position.vertical,
+          horizontal: updates.position.horizontal ?? currentText.position.horizontal
+        };
 
-        if (updates.fontFamily) {
-          const newLoadedFonts = new Set(state.loadedFonts);
-          newLoadedFonts.add(updates.fontFamily);
-          set({ loadedFonts: newLoadedFonts });
-        }
+        // Batch position updates
+        batchUpdate(id, { position: newPosition }, (id, batchedUpdates) => {
+          set(state => ({
+            textSets: state.textSets.map(set => 
+              set.id === id ? { ...set, ...batchedUpdates } : set
+            )
+          }));
+        });
+        return;
       }
 
-      set(state => ({
-        textSets: state.textSets.map(set => 
-          set.id === id ? { ...set, ...updates } : set
-        )
-      }));
+      if (updates.fontFamily) {
+        // Load fonts in parallel
+        const weightsToLoad = ['400', '700'];
+        await Promise.all(
+          weightsToLoad.map(weight => 
+            document.fonts.load(`${weight} 16px ${updates.fontFamily}`)
+          )
+        );
+
+        const newLoadedFonts = new Set(state.loadedFonts);
+        newLoadedFonts.add(updates.fontFamily);
+        set({ loadedFonts: newLoadedFonts });
+      }
+
+      // Use RAF for visual updates
+      requestAnimationFrame(() => {
+        set(state => ({
+          textSets: state.textSets.map(set => 
+            set.id === id ? { ...set, ...updates } : set
+          )
+        }));
+      });
     } catch (error) {
       console.warn(`Failed to update text set (ID: ${id}):`, error);
-      set(state => ({
-        textSets: state.textSets.map(set => 
-          set.id === id ? { ...set, ...updates } : set
-        )
-      }));
     }
   },
 
@@ -294,11 +357,28 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }]
   })),
 
-  updateShapeSet: (id, updates) => set((state) => ({
-    shapeSets: state.shapeSets.map(set => 
-      set.id === id ? { ...set, ...updates } : set
-    )
-  })),
+  updateShapeSet: (id, updates) => {
+    if (updates.position) {
+      // Batch position updates
+      batchUpdate(id, { position: updates.position }, (id, batchedUpdates) => {
+        set(state => ({
+          shapeSets: state.shapeSets.map(set => 
+            set.id === id ? { ...set, ...batchedUpdates } : set
+          )
+        }));
+      });
+      return;
+    }
+
+    // Use RAF for visual updates
+    requestAnimationFrame(() => {
+      set(state => ({
+        shapeSets: state.shapeSets.map(set => 
+          set.id === id ? { ...set, ...updates } : set
+        )
+      }));
+    });
+  },
 
   removeShapeSet: (id) => set((state) => ({
     shapeSets: state.shapeSets.filter(set => set.id !== id)
@@ -723,14 +803,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   resetEditor: (clearImage = true) => set((state) => {
     // Clean up existing object URLs to prevent memory leaks
     if (clearImage) {
-      if (state.image.original) URL.revokeObjectURL(state.image.original);
-      if (state.image.background) URL.revokeObjectURL(state.image.background);
-      if (state.image.foreground) URL.revokeObjectURL(state.image.foreground);
-      
-      // Clean up background images URLs
-      state.backgroundImages.forEach(img => {
-        URL.revokeObjectURL(img.url);
-      });
+      cleanupImageUrls(state);
     }
 
     return {

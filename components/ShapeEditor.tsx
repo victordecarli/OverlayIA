@@ -165,7 +165,7 @@ export function ShapeEditor() {
               <Slider
                 min={0}
                 max={100}
-                step={1}
+                step={0.1}
                 value={[shapeSet.position.horizontal]}
                 onValueChange={([value]) => handlePositionChange(shapeSet.id, 'horizontal', value)}
               />
@@ -182,6 +182,7 @@ export function ShapeEditor() {
               <Slider
                 min={0}
                 max={100}
+                step={0.1}
                 value={[shapeSet.position.vertical]}
                 onValueChange={([value]) => handlePositionChange(shapeSet.id, 'vertical', value)}
               />

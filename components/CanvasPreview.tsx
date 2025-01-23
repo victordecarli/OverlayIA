@@ -68,9 +68,17 @@ export function CanvasPreview() {
     loadImages();
   }, [backgroundImages, loadBackgroundImage]);
 
+  // Memoize expensive calculations
+  const calculateScale = useCallback((img: HTMLImageElement, canvas: HTMLCanvasElement) => {
+    return Math.min(
+      canvas.width / img.width,
+      canvas.height / img.height
+    );
+  }, []);
+
   const render = useCallback(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
+    const ctx = canvas?.getContext('2d', { alpha: true });
     if (!canvas || !ctx || !bgImageRef.current) return;
 
     // Cancel any pending render
@@ -78,8 +86,12 @@ export function CanvasPreview() {
       cancelAnimationFrame(renderRequestRef.current);
     }
 
-    // Schedule next render
+    // Schedule next render with high priority
     renderRequestRef.current = requestAnimationFrame(() => {
+      // Reset canvas transform and clear
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       // Set canvas size to match background image
       canvas.width = bgImageRef.current!.width;
       canvas.height = bgImageRef.current!.height;
@@ -287,13 +299,20 @@ export function CanvasPreview() {
     });
   }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize]);
 
-  // Cleanup animation frame on unmount
+  // Cleanup on unmount
   useEffect(() => {
+    const currentRenderRequest = renderRequestRef.current;
+    const loadedBgImages = new Set([...bgImagesRef.current.values()]);
+
     return () => {
-      if (renderRequestRef.current) {
-        cancelAnimationFrame(renderRequestRef.current);
+      if (currentRenderRequest) {
+        cancelAnimationFrame(currentRenderRequest);
       }
-      bgImagesRef.current.clear(); // Clean up loaded images on unmount
+      // Clean up image references
+      loadedBgImages.clear();
+      bgImagesRef.current.clear();
+      bgImageRef.current = null;
+      fgImageRef.current = null;
     };
   }, []);
 
