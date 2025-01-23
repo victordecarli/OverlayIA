@@ -28,46 +28,48 @@ export function getImageFormat(file: File): string {
   return file.type.split('/')[1];
 }
 
-
 export const optimizeImage = async (file: File): Promise<File> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
+  try {
+    // Check if the image needs compression
+    if (file.size <= 500 * 1024) { // Skip if less than 500KB
+      return file;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/api/compress', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to compress image');
+    }
+
+    const blob = await response.blob();
     
-    img.onload = () => {
-      URL.revokeObjectURL(url);
+    // Verify compression was successful
+    if (blob.size >= file.size) {
+      // If compressed size is larger, return original
+      return file;
+    }
 
-      // Set maximum width or height to resize the image
-      const width = img.width;
-      const height = img.height;
+    const compressedFile = new File([blob], file.name, { 
+      type: 'image/jpeg',
+      lastModified: Date.now()
+    });
 
-      // Create a canvas and resize the image
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        reject(new Error('Failed to get canvas context'));
-        return;
-      }
+    console.log('Compression results:', {
+      originalSize: Math.round(file.size / 1024) + 'KB',
+      compressedSize: Math.round(compressedFile.size / 1024) + 'KB',
+      reduction: Math.round((1 - compressedFile.size / file.size) * 100) + '%'
+    });
 
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(img, 0, 0, width, height);
-
-      // Compress and convert to Blob with low quality
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
-          } else {
-            reject(new Error('Failed to optimize image'));
-          }
-        },
-        'image/jpeg',
-        0.4 // Ensure this is set to low quality for compression
-      );
-    };
-
-    img.onerror = reject;
-    img.src = url;
-  });
+    return compressedFile;
+  } catch (error) {
+    console.error('Error optimizing image:', error);
+    // Return original file as fallback
+    return file;
+  }
 };
