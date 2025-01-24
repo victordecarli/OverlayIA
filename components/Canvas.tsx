@@ -92,14 +92,22 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
       }
 
     } catch (error) {
+      let errorMessage = 'Something went wrong. Please try again.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      // Always show toast on error
       toast({
         variant: "destructive",
-        title: "Error analyzing image",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again."
+        title: "Error",
+        description: errorMessage
       });
+      
       console.error('Error in handleFileProcess:', error);
     } finally {
       setIsProcessing(false);
+      setProcessingMessage('');  // Clear any processing message
     }
   };
 

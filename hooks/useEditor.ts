@@ -541,7 +541,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           foregroundUrl = URL.createObjectURL(imageBlob);
           URL.revokeObjectURL(imageUrl);
         } catch (error) {
-          throw new Error('Failed to analyze image. Please try with a different image or try again later.');
+          set({ 
+            processingMessage: 'Failed to analyze image. Please try with a different image.',
+            isProcessing: false 
+          });
+          throw new Error('Failed to analyze image. Please try with a different image.');
         }
       }
   
