@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useMemo, useCallback, useState } from 'react';
-import { useEditor } from '@/hooks/useEditor';
+import { useEditor, roundRect } from '@/hooks/useEditor';  // Add this import
 import { SHAPES } from '@/constants/shapes';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -132,13 +132,77 @@ export function CanvasPreview() {
 
         const baseSize = Math.min(canvas.width, canvas.height);
         const scale = (baseSize * bgImage.scale) / 100;
-        
-        ctx.drawImage(
+
+        // Create a temporary canvas for the image with effects
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        if (!tempCtx) continue;
+
+        // Set temp canvas size to accommodate glow
+        const padding = bgImage.glow.intensity * 2;
+        tempCanvas.width = scale + padding * 2;
+        tempCanvas.height = scale + padding * 2;
+
+        // First draw the image
+        tempCtx.drawImage(
           img,
-          -scale / 2,
-          -scale / 2,
+          padding,
+          padding,
           scale,
           scale
+        );
+
+        // Apply rounded corners if needed
+        if (bgImage.borderRadius > 0) {
+          const radius = (bgImage.borderRadius / 100) * (scale / 2);
+          // Create another temp canvas for the rounded shape
+          const roundedCanvas = document.createElement('canvas');
+          roundedCanvas.width = tempCanvas.width;
+          roundedCanvas.height = tempCanvas.height;
+          const roundedCtx = roundedCanvas.getContext('2d');
+          if (!roundedCtx) continue;
+
+          roundRect(
+            roundedCtx,
+            padding,
+            padding,
+            scale,
+            scale,
+            radius
+          );
+          roundedCtx.clip();
+          roundedCtx.drawImage(tempCanvas, 0, 0);
+          
+          // Copy back to main temp canvas
+          tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+          tempCtx.drawImage(roundedCanvas, 0, 0);
+        }
+
+        // Apply glow if intensity > 0
+        if (bgImage.glow.intensity > 0) {
+          tempCtx.shadowColor = '#ffffff'; // Always white glow
+          tempCtx.shadowBlur = bgImage.glow.intensity;
+          tempCtx.shadowOffsetX = 0;
+          tempCtx.shadowOffsetY = 0;
+          
+          // Create another temp canvas to apply glow
+          const glowCanvas = document.createElement('canvas');
+          glowCanvas.width = tempCanvas.width;
+          glowCanvas.height = tempCanvas.height;
+          const glowCtx = glowCanvas.getContext('2d');
+          if (!glowCtx) continue;
+          
+          glowCtx.drawImage(tempCanvas, 0, 0);
+          tempCtx.drawImage(glowCanvas, 0, 0);
+        }
+
+        // Draw the temp canvas onto the main canvas
+        ctx.drawImage(
+          tempCanvas,
+          -scale / 2 - padding,
+          -scale / 2 - padding,
+          scale + padding * 2,
+          scale + padding * 2
         );
         
         ctx.restore();

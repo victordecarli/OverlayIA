@@ -94,8 +94,8 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error processing image",
-        description: "Something went wrong. Please try again."
+        title: "Error analyzing image",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again."
       });
       console.error('Error in handleFileProcess:', error);
     } finally {

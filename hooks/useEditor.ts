@@ -61,6 +61,7 @@ interface ClonedForeground {
   rotation: number;
 }
 
+// Update the BackgroundImage interface
 interface BackgroundImage {
   id: number;
   url: string;
@@ -68,6 +69,10 @@ interface BackgroundImage {
   scale: number;
   opacity: number;
   rotation: number;
+  glow: {
+    intensity: number;  // Remove enabled and color, only keep intensity
+  };
+  borderRadius: number;
 }
 
 interface PendingImage {
@@ -148,7 +153,21 @@ interface EditorActions {
   updatePendingImage: (id: number, updates: Partial<PendingImage>) => void;
 }
 
-// Add helper functions outside of the store
+// Modify the export of helper functions
+export const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+};
+
 const createCheckerboardPattern = (): HTMLCanvasElement => {
   const size = 16;
   const canvas = document.createElement('canvas');
@@ -470,43 +489,55 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         set({ isProSubscriptionActive: isProActive });
 
         if (isProActive) {
-          // Pro users with active subscription: Use API endpoint
-          const formData = new FormData();
-          formData.append('file', fileToUpload);
-          formData.append('isAuthenticated', 'true');
+          try {
+            // Pro users with active subscription: Use API endpoint
+            const formData = new FormData();
+            formData.append('file', fileToUpload);
+            formData.append('isAuthenticated', 'true');
     
-          const response = await fetch('/api/remove-background', {
-            method: 'POST',
-            body: formData
-          });
+            const response = await fetch('/api/remove-background', {
+              method: 'POST',
+              body: formData
+            });
     
-          const data = await response.json();
+            const data = await response.json();
     
-          if (!response.ok) {
-            throw new Error(data.error || 'Failed to remove background');
+            if (!response.ok) {
+              throw new Error(data.error || 'Failed to remove background');
+            }
+    
+            // Fetch the processed image
+            const processedImageResponse = await fetch(data.url);
+            if (!processedImageResponse.ok) {
+              throw new Error('Failed to fetch processed image');
+            }
+    
+            const processedBlob = await processedImageResponse.blob();
+            foregroundUrl = URL.createObjectURL(processedBlob);
+          } catch (error) {
+            throw new Error('Failed to analyze image. Please try again.');
           }
-    
-          // Fetch the processed image
-          const processedImageResponse = await fetch(data.url);
-          if (!processedImageResponse.ok) {
-            throw new Error('Failed to fetch processed image');
-          }
-    
-          const processedBlob = await processedImageResponse.blob();
-          foregroundUrl = URL.createObjectURL(processedBlob);
         } else {
-          // Expired subscription: Use client-side removal
+          try {
+            // Expired subscription: Use client-side removal
+            const imageUrl = URL.createObjectURL(fileToUpload);
+            const imageBlob = await removeBackground(imageUrl);
+            foregroundUrl = URL.createObjectURL(imageBlob);
+            URL.revokeObjectURL(imageUrl);
+          } catch (error) {
+            throw new Error('Failed to analyze image. Please try with a different image or try again later.');
+          }
+        }
+      } else {
+        try {
+          // Free users: Use client-side removal
           const imageUrl = URL.createObjectURL(fileToUpload);
           const imageBlob = await removeBackground(imageUrl);
           foregroundUrl = URL.createObjectURL(imageBlob);
           URL.revokeObjectURL(imageUrl);
+        } catch (error) {
+          throw new Error('Failed to analyze image. Please try with a different image or try again later.');
         }
-      } else {
-        // Free users: Use client-side removal
-        const imageUrl = URL.createObjectURL(fileToUpload);
-        const imageBlob = await removeBackground(imageUrl);
-        foregroundUrl = URL.createObjectURL(imageBlob);
-        URL.revokeObjectURL(imageUrl);
       }
   
       set(state => ({
@@ -521,11 +552,14 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   
     } catch (error) {
       console.error('Error processing image:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to analyze image. Please try again.';
       set({ 
-        processingMessage: error instanceof Error ? error.message : 'Oops! Something went wrong. Please try again.',
+        processingMessage: errorMessage,
         isProcessing: false,
         isConverting: false
       });
+      // Let the component handle the toast display using the processingMessage
+      throw error;
     } finally {
       set({ isConverting: false, isProcessing: false });
     }
@@ -604,13 +638,77 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
         const baseSize = Math.min(canvas.width, canvas.height);
         const scale = (baseSize * bgImage.scale) / 100;
-        
-        ctx.drawImage(
+
+        // Create a temporary canvas for effects
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        if (!tempCtx) continue;
+
+        // Set temp canvas size to accommodate glow
+        const padding = bgImage.glow.intensity * 2;
+        tempCanvas.width = scale + padding * 2;
+        tempCanvas.height = scale + padding * 2;
+
+        // First draw the image
+        tempCtx.drawImage(
           img,
-          -scale / 2,
-          -scale / 2,
+          padding,
+          padding,
           scale,
           scale
+        );
+
+        // Apply rounded corners if needed
+        if (bgImage.borderRadius > 0) {
+          const radius = (bgImage.borderRadius / 100) * (scale / 2);
+          // Create another temp canvas for the rounded shape
+          const roundedCanvas = document.createElement('canvas');
+          roundedCanvas.width = tempCanvas.width;
+          roundedCanvas.height = tempCanvas.height;
+          const roundedCtx = roundedCanvas.getContext('2d');
+          if (!roundedCtx) continue;
+
+          roundRect(
+            roundedCtx,
+            padding,
+            padding,
+            scale,
+            scale,
+            radius
+          );
+          roundedCtx.clip();
+          roundedCtx.drawImage(tempCanvas, 0, 0);
+          
+          // Copy back to main temp canvas
+          tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+          tempCtx.drawImage(roundedCanvas, 0, 0);
+        }
+
+        // Apply glow if intensity > 0
+        if (bgImage.glow.intensity > 0) {
+          tempCtx.shadowColor = '#ffffff'; // Always white glow
+          tempCtx.shadowBlur = bgImage.glow.intensity;
+          tempCtx.shadowOffsetX = 0;
+          tempCtx.shadowOffsetY = 0;
+          
+          // Create another temp canvas to apply glow
+          const glowCanvas = document.createElement('canvas');
+          glowCanvas.width = tempCanvas.width;
+          glowCanvas.height = tempCanvas.height;
+          const glowCtx = glowCanvas.getContext('2d');
+          if (!glowCtx) continue;
+          
+          glowCtx.drawImage(tempCanvas, 0, 0);
+          tempCtx.drawImage(glowCanvas, 0, 0);
+        }
+
+        // Draw the temp canvas onto the main canvas
+        ctx.drawImage(
+          tempCanvas,
+          -scale / 2 - padding,
+          -scale / 2 - padding,
+          scale + padding * 2,
+          scale + padding * 2
         );
         
         ctx.restore();
@@ -997,7 +1095,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
             position: { vertical: 50, horizontal: 50 },
             scale: initialScale,
             opacity: 1,
-            rotation: 0
+            rotation: 0,
+            glow: {
+              intensity: 0  // Simplified glow object
+            },
+            borderRadius: 0
           }
         ]
       }));
