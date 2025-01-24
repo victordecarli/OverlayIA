@@ -59,6 +59,10 @@ interface ClonedForeground {
   };
   size: number;
   rotation: number;
+  flip: {
+    horizontal: boolean;
+    vertical: boolean;
+  };
 }
 
 // Update the BackgroundImage interface
@@ -119,6 +123,7 @@ interface EditorState {
   isProSubscriptionActive: boolean | null;  // Add this line
 }
 
+// Update the EditorActions interface to include flip in updateClonedForegroundTransform
 interface EditorActions {
   addTextSet: () => void;
   updateTextSet: (id: number, updates: Partial<TextSet>) => void;
@@ -141,7 +146,7 @@ interface EditorActions {
   addClonedForeground: () => void;
   removeClonedForeground: (id: number) => void;
   updateClonedForegroundPosition: (id: number, position: { x: number; y: number }) => void;
-  updateClonedForegroundTransform: (id: number, updates: Partial<{ position: { x: number; y: number }; size: number; rotation: number }>) => void;
+  updateClonedForegroundTransform: (id: number, updates: Partial<{ position: { x: number; y: number }; size: number; rotation: number; flip: { horizontal: boolean; vertical: boolean } }>) => void;
   setIsProcessing: (value: boolean) => void;
   setIsConverting: (value: boolean) => void;
   addBackgroundImage: (file: File, originalSize?: { width: number; height: number } | null, id?: number) => Promise<void>;
@@ -839,6 +844,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           // Rotate around the center
           ctx.rotate((clone.rotation * Math.PI) / 180);
           
+          // Apply flip transformations
+          ctx.scale(clone.flip.horizontal ? -1 : 1, clone.flip.vertical ? -1 : 1);
+
           // Draw image centered at origin
           ctx.drawImage(
             fgImg, 
@@ -1047,7 +1055,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           id: Date.now(),
           position: { x: 5, y: 0 },
           size: 100,
-          rotation: 0
+          rotation: 0,
+          flip: {
+            horizontal: false,
+            vertical: false
+          }
         }
       ]
     }));
@@ -1065,7 +1077,12 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
   updateClonedForegroundTransform: (id, updates) => set((state) => ({
     clonedForegrounds: state.clonedForegrounds.map(clone =>
-      clone.id === id ? { ...clone, ...updates } : clone
+      clone.id === id ? {
+        ...clone,
+        ...updates,
+        // Ensure flip property is properly merged
+        flip: updates.flip ? { ...clone.flip, ...updates.flip } : clone.flip
+      } : clone
     )
   })),
   setIsProcessing: (value: boolean) => set({ isProcessing: value }),

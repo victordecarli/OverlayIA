@@ -341,11 +341,15 @@ export function CanvasPreview() {
           // Save context state before transformations
           ctx.save();
 
-          // Move to center of where we want to draw the image
+          // Move to center point
           ctx.translate(x + offsetX + newWidth / 2, y + offsetY + newHeight / 2);
           
-          // Rotate around the center
+          // Apply rotation
           ctx.rotate((clone.rotation * Math.PI) / 180);
+          
+          // Apply flips if needed
+          if (clone.flip.horizontal) ctx.scale(-1, 1);
+          if (clone.flip.vertical) ctx.scale(1, -1);
           
           // Draw image centered at origin
           ctx.drawImage(

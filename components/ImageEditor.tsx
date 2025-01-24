@@ -309,7 +309,7 @@ export function ImageEditor() {
             />
             <label
               htmlFor="background-image-upload"
-              className="flex items-center justify-center w-full p-2 rounded-md bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10"
+              className="flex items-center justify-center w-full p-2 rounded-md bg-white dark:bg-black text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
               <span>Add Image {pendingImages.length > 0 ? `(${2 - pendingImages.length} remaining)` : ''}</span>

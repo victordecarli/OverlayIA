@@ -3,8 +3,9 @@
 import { useEditor } from '@/hooks/useEditor';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Copy, X, Expand, RotateCw } from 'lucide-react';
+import { Copy, X, Expand, RotateCw, FlipHorizontal, FlipVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export function CloneImageEditor() {
   const { 
@@ -98,6 +99,53 @@ export function CloneImageEditor() {
                 max={360}
                 step={1}
               />
+            </div>
+
+            {/* Add Flip Controls */}
+            <div className="flex gap-4 pt-2">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={`horizontal-flip-${clone.id}`}
+                  checked={clone.flip.horizontal}
+                  onCheckedChange={(checked) => 
+                    updateClonedForegroundTransform(clone.id, {
+                      flip: {
+                        ...clone.flip,
+                        horizontal: checked as boolean
+                      }
+                    })
+                  }
+                />
+                <label 
+                  htmlFor={`horizontal-flip-${clone.id}`}
+                  className="text-sm font-medium flex items-center gap-1"
+                >
+                  <FlipHorizontal className="w-4 h-4" />
+                  Flip H
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={`vertical-flip-${clone.id}`}
+                  checked={clone.flip.vertical}
+                  onCheckedChange={(checked) => 
+                    updateClonedForegroundTransform(clone.id, {
+                      flip: {
+                        ...clone.flip,
+                        vertical: checked as boolean
+                      }
+                    })
+                  }
+                />
+                <label 
+                  htmlFor={`vertical-flip-${clone.id}`}
+                  className="text-sm font-medium flex items-center gap-1"
+                >
+                  <FlipVertical className="w-4 h-4" />
+                  Flip V
+                </label>
+              </div>
             </div>
 
           </div>
