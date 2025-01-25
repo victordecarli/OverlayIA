@@ -17,6 +17,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { GlowEffect } from '@/types/editor';
 import { useDebounce } from '@/hooks/useDebounce';
 import { ColorInput } from './ColorInput';
+import { DrawingEditor } from './DrawingEditor';
 
 export function ShapeEditor() {
   const { shapeSets, updateShapeSet, removeShapeSet } = useEditor();
@@ -58,7 +59,14 @@ export function ShapeEditor() {
   };
 
   return (
-    <div className="space-y-4"> {/* Increased gap between items */}
+    <div className="space-y-6">
+      {/* Drawing Tools Section */}
+      <div className="bg-white dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-lg shadow-md dark:shadow-lg dark:shadow-black/20 p-4">
+        <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-4">Drawing Tools</h3>
+        <DrawingEditor />
+      </div>
+
+      {/* Existing Shapes Section */}
       {shapeSets.map((shapeSet) => {
         const shapeName = SHAPES.find(s => s.value === shapeSet.type)?.name || 'Shape';
         return (

@@ -6,6 +6,7 @@ import { SHAPES } from '@/constants/shapes';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { DrawingPoint } from '@/types/editor';  // Add this import
 
 export function CanvasPreview() {
   const { 
@@ -20,7 +21,13 @@ export function CanvasPreview() {
     backgroundImages,  // Add this line
     backgroundColor,
     foregroundSize,
-    downloadImage // Keep this
+    downloadImage, // Keep this
+    isDrawingMode,
+    drawingTool,
+    drawingSize,
+    drawingColor,
+    drawings,
+    addDrawingPath 
   } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
@@ -29,6 +36,9 @@ export function CanvasPreview() {
   const renderRequestRef = useRef<number | undefined>(undefined);
   const { toast } = useToast();
   const { user } = useAuth();
+
+  const [currentPath, setCurrentPath] = useState<DrawingPoint[]>([]);
+  const [isDrawing, setIsDrawing] = useState(false);
 
   // Memoize the filter string
   const filterString = useMemo(() => `
@@ -208,6 +218,16 @@ export function CanvasPreview() {
         ctx.restore();
       }
 
+      // Draw drawings right after background but before shapes and text
+      drawings.forEach(path => {
+        drawPath(ctx, path.points);
+      });
+
+      // Draw current path (active drawing)
+      if (currentPath.length > 0) {
+        drawPath(ctx, currentPath);
+      }
+
       // Draw shapes with consistent scaling
       shapeSets.forEach(shapeSet => {
         ctx.save();
@@ -364,8 +384,9 @@ export function CanvasPreview() {
           ctx.restore();
         });
       }
+
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -436,24 +457,164 @@ export function CanvasPreview() {
     foregroundSize  // Add foregroundSize here
   ]);
 
+  // Add a useEffect for window resize event
+  useEffect(() => {
+    const handleResize = () => {
+      render();
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [render]);
+
+  // Modify the drawings effect to force immediate render
+  useEffect(() => {
+    render();
+  }, [drawings, currentPath, render]);
+
+  // Add a separate effect for drawings
+  useEffect(() => {
+    if (drawings.length > 0 || currentPath.length > 0) {
+      render();
+    }
+  }, [drawings, currentPath, render]);
+
+  // Add effect to reset currentPath when drawings are cleared
+  useEffect(() => {
+    if (drawings.length === 0) {
+      setCurrentPath([]);
+    }
+  }, [drawings.length]);
+
   const handleClick = () => {
     downloadImage(true);
   };
 
+  // Handle drawing interactions
+  const handleDrawStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawingMode) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    setIsDrawing(true);
+    const point = getCanvasPoint(e, canvas);
+    setCurrentPath([{
+      ...point,
+      size: drawingSize,
+      color: drawingColor
+    }]);
+  };
+
+  const handleDrawMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawing || !isDrawingMode) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const point = getCanvasPoint(e, canvas);
+    setCurrentPath(prev => [...prev, {
+      ...point,
+      size: drawingSize,
+      color: drawingColor
+    }]);
+  };
+
+  const handleDrawEnd = () => {
+    if (!isDrawing || !isDrawingMode) return;
+    
+    if (currentPath.length > 0) {
+      addDrawingPath(currentPath);
+    }
+    setCurrentPath([]);
+    setIsDrawing(false);
+  };
+
+  // Helper function to draw a path
+  const drawPath = (ctx: CanvasRenderingContext2D, points: DrawingPoint[]) => {
+    if (points.length < 2) return;
+  
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    for (let i = 1; i < points.length; i++) {
+      const start = points[i - 1];
+      const end = points[i];
+  
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(end.x, end.y);
+  
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = start.color;
+      ctx.lineWidth = start.size;
+      ctx.stroke();
+    }
+  
+    ctx.restore();
+  };
+
+  // Helper function to get canvas coordinates
+  const getCanvasPoint = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const getCoordinates = (clientX: number, clientY: number) => ({
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    });
+
+    if ('touches' in e) {
+      const touch = e.touches[0];
+      return getCoordinates(touch.clientX, touch.clientY);
+    }
+    
+    return getCoordinates(e.clientX, e.clientY);
+  };
+
+  // Add cursor indicator for drawing tools
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const updateCursor = (e: MouseEvent) => {
+      if (!isDrawingMode) return;
+
+      const cursorCanvas = document.createElement('canvas');
+      cursorCanvas.width = drawingSize * 2;
+      cursorCanvas.height = drawingSize * 2;
+      const ctx = cursorCanvas.getContext('2d')!;
+
+      ctx.beginPath();
+      ctx.arc(drawingSize, drawingSize, drawingSize / 2, 0, Math.PI * 2);
+      ctx.fillStyle = drawingColor;
+      ctx.fill();
+
+      const dataURL = cursorCanvas.toDataURL();
+      canvas.style.cursor = `url(${dataURL}) ${drawingSize}, auto`;
+    };
+
+    canvas.addEventListener('mousemove', updateCursor);
+    return () => canvas.removeEventListener('mousemove', updateCursor);
+  }, [isDrawingMode, drawingSize, drawingColor]);
+
   return (
-    <div className="relative w-full h-full">
-      <div className={cn(
-        "absolute inset-0",
-        "flex items-center justify-center",
-        "overflow-hidden"
-      )}>
+    <div className="relative w-full h-full flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center">
         <canvas
           ref={canvasRef}
           className={cn(
-            "max-w-full max-h-full",
-            "object-contain",
-            "rounded-xl" // Rounded corners for canvas
+            "max-w-full max-h-full object-contain rounded-xl",
+            isDrawingMode && "cursor-crosshair"
           )}
+          onMouseDown={handleDrawStart}
+          onMouseMove={handleDrawMove}
+          onMouseUp={handleDrawEnd}
+          onMouseLeave={handleDrawEnd}
+          onTouchStart={handleDrawStart}
+          onTouchMove={handleDrawMove}
+          onTouchEnd={handleDrawEnd}
         />
       </div>
     </div>

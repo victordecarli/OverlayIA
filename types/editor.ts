@@ -45,3 +45,10 @@ export interface ClonedForeground {
   size: number;  // 100 is original size
   rotation: number;  // degrees
 }
+
+export interface DrawingPoint {
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+}

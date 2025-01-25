@@ -92,6 +92,18 @@ interface PendingImage {
   } | null;
 }
 
+interface DrawingPoint {
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+}
+
+interface DrawingPath {
+  id: number;
+  points: DrawingPoint[];
+}
+
 interface EditorState {
   image: {
     original: string | null;
@@ -121,6 +133,11 @@ interface EditorState {
   foregroundSize: number;  // Add this line
   pendingImages: PendingImage[];  // Add this line
   isProSubscriptionActive: boolean | null;  // Add this line
+  drawings: DrawingPath[];
+  isDrawingMode: boolean;
+  drawingTool: 'pencil';  // Remove eraser option
+  drawingSize: number;
+  drawingColor: string;
 }
 
 // Update the EditorActions interface to include flip in updateClonedForegroundTransform
@@ -156,6 +173,13 @@ interface EditorActions {
   updateForegroundSize: (size: number) => void;  // Add this line
   addPendingImage: (image: PendingImage) => void;
   updatePendingImage: (id: number, updates: Partial<PendingImage>) => void;
+  setIsDrawingMode: (isDrawing: boolean) => void;
+  setDrawingTool: (tool: 'pencil') => void;
+  setDrawingSize: (size: number) => void;
+  setDrawingColor: (color: string) => void;
+  addDrawingPath: (path: DrawingPoint[]) => void;
+  clearDrawings: () => void;
+  undoLastDrawing: () => void;
 }
 
 // Modify the export of helper functions
@@ -286,6 +310,12 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   foregroundSize: 100,  // Default size is 100%
   pendingImages: [],  // Initialize the new state
   isProSubscriptionActive: null,  // Add this line
+  drawings: [],
+  isDrawingMode: false,
+  drawingTool: 'pencil',  // Remove eraser option
+  drawingSize: 50,  // Changed from 5 to 50
+  drawingColor: '#FFFFFF',  // Changed from #000000 to #FFFFFF
+
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -723,6 +753,35 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         ctx.restore();
       }
 
+      // Draw all drawings
+      const { drawings } = get();
+      
+      // Draw all drawings after background but before other elements
+      drawings.forEach(path => {
+        const points = path.points;
+        if (points.length < 2) return;
+
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        for (let i = 1; i < points.length; i++) {
+          const start = points[i - 1];
+          const end = points[i];
+
+          ctx.beginPath();
+          ctx.moveTo(start.x, start.y);
+          ctx.lineTo(end.x, end.y);
+          
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = start.color;
+          ctx.lineWidth = start.size;
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      });
+
       // 3. Draw shapes and text
       // Draw shapes
       shapeSets.forEach(shapeSet => {
@@ -887,7 +946,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       const timestamp = Math.floor(Date.now() / 1000);
-      const extension = imageFormat === 'image/png' ? 'png' : 'jpg';
+      const extension = 'png';
       const filename = `UnderlayXAI_${timestamp}.${extension}`;
       
       link.download = filename;
@@ -962,6 +1021,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       } : state.image,
       loadedFonts: new Set(),
       isProSubscriptionActive: null,  // Add this line
+      drawings: [],
+      isDrawingMode: false,
+      drawingTool: 'pencil',  // Remove eraser option
+      drawingSize: 50,
+      drawingColor: '#ffffff',
     };
   }),
 
@@ -1189,4 +1253,46 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       img.id === id ? { ...img, ...updates } : img
     )
   })),
+
+  setIsDrawingMode: (isDrawing) => {
+    set(state => ({
+      isDrawingMode: isDrawing,
+      // Reset currentPath when exiting drawing mode
+      drawings: isDrawing ? state.drawings : [...state.drawings]
+    }));
+  },
+
+  setDrawingTool: (tool) => set({ drawingTool: tool }),
+  setDrawingSize: (size) => set({ drawingSize: size }),
+  setDrawingColor: (color) => set({ drawingColor: color }),
+  addDrawingPath: (path) => {
+    if (path.length < 2) return; // Don't add single points
+    set(state => ({
+      drawings: [...state.drawings, { id: Date.now(), points: path }]
+    }));
+  },
+  clearDrawings: () => {
+    set(state => {
+      // Trigger an immediate re-render after clearing drawings
+      requestAnimationFrame(() => {
+        // Dispatch a resize event to force canvas update
+        window.dispatchEvent(new Event('resize'));
+      });
+      return { drawings: [] };
+    });
+  },
+
+  undoLastDrawing: () => {
+    set(state => {
+      // Trigger an immediate re-render after undoing
+      requestAnimationFrame(() => {
+        // Dispatch a resize event to force canvas update
+        window.dispatchEvent(new Event('resize'));
+      });
+      return {
+        drawings: state.drawings.slice(0, -1)
+      };
+    });
+  },
+
 }));
