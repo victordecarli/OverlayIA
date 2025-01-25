@@ -26,7 +26,7 @@ export const metadata = {
     images: ['/og-image.png'],
     site: '@underlayx',
   },
-  keywords: 'image behind image, image overlay, blend image, logo behind image, text behind image, logos behind image, shapes behind image, remove background, clone objects, change background, glowing text effect, image editor, photo editing, advanced image editor',
+  keywords: 'image behind image, image overlay, blend image, logo behind image, text behind image, logos behind image, shapes behind image, remove background, clone objects, change background, glowing text effect, image editor, photo editing, advanced image editor, youtube thumbnail maker',
   icons: {
     icon: '/favicon.ico',
   },

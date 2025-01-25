@@ -42,7 +42,7 @@ export function ProUpgradeButton({ variant = 'default', className }: ProUpgradeB
         <span className="flex items-center gap-1.5">
           <Sparkles className="w-4 h-4 text-purple-600" />
           <span className="text-purple-600 font-medium">
-            Upgrade to Pro
+            Pro
           </span>
         </span>
       </button>

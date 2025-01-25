@@ -284,6 +284,16 @@ export function ImageEditor() {
     );
   };
 
+  const debounceTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, []);
+
   return (
     <>
       <div className="space-y-4 max-w-2xl mx-auto"> {/* Added max-w-2xl and mx-auto */}
@@ -299,7 +309,7 @@ export function ImageEditor() {
             />
             <label
               htmlFor="background-image-upload"
-              className="flex items-center justify-center w-full p-2 rounded-md bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10"
+              className="flex items-center justify-center w-full p-2 rounded-md bg-white dark:bg-black text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
               <span>Add Image {pendingImages.length > 0 ? `(${2 - pendingImages.length} remaining)` : ''}</span>
@@ -479,6 +489,64 @@ export function ImageEditor() {
                             onValueChange={([value]) => 
                               updateBackgroundImage(pendingImage.id, { opacity: value / 100 })
                             }
+                            min={0}
+                            max={100}
+                            step={1}
+                            className="my-0.5"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 pt-2 border-t border-gray-200 dark:border-white/10">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-medium">Effects</h4>
+                        </div>
+
+                        {/* Glow Effect - Simplified */}
+                        <div className="space-y-2">
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Glow</span>
+                              <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.glow.intensity || 0)}px</span>
+                            </div>
+                            <Slider
+                              value={[backgroundImages.find(img => img.id === pendingImage.id)?.glow.intensity || 0]}
+                              onValueChange={([value]) => {
+                                // Debounce the update to improve performance
+                                if (debounceTimeout.current) {
+                                  clearTimeout(debounceTimeout.current);
+                                }
+                                debounceTimeout.current = setTimeout(() => {
+                                  updateBackgroundImage(pendingImage.id, {
+                                    glow: { intensity: value }
+                                  });
+                                }, 16); // Approximately 1 frame at 60fps
+                              }}
+                              min={0}
+                              max={50}
+                              step={1}
+                              className="my-0.5"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Border Radius */}
+                        <div>
+                          <div className="flex justify-between text-xs mb-1">
+                            <span>Border Radius</span>
+                            <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.borderRadius || 0)}px</span>
+                          </div>
+                          <Slider
+                            value={[backgroundImages.find(img => img.id === pendingImage.id)?.borderRadius || 0]}
+                            onValueChange={([value]) => {
+                              // Debounce the update to improve performance
+                              if (debounceTimeout.current) {
+                                clearTimeout(debounceTimeout.current);
+                              }
+                              debounceTimeout.current = setTimeout(() => {
+                                updateBackgroundImage(pendingImage.id, { borderRadius: value });
+                              }, 16);
+                            }}
                             min={0}
                             max={100}
                             step={1}

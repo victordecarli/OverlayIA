@@ -102,7 +102,8 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-white/10">
-        <div className="px-4 h-16 flex items-center justify-between max-w-7xl mx-auto">
+        {/* Adjusted padding for better mobile spacing */}
+        <div className="px-3 sm:px-4 h-16 flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
             <a href="/" className="flex items-center gap-2 text-gray-900 dark:text-white hover:opacity-80 transition-opacity">
               <span className="text-xl font-semibold hidden sm:inline">UnderlayX AI</span>
@@ -113,40 +114,44 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             </a>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6"> {/* Increased gap spacing */}
+          {/* Updated spacing for mobile buttons */}
+          <div className="flex items-center gap-2 sm:gap-4"> {/* Reduced gap for mobile */}
             {image.original && (
               <>
                 <button
                   onClick={() => resetEditor(true)}
                   disabled={isActionDisabled}
                   className={cn(
-                    "flex flex-col items-center px-2", // Added horizontal padding
+                    "flex flex-col items-center px-1 sm:px-2", // Reduced padding for mobile
                     isActionDisabled && "opacity-50 cursor-not-allowed"
                   )}
                   aria-disabled={isActionDisabled}
                 >
-                  <Upload className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                  <span className="text-xs mt-0.5 text-gray-600 dark:text-gray-400">Upload</span>
+                  <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" /> {/* Smaller icons on mobile */}
+                  <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">Upload</span>
                 </button>
                 <button
                   onClick={handleDownload}
                   disabled={isActionDisabled}
                   className={cn(
-                    "flex flex-col items-center px-2",
+                    "flex flex-col items-center px-1 sm:px-2",
                     isActionDisabled && "opacity-50 cursor-not-allowed"
                   )}
                   aria-disabled={isActionDisabled}
                 >
-                  <Save className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                  <span className="text-xs mt-0.5 text-gray-600 dark:text-gray-400">
-                    {isDownloading ? 'Downloading...' : 'Download'}
+                  <Save className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
+                  <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    {isDownloading ? 'Saving...' : 'Save'}
                   </span>
                 </button>
               </>
             )}
-            <div className="flex items-center gap-4 sm:gap-6"> {/* Increased gap between theme toggle and avatar */}
+            
+            <div className="flex items-center gap-2 sm:gap-4">
               {shouldShowUpgradeButton && <ProUpgradeButton variant="nav" />}
+              
               <ThemeToggle />
+              
               {isLoading ? (
                 <div className="w-8 h-8 flex items-center justify-center">
                   <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
@@ -212,10 +217,10 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
               ) : (
                 <button
                   onClick={() => setShowAuthDialog(true)}
-                  className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="flex flex-col items-center px-1 sm:px-2"
                 >
-                  <LogIn className="w-4 h-4" />
-                  <span>Login</span>
+                  <LogIn className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
+                  <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">Login</span>
                 </button>
               )}
             </div>
