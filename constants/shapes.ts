@@ -63,5 +63,10 @@ export const SHAPES = [
     name: 'Arrow',
     value: 'arrow',
     path: 'M0,40 H70 L70,10 L100,50 L70,90 L70,60 H0 Z'
+  },
+  {
+    name: 'Curved Line',
+    value: 'curved-line',
+    path: 'M 0,50 Q 50,0 100,50'  // Quadratic Bezier curve
   }
 ];

@@ -867,7 +867,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       // Check subscription status
       let imageFormat = 'image/jpeg';
-      let imageQuality = 0.4;
+      let imageQuality = 1;
       
       if (isAuthenticated && get().isProSubscriptionActive) {
         imageFormat = 'image/png';
