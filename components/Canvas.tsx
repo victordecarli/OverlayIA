@@ -207,7 +207,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
                 {processingMessage || 'Analyzing with Basic AI ✨'}
               </p>
             </div>
-            {/* <div className="flex flex-col items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+            <div className="flex flex-col items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
               <p className="text-white/90 text-xs">
                 💫 Upgrade to Pro for 2x faster processing & HD quality
               </p>
@@ -217,7 +217,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
               >
                 Upgrade Now
               </button>
-            </div> */}
+            </div>
           </div>
         );
       }

@@ -52,22 +52,32 @@ export default function Home() {
               The all-in-one tool to clone images, place logos, text, shapes, or other images behind your photo, remove backgrounds, and change backgrounds.
               </p>
               <p className="text-sm text-gray-400 mb-4">7,400+ images generated</p>
-              <Link 
-                href="/custom-editor"
-                onClick={() => setIsLoading(true)}
-                className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xl font-semibold transition-all mb-4" /* Changed from mb-8 to mb-4 */
-              >
-                {isLoading ? (
-                  <>
-                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
-                    Loading...
-                  </>
-                ) : user ? (
-                  "Open the app"
-                ) : (
-                  "Start creating for free"
-                )}
-              </Link>
+              <div className="flex justify-center gap-4 mb-4">
+                <a 
+                  href="https://www.youtube.com/watch?v=qMXQpFb5ej4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-8 py-3 bg-white hover:bg-gray-100 text-black rounded-lg text-xl font-semibold transition-all"
+                >
+                  Demo
+                </a>
+                <Link 
+                  href="/custom-editor"
+                  onClick={() => setIsLoading(true)}
+                  className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
+                >
+                  {isLoading ? (
+                    <>
+                      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                      Loading...
+                    </>
+                  ) : user ? (
+                    "Open the app"
+                  ) : (
+                    "Open the app"
+                  )}
+                </Link>
+              </div>
             </div>
           </section>
 
