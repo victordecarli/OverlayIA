@@ -19,9 +19,10 @@ import { supabase } from '@/lib/supabaseClient';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
+  mode?: 'full' | 'draw-only';
 }
 
-export function Canvas({ shouldAutoUpload }: CanvasProps) {
+export function Canvas({ shouldAutoUpload, mode = 'full' }: CanvasProps) {
   const { 
     image, 
     isProcessing, 
@@ -298,7 +299,7 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
   return (
     <>
       <div className={cn(
-        "absolute inset-0 flex items-center justify-center",
+        "absolute inset-0 flex items-center justify-center w-full h-full",
         "p-4 sm:p-6",
         isMobile && "mt-2",
         isPanelOpen && isMobile && "mb-4"
@@ -313,11 +314,11 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
               "relative flex items-center justify-center",
               isMobile ? 
                 isPanelOpen ? 
-                  "h-[40vh]" : // Further reduced height when panel is open
-                  "h-[55vh]"   // Reduced height when panel is closed
+                  "h-[65vh]" :    // Increased height for upload area
+                  "h-[75vh]"      // Increased height for upload area
                 : 
                 isPanelOpen ? 
-                  'h-[calc(68vh-8rem)]' : 
+                  'h-[calc(80vh-8rem)]' : 
                   'h-[calc(100vh-10rem)]'
             )}
           >
@@ -374,17 +375,17 @@ export function Canvas({ shouldAutoUpload }: CanvasProps) {
         ) : (
           <div className={cn(
             "relative transition-all duration-300",
-            "max-w-3xl w-full",
+            "max-w-5xl w-full",   // Increased max width
             "flex items-center justify-center",
             "overflow-hidden",
             isMobile ? 
               isPanelOpen ?
-                "h-[38vh]" :  // Further reduced height when panel is open
-                "h-[52vh]"    // Reduced height when panel is closed
+                "h-[65vh]" :      // Increased height for canvas
+                "h-[80vh]"        // Increased height for canvas
               : 
               isPanelOpen ? 
-                'h-[calc(68vh-12rem)]' : 
-                'h-[calc(100vh-14rem)]',
+                'h-[calc(85vh-8rem)]' :  // Increased height for canvas
+                'h-[calc(100vh-10rem)]',
             // Add padding top when showing the notification
             !user && "pt-10"
           )}>

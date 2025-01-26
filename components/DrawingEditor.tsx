@@ -41,7 +41,7 @@ export function DrawingEditor() {
           </Label>
           <Slider
             min={1}
-            max={100} 
+            max={500} 
             step={1}
             value={[drawingSize]}
             onValueChange={([value]) => setDrawingSize(value)}

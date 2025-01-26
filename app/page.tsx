@@ -51,7 +51,7 @@ export default function Home() {
               <p className="text-md md:text-md text-gray-300 mb-8 max-w-xl mx-auto">
               The all-in-one tool to clone images, place logos, text, shapes, or other images behind your photo, remove backgrounds, and change backgrounds.
               </p>
-              <p className="text-sm text-gray-400 mb-4">7,400+ images generated</p>
+              {/* <p className="text-sm text-gray-400 mb-4">7,400+ images generated</p> */}
               <div className="flex justify-center gap-4 mb-4">
                 <a 
                   href="https://www.youtube.com/watch?v=qMXQpFb5ej4"
