@@ -21,9 +21,9 @@ export function DrawingEditor() {
   } = useEditor();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Drawing Mode Toggle */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-3">
         <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">Drawing Mode</Label>
         <button
           onClick={() => setIsDrawingMode(!isDrawingMode)}
@@ -39,9 +39,9 @@ export function DrawingEditor() {
       </div>
 
       {/* Controls Section */}
-      <div className="space-y-4 bg-gray-50 dark:bg-white/5 rounded-lg p-4">
+      <div className="space-y-3 bg-gray-50 dark:bg-white/5 rounded-lg p-3">
         {/* Size Control */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
             Brush Size
           </Label>
@@ -51,13 +51,13 @@ export function DrawingEditor() {
             step={1}
             value={[drawingSize]}
             onValueChange={([value]) => setDrawingSize(value)}
-            className="my-2"
+            className="my-1.5"
           />
           <div className="text-xs text-gray-500 text-right">{drawingSize}px</div>
         </div>
 
         {/* Color Picker */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
             Color
           </Label>
@@ -71,7 +71,7 @@ export function DrawingEditor() {
 
       {/* Action Buttons */}
       {drawings.length > 0 && (
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-3">
           <button
             onClick={() => {
               undoLastDrawing();

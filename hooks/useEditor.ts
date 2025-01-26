@@ -956,20 +956,48 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       }
 
       try {
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        const timestamp = Math.floor(Date.now() / 1000);
-        link.download = `UnderlayXAI_${timestamp}.png`;
-        link.href = dataUrl;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Convert canvas to blob with maximum quality
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            throw new Error('Failed to create blob from canvas');
+          }
+      
+          const timestamp = Math.floor(Date.now() / 1000);
+          const fileName = `UnderlayXAI_${timestamp}.png`;
+          const blobUrl = URL.createObjectURL(blob);
+      
+          try {
+            // Create and trigger download
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = fileName;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+      
+            // Cleanup after a short delay
+            setTimeout(() => {
+              document.body.removeChild(link);
+              URL.revokeObjectURL(blobUrl);
+            }, 1000);
+      
+            set({ 
+              isDownloading: false,
+              processingMessage: 'Download complete!' 
+            });
+          } catch (error) {
+            console.error('Download error:', error);
+          }
+        }, 'image/png', 1.0); // Maximum PNG quality
+      
       } catch (error) {
-        console.error('Download error:', error);
-        throw error;
+        console.error('Canvas to Blob error:', error);
+        set({ 
+          isDownloading: false,
+          processingMessage: 'Download failed. Please try again.' 
+        });
       }
 
-      set({ isDownloading: false });
     } catch (error) {
       console.error('Download error:', error);
       set({ 
