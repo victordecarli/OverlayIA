@@ -5,7 +5,23 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 
-export default function OverlayImagePage() {
+interface TransformationPageProps {
+  title: string;
+  description: string;
+  beforeImage: string;
+  afterImage: string;
+  beforeAlt: string;
+  afterAlt: string;
+}
+
+export function TransformationPage({
+  title,
+  description,
+  beforeImage,
+  afterImage,
+  beforeAlt,
+  afterAlt,
+}: TransformationPageProps) {
   const router = useRouter();
   const { theme } = useTheme();
 
@@ -15,22 +31,19 @@ export default function OverlayImagePage() {
 
   return (
     <div className={`min-h-screen ${bgColor} flex flex-col p-4`}>
-      {/* Navigation */}
       <nav className="w-full max-w-7xl mx-auto py-2 md:py-4">
         <Link href="/" className={`text-xl font-bold ${textColor} hover:opacity-80`}>
           UnderlayX AI
         </Link>
       </nav>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto text-center pt-4 md:pt-0">
         <h1 className={`text-4xl md:text-5xl font-bold ${textColor} mb-4`}>
-          Image Overlay Transformation
+          {title}
         </h1>
         
         <p className={`${textColorMuted} text-lg mb-6 max-w-2xl`}>
-          Transform your images by adding stunning overlays, text, and effects. 
-          Create professional-looking visuals in minutes with our intuitive editor.
+          {description}
         </p>
 
         <div className="space-y-4 mb-8">
@@ -45,24 +58,25 @@ export default function OverlayImagePage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 md:gap-8"> {/* Reduced gap */}
           <div className="text-center">
             <Image
-              src="/personbefore.jpg"
-              alt="Original image before transformation"
-              width={300}
-              height={400}
+              src={beforeImage}
+              alt={beforeAlt}
+              width={250}  // Reduced from 300
+              height={333} // Adjusted to maintain aspect ratio
               className="rounded-lg shadow-lg"
               priority
             />
-            <p className={`${textColorMuted} mt-2 font-medium`}>Original Image</p>
+            <p className={`${textColorMuted} mt-2 font-medium text-sm`}> {/* Added text-sm */}
+              Original Image
+            </p>
           </div>
 
-          {/* Transform Arrow */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="40"
-            height="40"
+            width="32" // Reduced from 40
+            height="32" // Reduced from 40
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -77,14 +91,16 @@ export default function OverlayImagePage() {
 
           <div className="text-center">
             <Image
-              src="/personafter.jpg"
-              alt="Transformed image with overlay effects"
-              width={300}
-              height={400}
+              src={afterImage}
+              alt={afterAlt}
+              width={250}  // Reduced from 300
+              height={333} // Adjusted to maintain aspect ratio
               className="rounded-lg shadow-lg"
               priority
             />
-            <p className={`${textColorMuted} mt-2 font-medium`}>Transformed Image</p>
+            <p className={`${textColorMuted} mt-2 font-medium text-sm`}> {/* Added text-sm */}
+              Transformed Image
+            </p>
           </div>
         </div>
       </main>

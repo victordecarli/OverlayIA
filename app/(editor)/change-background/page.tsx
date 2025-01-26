@@ -1,27 +1,16 @@
 'use client';
 
-import { EditorLayout } from '@/components/EditorLayout';
-import { SideNavigation } from '@/components/SideNavigation';
-import { useEditor } from '@/hooks/useEditor';
-import { redirect } from 'next/navigation';
-import { useEffect } from 'react';
+import { TransformationPage } from '@/components/TransformationPage';
 
 export default function ChangeBackgroundPage() {
-   const { resetEditor } = useEditor();
-          
-    useEffect(() => {
-      resetEditor(true);
-      return () => {      
-        resetEditor(true);
-      };
-    }, [resetEditor]);
-  
-    return (
-        <EditorLayout
-          SideNavComponent={(props) => (
-            <SideNavigation {...props} mode="change-background-only" />
-          )}
-          mode="change-background-only"  
-        />
-    );
+  return (
+    <TransformationPage
+      title="Change Background Transform"
+      description="Transform your image backgrounds instantly. Replace, modify, or enhance your image backgrounds with ease."
+      beforeImage="/shirtbefore.jpg"
+      afterImage="/shirtafter.jpg"
+      beforeAlt="Original image with default background"
+      afterAlt="Image with changed background"
+    />
+  );
 }
