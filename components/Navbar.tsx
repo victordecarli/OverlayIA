@@ -116,12 +116,6 @@ export function Navbar() {
       description: 'Blend and overlay images with AI'
     },
     {
-      href: '/draw-behind-image',  // Add new route
-      icon: Pencil,
-      title: 'Draw Behind Image',
-      description: 'Draw behind your images'
-    },
-    {
       href: '/clone-image',
       icon: ImageDown,
       title: 'Clone Image',
@@ -138,6 +132,12 @@ export function Navbar() {
       icon: ImageDown,
       title: 'Change Image Background',
       description: 'Easily change the background of your image'
+    },
+    {
+      href: '/draw-behind-image',  // Add new route
+      icon: Pencil,
+      title: 'Draw Behind Image',
+      description: 'Draw behind your images'
     },
     {
       href: '/text-behind-image',

@@ -40,11 +40,11 @@ const features = [
     afterAlt: "Image with cloned objects",
   },
   {
-    title: "Add Images Behind Main Image",
-    beforeImage: "/flowerbefore.jpg",
-    afterImage: "/flowerafter.jpg",
+    title: "Draw Behind Images in Your Photos",
+    beforeImage: "/drawbefore.jpg",
+    afterImage: "/drawafter.jpeg",
     beforeAlt: "Original main image",
-    afterAlt: "Main image with background images",
+    afterAlt: "Main image with background drawings",
   },
 ];
 
