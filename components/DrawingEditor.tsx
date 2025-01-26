@@ -1,12 +1,11 @@
 'use client';
 
 import { useEditor } from '@/hooks/useEditor';
-import { Undo, Trash2 } from 'lucide-react';
+import { Undo, Trash2, Pencil } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { ColorInput } from './ColorInput';
 import { cn } from '@/lib/utils';
-import { Switch } from './ui/switch';
 
 export function DrawingEditor() {
   const {
@@ -24,12 +23,19 @@ export function DrawingEditor() {
   return (
     <div className="space-y-4">
       {/* Drawing Mode Toggle */}
-      <div className="flex items-center justify-between gap-4 mb-6">
+      <div className="flex items-center gap-3 mb-6">
         <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">Drawing Mode</Label>
-        <Switch
-          checked={isDrawingMode}
-          onCheckedChange={setIsDrawingMode}
-        />
+        <button
+          onClick={() => setIsDrawingMode(!isDrawingMode)}
+          className={cn(
+            "p-2 rounded-lg border transition-all flex items-center justify-center",
+            isDrawingMode 
+              ? "border-primary bg-primary/10 text-primary" 
+              : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
+          )}
+        >
+          <Pencil className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Controls Section */}
