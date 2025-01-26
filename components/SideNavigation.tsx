@@ -18,7 +18,7 @@ type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | '
 
 interface SideNavigationProps {
   mobile?: boolean;
-  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only' | 'draw-only';
+  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only' | 'draw-only' | 'overlay-only';
 }
 
 export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
@@ -37,6 +37,8 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
         return 'clone-image';
       case 'draw-only':
         return 'draw';
+      case 'overlay-only':
+        return 'images';
       default:
         return null;
     }
@@ -86,7 +88,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   const showRemoveBackground = mode === 'full' || mode === 'remove-background-only';
   const showChangeBackground = mode === 'full' || mode === 'change-background-only';
   const showCloneImage = mode === 'full' || mode === 'clone-image-only';
-  const showSmartOverlay = mode === 'full'; // Add this line - only show in full mode
+  const showSmartOverlay = mode === 'full' || mode === 'overlay-only'; // Add this line - only show in full mode
   const showDrawButton = mode === 'full' || mode === 'draw-only'; // Add this line
 
   // Add effect to handle body class for mobile slide up
@@ -162,10 +164,10 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50 overflow-x-auto">
       <div className="flex gap-2 min-w-fit px-2">  {/* Changed from max-w-md mx-auto to min-w-fit px-2 */}
         {showSmartOverlay && renderTabButton('images', <Images className="w-4 h-4" />, 'Smart Overlay')}
-        {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Draw')}
         {cloneImageButton}
-        {changeBackgroundButton}
         {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
+        {changeBackgroundButton}
+        {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Draw')}
         {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
         {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
       </div>
@@ -175,9 +177,9 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   const renderDesktopNavigation = () => (
     <div className="w-[80px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2">
       {showSmartOverlay && renderTabButton('images', <Images className="w-5 h-5" />, 'Smart Overlay')}
-      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
       {cloneImageButton}
       {changeBackgroundButton}
+      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
       {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
       {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
       {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}

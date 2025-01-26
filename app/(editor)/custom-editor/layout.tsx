@@ -1,4 +1,3 @@
-import { EditorPanelProvider } from '@/contexts/EditorPanelContext';
 export { metadata } from './metadata';
 
 export default function Layout({

@@ -19,7 +19,7 @@ import { supabase } from '@/lib/supabaseClient';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
-  mode?: 'full' | 'draw-only';
+  mode?: 'full' | 'draw-only' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only' | 'overlay-only';  // Add overlay-only
 }
 
 export function Canvas({ shouldAutoUpload, mode = 'full' }: CanvasProps) {

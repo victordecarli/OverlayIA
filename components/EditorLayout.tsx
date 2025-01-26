@@ -17,7 +17,7 @@ import { ProUpgradeButton } from './ProUpgradeButton'; // Add ProUpgradeButton t
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
-  mode?: 'full' | 'draw-only';  // Add mode prop with types
+  mode?: 'full' | 'draw-only' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only' | 'overlay-only';  // Add overlay-only
 }
 
 interface UserInfo {

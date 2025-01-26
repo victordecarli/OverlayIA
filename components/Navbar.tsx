@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Type, Shapes, ImageDown, LogIn, Loader2, Menu, LucideIcon, Github } from 'lucide-react'; // Add Github import
+import { ChevronDown, Type, Shapes, ImageDown, LogIn, Loader2, Menu, LucideIcon, Github, Images, Pencil } from 'lucide-react'; // Add Github, Images, and Pencil import
 import { cn } from '@/lib/utils';
 import { User } from '@supabase/supabase-js';
 import { AuthDialog } from './AuthDialog';
@@ -110,16 +110,22 @@ export function Navbar() {
 
   const navigationItems: NavigationItem[] = [
     {
-      href: '/text-behind-image',
-      icon: Type,
-      title: 'Text Behind Image',
-      description: 'Add text behind your images'
+      href: '/overlay-image',  // Add new route
+      icon: Images,
+      title: 'Smart Image Overlay',
+      description: 'Blend and overlay images with AI'
     },
     {
-      href: '/shape-behind-image',
-      icon: Shapes,
-      title: 'Shapes Behind Image',
-      description: 'Add shapes behind your images'
+      href: '/draw-behind-image',  // Add new route
+      icon: Pencil,
+      title: 'Draw Behind Image',
+      description: 'Draw behind your images'
+    },
+    {
+      href: '/clone-image',
+      icon: ImageDown,
+      title: 'Clone Image',
+      description: 'Effortlessly clone and position objects in your image'
     },
     {
       href: '/remove-background',
@@ -134,13 +140,19 @@ export function Navbar() {
       description: 'Easily change the background of your image'
     },
     {
-      href: '/clone-image',
-      icon: ImageDown,
-      title: 'Clone Image',
-      description: 'Effortlessly clone and position objects in your image'
-    }
+      href: '/text-behind-image',
+      icon: Type,
+      title: 'Text Behind Image',
+      description: 'Add text behind your images'
+    },
+    {
+      href: '/shape-behind-image',
+      icon: Shapes,
+      title: 'Shapes Behind Image',
+      description: 'Add shapes behind your images'
+    },
   ];
-
+  
   const renderNavigationItems = (isMobile = false) => (
     navigationItems.map((item) => (
       <Link 
