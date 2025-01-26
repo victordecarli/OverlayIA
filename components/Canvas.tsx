@@ -417,17 +417,16 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
         ) : (
           <div
             className={cn(
-              "relative transition-all duration-300",
-              "max-w-5xl w-full",
+              "relative w-full h-full",
+              "max-w-5xl",
               "flex items-center justify-center",
-              "overflow-hidden",
               isMobile
                 ? isPanelOpen
                   ? "h-[48vh] mb-6" // Reduced height and increased bottom margin
-                  : "h-[75vh]"
+                  : "h-full"
                 : isPanelOpen
                 ? "h-[calc(85vh-8rem)]"
-                : "h-[calc(100vh-10rem)]",
+                : "h-full",
               !user && "pt-10"
             )}
           >
@@ -441,10 +440,8 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
             )}
 
             {image.original && (
-              <div className="relative w-full h-full flex items-center justify-center">
-                <div className="absolute inset-0">
-                  <CanvasPreview />
-                </div>
+              <div className="w-full h-full">
+                <CanvasPreview />
               </div>
             )}
           </div>
