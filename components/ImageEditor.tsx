@@ -180,7 +180,7 @@ export function ImageEditor() {
         const processedBlob = await processedImageResponse.blob();
         processedUrl = URL.createObjectURL(processedBlob);
       } else {
-        // Free user path
+        // Free plan path
         console.log('Using client-side background removal');
         const imageUrl = URL.createObjectURL(pendingImage.file);
         const imageBlob = await removeBackground(imageUrl);

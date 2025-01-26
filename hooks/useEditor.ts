@@ -213,12 +213,43 @@ const createCheckerboardPattern = (): HTMLCanvasElement => {
   return canvas;
 };
 
+// Update the image loading function to ensure cross-platform compatibility
 const loadImage = (src: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = reject;
+    img.crossOrigin = "anonymous";  // Important for CORS
+    img.decoding = "async";        // Add async decoding
+    
+    // Add error handling
+    img.onerror = (e) => {
+      console.error('Error loading image:', e);
+      reject(new Error('Failed to load image'));
+    };
+    
+    img.onload = () => {
+      // Create a canvas to ensure proper image data
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('Failed to get canvas context'));
+        return;
+      }
+      
+      // Draw and re-encode the image to ensure proper format
+      ctx.drawImage(img, 0, 0);
+      try {
+        // Create a new image from the canvas
+        const cleanImg = new Image();
+        cleanImg.onload = () => resolve(cleanImg);
+        cleanImg.onerror = reject;
+        cleanImg.src = canvas.toDataURL('image/png');  // Use PNG for better quality
+      } catch (err) {
+        reject(err);
+      }
+    };
+    
     img.src = src;
   });
 };
@@ -313,7 +344,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   drawings: [],
   isDrawingMode: false,
   drawingTool: 'pencil',  // Remove eraser option
-  drawingSize: 50,  // Changed from 5 to 50
+  drawingSize: 20,  // Changed from 5 to 50
   drawingColor: '#FFFFFF',  // Changed from #000000 to #FFFFFF
 
   setProcessingMessage: (message) => set({ processingMessage: message }),
@@ -565,7 +596,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         }
       } else {
         try {
-          // Free users: Use client-side removal
+          // Free plan: Use client-side removal
           const imageUrl = URL.createObjectURL(fileToUpload);
           const imageBlob = await removeBackground(imageUrl);
           foregroundUrl = URL.createObjectURL(imageBlob);
@@ -924,53 +955,18 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         }
       }
 
-      // Check subscription status
-      let imageFormat = 'image/jpeg';
-      let imageQuality = 1;
-      
-      if (isAuthenticated && get().isProSubscriptionActive) {
-        imageFormat = 'image/png';
-        imageQuality = 1;
-      }
-
-      // Create blob with appropriate format
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob(
-          blob => blob ? resolve(blob) : reject(new Error('Failed to create image')),
-          imageFormat,
-          imageQuality
-        );
-      });
-
-      // Create download link and trigger download
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      const timestamp = Math.floor(Date.now() / 1000);
-      const extension = 'png';
-      const filename = `UnderlayXAI_${timestamp}.${extension}`;
-      
-      link.download = filename;
-      link.href = url;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      // After successful download, log to Supabase
       try {
-        const { error } = await supabase
-          .from('downloads')
-          .insert([
-            { 
-              file_format: extension.toUpperCase(),
-            }
-          ]);
-
-        if (error) {
-          console.error('Failed to log download:', error);
-        }
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        const timestamp = Math.floor(Date.now() / 1000);
+        link.download = `UnderlayXAI_${timestamp}.png`;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       } catch (error) {
-        console.error('Error logging download:', error);
+        console.error('Download error:', error);
+        throw error;
       }
 
       set({ isDownloading: false });
@@ -980,8 +976,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         isDownloading: false,
         processingMessage: 'Download failed. Please try again.' 
       });
-    } finally {
-      set({ isDownloading: false });
     }
   },
 
@@ -1024,7 +1018,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       drawings: [],
       isDrawingMode: false,
       drawingTool: 'pencil',  // Remove eraser option
-      drawingSize: 50,
+      drawingSize: 20,
       drawingColor: '#ffffff',
     };
   }),
