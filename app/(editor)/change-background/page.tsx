@@ -1,7 +1,16 @@
 'use client';
 
-import { redirect } from 'next/navigation';
+import { TransformationPage } from '@/components/TransformationPage';
 
 export default function ChangeBackgroundPage() {
-  redirect('/custom-editor');
+  return (
+    <TransformationPage
+      title="Change Background Transform"
+      description="Transform your image backgrounds instantly. Replace, modify, or enhance your image backgrounds with ease."
+      beforeImage="/shirtbefore.jpg"
+      afterImage="/shirtafter.jpg"
+      beforeAlt="Original image with default background"
+      afterAlt="Image with changed background"
+    />
+  );
 }

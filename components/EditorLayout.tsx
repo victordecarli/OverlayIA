@@ -17,6 +17,7 @@ import { ProUpgradeButton } from './ProUpgradeButton'; // Add ProUpgradeButton t
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
+  mode?: 'full' | 'draw-only' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only' | 'overlay-only';  // Add overlay-only
 }
 
 interface UserInfo {
@@ -34,7 +35,7 @@ const AvatarFallback = ({ email }: { email: string }) => {
   );
 };
 
-export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
+export function EditorLayout({ SideNavComponent, mode = 'full' }: EditorLayoutProps) {
   const { 
     resetEditor, 
     downloadImage, 
@@ -259,23 +260,23 @@ export function EditorLayout({ SideNavComponent }: EditorLayoutProps) {
             "flex items-center justify-center transition-all duration-300",
             "w-full mx-auto", // Added width constraint
             "overflow-hidden", // Prevent horizontal scroll
+            "max-w-[min(900px,calc(100vw-2rem))]",
             isMobile ?
               isPanelOpen ?
-                'h-[42vh]' :    // Reduced height when panel is open
-                'h-[60vh]'      // Reduced height when panel is closed
+                'h-[60vh]' :    // Same height for all modes
+                'h-[75vh]'      // Same height for all modes
               :
               isPanelOpen ?
-                'h-[calc(68vh-9rem)]' : 
+                'h-[calc(80vh-9rem)]' : // Same height for all modes
                 'h-[calc(100vh-11rem)]',
             "xl:h-[calc(100vh-8rem)]"
           )}>
             <div className={cn(
               "relative w-full h-full",
-              "max-w-[min(900px,calc(100vw-2rem))]", // Slightly larger max width
               "flex items-center justify-center"
             )}>
               <div className="w-full h-full">
-                <Canvas />
+                <Canvas mode={mode} />  {/* Pass mode to Canvas */}
               </div>
             </div>
           </div>

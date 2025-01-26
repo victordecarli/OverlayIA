@@ -1,7 +1,7 @@
 'use client';
 
 import React, { JSX } from 'react';
-import { Type, Shapes, Plus, ImageIcon, Image, Copy, Images } from 'lucide-react';
+import { Type, Shapes, Plus, ImageIcon, Image, Copy, Images, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { TextEditor } from './TextEditor';
@@ -12,12 +12,13 @@ import { ChangeBackgroundEditor } from './ChangeBackgroundEditor';
 import { CloneImageEditor } from './CloneImageEditor';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { ImageEditor } from './ImageEditor';
+import { DrawingEditor } from './DrawingEditor';
 
-type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | 'images' | null;
+type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | 'images' | 'draw' | null;
 
 interface SideNavigationProps {
   mobile?: boolean;
-  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only';
+  mode?: 'full' | 'text-only' | 'shapes-only' | 'remove-background-only' | 'change-background-only' | 'clone-image-only' | 'draw-only' | 'overlay-only';
 }
 
 export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigationProps) {
@@ -34,6 +35,10 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
         return 'change-background';
       case 'clone-image-only':
         return 'clone-image';
+      case 'draw-only':
+        return 'draw';
+      case 'overlay-only':
+        return 'images';
       default:
         return null;
     }
@@ -69,6 +74,8 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
           return 'Please upload an image first to change the background';
         case 'clone-image':
           return 'Please upload an image first to use the clone feature';
+        case 'draw':
+          return 'Please upload an image first to use the draw feature';
         default:
           return 'Please upload an image first';
       }
@@ -81,6 +88,8 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   const showRemoveBackground = mode === 'full' || mode === 'remove-background-only';
   const showChangeBackground = mode === 'full' || mode === 'change-background-only';
   const showCloneImage = mode === 'full' || mode === 'clone-image-only';
+  const showSmartOverlay = mode === 'full' || mode === 'overlay-only'; // Add this line - only show in full mode
+  const showDrawButton = mode === 'full' || mode === 'draw-only'; // Add this line
 
   // Add effect to handle body class for mobile slide up
   useEffect(() => {
@@ -95,6 +104,8 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
       setActiveTab('change-background');
     } else if (mode === 'clone-image-only') {
       setActiveTab('clone-image');
+    } else if (mode === 'draw-only') {
+      setActiveTab('draw');
     }
   }, [mode]);
 
@@ -149,20 +160,36 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     )
   );
 
+  const renderMobileNavigation = () => (
+    <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50 overflow-x-auto">
+      <div className="flex gap-2 min-w-fit px-2">  {/* Changed from max-w-md mx-auto to min-w-fit px-2 */}
+        {showSmartOverlay && renderTabButton('images', <Images className="w-4 h-4" />, 'Smart Overlay')}
+        {cloneImageButton}
+        {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
+        {changeBackgroundButton}
+        {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Draw')}
+        {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
+        {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
+      </div>
+    </div>
+  );
+
+  const renderDesktopNavigation = () => (
+    <div className="w-[80px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2">
+      {showSmartOverlay && renderTabButton('images', <Images className="w-5 h-5" />, 'Smart Overlay')}
+      {cloneImageButton}
+      {changeBackgroundButton}
+      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
+      {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
+      {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
+      {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
+    </div>
+  );
+
   if (mobile) {
     return (
       <>
-        {/* Bottom Navigation Bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50">
-          <div className="flex gap-2 max-w-md mx-auto">
-            {renderTabButton('images', <Images className="w-4 h-4" />, 'Smart Overlay')}
-            {cloneImageButton}
-            {changeBackgroundButton}
-            {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
-            {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
-            {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
-          </div>
-        </div>
+        {renderMobileNavigation()}
 
         {/* Mobile Slide-up Editor Panel */}
         {activeTab && (
@@ -215,6 +242,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                     {activeTab === 'change-background' && <ChangeBackgroundEditor />}
                     {activeTab === 'clone-image' && <CloneImageEditor />}
                     {activeTab === 'images' && <ImageEditor />}
+                    {activeTab === 'draw' && <DrawingEditor />}
                   </>
                 )}
               </div>
@@ -234,14 +262,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
       {/* Side Navigation Bar */}
       <div className="flex h-full bg-white dark:bg-zinc-950">
         {/* Increase the width of the navigation buttons */}
-        <div className="w-[80px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2">
-          {renderTabButton('images', <Images className="w-5 h-5" />, 'Smart Overlay')}
-          {cloneImageButton}
-          {changeBackgroundButton}
-          {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
-          {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
-          {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
-        </div>
+        {renderDesktopNavigation()}
 
         {/* Editor Content with border */}
         {activeTab && (
@@ -263,6 +284,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                    activeTab === 'change-background' ? 'Change Background' : 
                    activeTab === 'clone-image' ? 'Clone Image' :
                    activeTab === 'text' ? 'Add Text' :
+                   activeTab === 'draw' ? 'Draw' :
                    'Add Shapes'}
                 </h3>
               )}
@@ -280,6 +302,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                   {activeTab === 'change-background' && <ChangeBackgroundEditor />}
                   {activeTab === 'clone-image' && <CloneImageEditor />}
                   {activeTab === 'images' && <ImageEditor />}
+                  {activeTab === 'draw' && <DrawingEditor />}
                 </>
               )}
             </div>

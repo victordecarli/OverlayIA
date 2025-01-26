@@ -58,7 +58,8 @@ export function ShapeEditor() {
   };
 
   return (
-    <div className="space-y-4"> {/* Increased gap between items */}
+    <div className="space-y-6">
+      {/* Existing Shapes Section */}
       {shapeSets.map((shapeSet) => {
         const shapeName = SHAPES.find(s => s.value === shapeSet.type)?.name || 'Shape';
         return (
