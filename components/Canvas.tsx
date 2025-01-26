@@ -208,17 +208,17 @@ export function Canvas({ shouldAutoUpload, mode = 'full' }: CanvasProps) {
                 {processingMessage || 'Analyzing with Basic AI ✨'}
               </p>
             </div>
-            <div className="flex flex-col items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-              {/* <p className="text-white/90 text-xs">
+            {/* <div className="flex flex-col items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+              <p className="text-white/90 text-xs">
                 💫 Upgrade to Pro for 2x faster processing & HD quality
-              </p> */}
+              </p>
               <button
                 onClick={handleUpgradeClick}
                 className="mt-2 px-3 py-1 text-xs font-medium text-white bg-purple-500/30 hover:bg-purple-500/40 rounded-full transition-colors"
               >
                 Upgrade Now
               </button>
-            </div>
+            </div> */}
           </div>
         );
       }

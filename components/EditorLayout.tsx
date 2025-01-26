@@ -97,7 +97,7 @@ export function EditorLayout({ SideNavComponent, mode = 'full' }: EditorLayoutPr
 
   // Modify the shouldShowUpgradeButton logic
   const shouldShowUpgradeButton = !user || 
-    !userInfo?.expires_at || // Show for free users (no expires_at)
+    !userInfo?.expires_at || // Show for free plan (no expires_at)
     !isSubscriptionActive(userInfo.expires_at); // Show for expired pro users
 
   return (
@@ -149,7 +149,7 @@ export function EditorLayout({ SideNavComponent, mode = 'full' }: EditorLayoutPr
             )}
             
             <div className="flex items-center gap-2 sm:gap-4">
-              {shouldShowUpgradeButton && <ProUpgradeButton variant="nav" />}
+              {/* {shouldShowUpgradeButton && <ProUpgradeButton variant="nav" />} */}
               
               <ThemeToggle />
               
