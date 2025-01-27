@@ -228,12 +228,12 @@ export function Navbar() {
               </div>
 
               {/* Separate Pricing Link */}
-              <button
+              {/* <button
                 onClick={handlePricingClick}
                 className="text-white/80 hover:text-white transition-colors"
               >
                 Pricing
-              </button>
+              </button> */}
 
               <a
                 href="https://github.com/nagavineerpasam/UnderlayX"
@@ -334,7 +334,7 @@ export function Navbar() {
           <div className="md:hidden fixed inset-0 top-[85px] bg-black/95 backdrop-blur-sm">
             <div className="bg-[#141414] border-t border-white/10">
               {renderNavigationItems(true)}
-              <Link 
+              {/* <Link 
                 href="#pricing"
                 className="flex w-full items-center gap-3 p-4 hover:bg-white/10 text-white transition-colors border-b border-white/10"
                 onClick={handlePricingClick}
@@ -344,7 +344,7 @@ export function Navbar() {
                   <span className="font-medium">Pricing</span>
                   <span className="text-xs text-gray-300">View our simple pricing plans</span>
                 </div>
-              </Link>
+              </Link> */}
               <div className="p-4 border-t border-white/10">
                 {isLoading ? (
                   <div className="flex items-center justify-center">

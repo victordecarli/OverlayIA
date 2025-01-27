@@ -169,7 +169,7 @@ export function EditorLayout({
                 >
                   <Save className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
                   <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                    {isDownloading ? "Saving..." : "Save"}
+                    {isDownloading ? "Downloading..." : "Download"}
                   </span>
                 </button>
               </>
