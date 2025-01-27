@@ -112,9 +112,9 @@ export default function Home() {
           <FeatureShowcase />
           <Features />
           <UseCases />
-          <section id="pricing">
+          {/* <section id="pricing">
             <Pricing />
-          </section>
+          </section> */}
           
           <Footer />
         </main>
