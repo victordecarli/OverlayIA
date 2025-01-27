@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import Replicate from "replicate";
 
-// We only need the premium model now since this endpoint is only for pro users
-const MODEL = "lucataco/remove-bg:95fcc2a26d3899cd6c2691c900465aaeff466285a65c14638cc5f36f34befaf1" as const;
+// const MODEL = "lucataco/remove-bg:95fcc2a26d3899cd6c2691c900465aaeff466285a65c14638cc5f36f34befaf1" as const;
+const MODEL = "/" as const;
 
 export async function POST(req: Request) {
   try {
