@@ -44,16 +44,16 @@ export default function Home() {
           <section className="container mx-auto px-4 py-4 md:py-8"> {/* Changed from md:py-10 to md:py-8 */}
             <div className="max-w-4xl mx-auto text-center"> {/* Removed mb-4 */}
               <h1 className="text-3xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Transform Your Images
-                <br/>
-                <span className="text-purple-400 md:mt-2 block">Like Never Before</span>
+                Transforme suas imagens
+                <br />
+                <span className="text-purple-400 md:mt-2 block">Como nunca antes</span>
               </h1>
               <p className="text-md md:text-md text-gray-300 mb-8 max-w-xl mx-auto">
-              The all-in-one tool to clone images, place logos, text, shapes, or other images behind your photo, remove backgrounds, and change backgrounds.
+                A ferramenta definitiva para clonar imagens, adicionar logos, texto, formas ou outras imagens por trás da sua foto, remover fundos e alterar fundos.
               </p>
               {/* <p className="text-sm text-gray-400 mb-4">7,400+ images generated</p> */}
               <div className="flex justify-center mb-4">
-                <Link 
+                <Link
                   href="/custom-editor"
                   onClick={() => setIsLoading(true)}
                   className="inline-flex items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
@@ -61,12 +61,12 @@ export default function Home() {
                   {isLoading ? (
                     <>
                       <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
-                      Loading...
+                      Carregando...
                     </>
                   ) : user ? (
-                    "Open the app"
+                    "Faça o login"
                   ) : (
-                    "Open the app"
+                    "Transformar agora"
                   )}
                 </Link>
               </div>
@@ -90,10 +90,10 @@ export default function Home() {
                   src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164"
                 }
               ].map((badge, index) => (
-                <a 
+                <a
                   key={index}
                   href={badge.href}
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
                 >
                   <img
@@ -112,10 +112,10 @@ export default function Home() {
           <FeatureShowcase />
           <Features />
           <UseCases />
-          {/* <section id="pricing">
+          <section id="pricing">
             <Pricing />
-          </section> */}
-          
+          </section>
+
           <Footer />
         </main>
       </div>

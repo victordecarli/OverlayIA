@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Remove Background from Image - UnderlayX AI',
-  description: 'Easily remove image backgrounds with our powerful editor. Get a clean, transparent background for your images in seconds.',
-  keywords: 'remove background, image background remover, transparent background, background removal tool, edit images online'
+  title: 'Queflow IA - Remover Fundo de Imagens',
+  description: 'Remover fundos de imagens com nosso poderoso editor. Obtenha um fundo limpo e transparente para suas imagens em segundos.',
+  keywords: 'remover fundo, remover fundo de imagem, fundo transparente, remover fundo, editar imagens online'
 };
 
 export default function Layout({

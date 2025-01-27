@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const userProfile = await getFreshUserProfile(userID);
     if (!userProfile) {
       return NextResponse.json(
-        { error: 'User not found' },
+        { error: 'Usuário não encontrado' },
         { status: 404, headers }
       );
     }
@@ -49,22 +49,22 @@ export async function POST(req: Request) {
       intent: 'CAPTURE',
       purchase_units: [{
         amount: {
-          currency_code: 'USD',
+          currency_code: 'BRL',
           value: PRO_PLAN_PRICE.toString(),
           breakdown: {
             item_total: {
-              currency_code: 'USD',
+              currency_code: 'BRL',
               value: PRO_PLAN_PRICE.toString()
             }
           }
         },
-        description: `Pro Monthly Plan`,
+        description: `Plano Pro Mensal`,
         items: [{
-          name: `UnderlayX AI Pro Monthly Plan`,
-          description: `Unlimited access for one month`,
+          name: `Queflow IA Pro Mensal`,
+          description: `Acesso ilimitado por um mês`,
           quantity: '1',
           unit_amount: {
-            currency_code: 'USD',
+            currency_code: 'BRL',
             value: PRO_PLAN_PRICE.toString()
           }
         }]
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
         user_action: "PAY_NOW",
         return_url: `${baseUrl}/pay`,
         cancel_url: `${baseUrl}/pay`,
-        brand_name: "UnderLayX AI",
+        brand_name: "Queflow IA",
         payment_method: {
           payee_preferred: "IMMEDIATE_PAYMENT_REQUIRED"
         }
@@ -86,9 +86,9 @@ export async function POST(req: Request) {
       id: order.result.id
     }, { headers });
   } catch (error) {
-    console.error('PayPal Error:', error);
+    console.error('PayPal Erro:', error);
     return NextResponse.json(
-      { error: 'Error creating order' },
+      { error: 'Erro ao realizar o pedido' },
       { status: 500, headers }
     );
   }

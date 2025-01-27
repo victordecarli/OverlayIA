@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 
 export function CloneImageEditor() {
-  const { 
+  const {
     image,
     clonedForegrounds,
     addClonedForeground,
@@ -19,7 +19,7 @@ export function CloneImageEditor() {
   if (!image.foreground) {
     return (
       <div className="p-4 text-center text-gray-500">
-        Please upload an image first to use the clone feature.
+        Por favor, carregue uma imagem primeiro para usar a funcionalidade de clone.
       </div>
     );
   }
@@ -32,7 +32,7 @@ export function CloneImageEditor() {
         variant="default"
       >
         <Copy className="w-4 h-4 mr-2" />
-        Add Clone
+        Adicionar Clone
       </Button>
 
       <div className="space-y-4">
@@ -50,10 +50,10 @@ export function CloneImageEditor() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Horizontal Position</label>
+              <label className="text-sm font-medium">Posição Horizontal</label>
               <Slider
                 value={[clone.position.x]}
-                onValueChange={([x]) => updateClonedForegroundTransform(clone.id, { 
+                onValueChange={([x]) => updateClonedForegroundTransform(clone.id, {
                   position: { x, y: clone.position.y }
                 })}
                 min={-100}
@@ -63,10 +63,10 @@ export function CloneImageEditor() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Vertical Position</label>
+              <label className="text-sm font-medium">Posição Vertical</label>
               <Slider
                 value={[clone.position.y]}
-                onValueChange={([y]) => updateClonedForegroundTransform(clone.id, { 
+                onValueChange={([y]) => updateClonedForegroundTransform(clone.id, {
                   position: { x: clone.position.x, y }
                 })}
                 min={-100}
@@ -107,7 +107,7 @@ export function CloneImageEditor() {
                 <Checkbox
                   id={`horizontal-flip-${clone.id}`}
                   checked={clone.flip.horizontal}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     updateClonedForegroundTransform(clone.id, {
                       flip: {
                         ...clone.flip,
@@ -116,12 +116,12 @@ export function CloneImageEditor() {
                     })
                   }
                 />
-                <label 
+                <label
                   htmlFor={`horizontal-flip-${clone.id}`}
                   className="text-sm font-medium flex items-center gap-1"
                 >
                   <FlipHorizontal className="w-4 h-4" />
-                  Flip H
+                  Virar Horizontal
                 </label>
               </div>
 
@@ -129,7 +129,7 @@ export function CloneImageEditor() {
                 <Checkbox
                   id={`vertical-flip-${clone.id}`}
                   checked={clone.flip.vertical}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     updateClonedForegroundTransform(clone.id, {
                       flip: {
                         ...clone.flip,
@@ -138,12 +138,12 @@ export function CloneImageEditor() {
                     })
                   }
                 />
-                <label 
+                <label
                   htmlFor={`vertical-flip-${clone.id}`}
                   className="text-sm font-medium flex items-center gap-1"
                 >
                   <FlipVertical className="w-4 h-4" />
-                  Flip V
+                  Virar Vertical
                 </label>
               </div>
             </div>

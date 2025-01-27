@@ -1,39 +1,39 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'UnderlayX AI: Edit Images with Cloning, Text Behind, and Background Customization',
-  description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
+  title: 'Queflow IA - Editar Imagens com Clonagem, Texto Atrás e Fundos Personalizados',
+  description: 'A ferramenta definitiva para adicionar texto e formas atrás de imagens, remover fundos, clonar objetos, mudar fundos e criar efeitos luminosos de forma fácil e rápida. Ideal para criadores e designers.',
   keywords: [
-    'text behind image',
-    'image editor',
-    'photo editor',
-    'shape behind image',
-    'glow effect',
-    'YouTube thumbnail maker',
-    'social media graphics',
-    'image overlay',
-    'photo text editor',
-    'online image editor'
+    'editor de imagem',
+    'clonar imagem',
+    'mudar fundo',
+    'efeito luminoso',
+    'queflow',
+    'editor de imagem',
+    'editor de imagem online',
+    'editor de imagem gratuito',
+    'editor de imagem online gratuito',
+    'editor de imagem online grátis',
   ].join(', '),
   openGraph: {
-    title: 'UnderlayX AI: Edit Images with Cloning, Text Behind, and Background Customization',
-    description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
+    title: 'Queflow IA - Editar Imagens com Clonagem, Texto Atrás e Fundos Personalizados',
+    description: 'A ferramenta definitiva para adicionar texto e formas atrás de imagens, remover fundos, clonar objetos, mudar fundos e criar efeitos luminosos de forma fácil e rápida. Ideal para criadores e designers.',
     url: 'https://underlayx.com/custom-editor',
-    siteName: 'UnderlayX AI',
+    siteName: 'Queflow IA',
     images: [
       {
         url: 'https://underlayx.com/og-image.png', // Add your OG image path
         width: 1200,
         height: 630,
-        alt: 'UnderlayX AI Editor Preview'
+        alt: 'Queflow IA Editor'
       }
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'UnderlayX AI: Edit Images with Cloning, Text Behind, and Background Customization',
-    description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
+    title: 'Queflow IA - Editar Imagens com Clonagem, Texto Atrás e Fundos Personalizados',
+    description: 'A ferramenta definitiva para adicionar texto e formas atrás de imagens, remover fundos, clonar objetos, mudar fundos e criar efeitos luminosos de forma fácil e rápida. Ideal para criadores e designers.',
     images: ['https://underlayx.com/og-image.png'], // Add your Twitter card image path
   },
   robots: {

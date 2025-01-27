@@ -7,85 +7,85 @@ export default function Privacy() {
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 text-center">
-          Privacy Policy
+          Política de Privacidade
         </h1>
-        <p className="text-gray-400 text-center mb-12">Effective Date: January 21, 2024</p>
+        <p className="text-gray-400 text-center mb-12">Data de entrada: 21 de janeiro de 2024</p>
         <div className="max-w-3xl mx-auto">
           <div className="bg-black/20 backdrop-blur-sm p-8 rounded-xl border border-gray-800">
             <p className="text-gray-300 mb-6">
-              UnderlayX AI ("the Service") respects your privacy and is committed to protecting your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you use our Service.
+              Queflow IA ("the Service") respeita sua privacidade e se compromete a proteger suas informações pessoais. Esta Política de Privacidade explica como coletamos, usamos e protegemos seus dados quando você usa nosso Serviço.
             </p>
 
             {[
               {
-                title: "1. Information We Collect",
+                title: "1. Informações que coletamos",
                 content: [
-                  "We only collect the following information when you use our Service:",
+                  "Coletamos apenas as seguintes informações quando você usa nosso Serviço:",
                   "1.1 Google Account Information:",
-                  "When you sign in using Google Sign-In, we collect your email address and avatar (profile picture) to create your account and display this information on the user interface.",
+                  "Quando você se conecta usando Google Sign-In, coletamos seu endereço de e-mail e avatar (imagem de perfil) para criar sua conta e exibir esta informação na interface do usuário.",
                   "1.2 Payment Information:",
-                  "• For transactions requiring Indian payment methods (via PayU), we collect your phone number.",
-                  "• This number is required by PayU to send transaction confirmation SMS messages.",
-                  "Note: We do not store your phone number in our database. It is only used to facilitate the transaction process."
+                  "• Para transações que requerem métodos de pagamento indiano (via PayU), coletamos seu número de telefone.",
+                  "• Este número é necessário pelo PayU para enviar mensagens de SMS de confirmação de transação.",
+                  "Nota: Não armazenamos seu número de telefone em nosso banco de dados. Ele é usado apenas para facilitar o processo de transação."
                 ]
               },
               {
-                title: "2. Image Processing",
+                title: "2. Processamento de Imagens",
                 content: [
-                  "2.1 Local Processing:",
-                  "For features not requiring third-party services, all image processing occurs locally on your device's browser. Your images are not uploaded to or stored on our servers.",
-                  "2.2 Integration with Replicate API:",
-                  "When using features powered by the Replicate API, your image is temporarily sent to their servers for processing.",
-                  "Replicate's Policy: Input and output files are automatically deleted after one hour on their servers.",
-                  "We do not store or use your input or output images for any purpose beyond delivering the processed result.",
-                  "Note: If you wish to retain the processed image, you must download it, as neither Replicate nor UnderlayX stores these images permanently."
+                  "2.1 Processamento Local:",
+                  "Para recursos que não requerem serviços de terceiros, todo o processamento de imagens ocorre localmente no navegador do seu dispositivo. Suas imagens não são enviadas para ou armazenadas em nosso servidor.",
+                  "2.2 Integração com Replicate API:",
+                  "Quando você usa recursos que são alimentados pela API do Replicate, sua imagem é enviada temporariamente para seus servidores para processamento.",
+                  "Política do Replicate: Arquivos de entrada e saída são automaticamente excluídos após uma hora em seus servidores.",
+                  "Não armazenamos ou usamos suas imagens de entrada ou saída para qualquer outro propósito além de fornecer o resultado processado.",
+                  "Nota: Se você deseja manter a imagem processada, deve baixá-la, pois nem o Replicate nem o UnderlayX armazenam estas imagens permanentemente."
                 ]
               },
               {
-                title: "3. How We Use Your Information",
+                title: "3. Como usamos suas informações",
                 content: [
-                  "We use the collected information for the following purposes:",
-                  "• Account Creation and Display: To create your account and display your email address and avatar on the interface.",
-                  "• Authentication: To verify your identity and enable access to certain features of the Service.",
-                  "• Transaction Facilitation: To ensure successful payment processing for Indian users via PayU.",
-                  "• Improving the Service: To understand usage patterns and enhance the Service (via anonymized data from Google Analytics)."
+                  "Usamos as informações coletadas para os seguintes propósitos:",
+                  "• Criação e Exibição de Conta: Para criar sua conta e exibir seu endereço de e-mail e avatar na interface.",
+                  "• Autenticação: Para verificar sua identidade e habilitar o acesso a determinados recursos do Serviço.",
+                  "• Facilitação de Transações: Para garantir o processamento de pagamento com sucesso para usuários indiano via PayU.",
+                  "• Melhoria do Serviço: Para entender padrões de uso e melhorar o Serviço (via dados anonimizados do Google Analytics)."
                 ]
               },
               {
-                title: "4. Data Privacy and Security",
+                title: "4. Privacidade e Segurança de Dados",
                 content: [
-                  "• No Image Storage: Your images are not stored on our servers. Images sent to the Replicate API are automatically deleted after processing or within one hour, as per their policy.",
-                  "• No Data Sharing: We do not share, sell, or distribute your personal information with third parties.",
-                  "• Google Analytics: We use Google Analytics to track anonymous usage statistics, such as page views and session times. This data is not tied to your personal information."
+                  "• Não Armazenamento de Imagens: Suas imagens não são armazenadas em nosso servidor. Imagens enviadas para a API do Replicate são automaticamente excluídas após o processamento ou dentro de uma hora, conforme sua política.",
+                  "• Não Compartilhamento de Dados: Não compartilhamos, vendemos ou distribuímos suas informações pessoais com terceiros.",
+                  "• Google Analytics: Usamos Google Analytics para rastrear estatísticas anônimas de uso, como visualizações de página e tempos de sessão. Este dado não está vinculado às suas informações pessoais."
                 ]
               },
               {
-                title: "5. Third-Party Services",
+                title: "5. Serviços de Terceiros",
                 content: [
-                  "We use the following third-party services:",
-                  "• Google Sign-In: To authenticate users and retrieve email addresses and avatars.",
-                  "• Google Analytics: To collect anonymized usage data for improving the Service.",
-                  "• PayU: To process payments for Indian users, which requires a phone number for transaction SMS notifications.",
-                  "• Replicate API: To process images sent by users. Input and output files are deleted after one hour as per Replicate's policy.",
-                  "These services may have their own privacy policies, which you can review to understand how they handle your data."
+                  "Usamos os seguintes serviços de terceiros:",
+                  "• Google Sign-In: Para autenticar usuários e recuperar endereços de e-mail e avatares.",
+                  "• Google Analytics: Para coletar dados anônimos de uso para melhorar o Serviço.",
+                  "• PayU: Para processar pagamentos para usuários indiano, que requer um número de telefone para notificações de SMS de transação.",
+                  "• Replicate API: Para processar imagens enviadas pelos usuários. Arquivos de entrada e saída são excluídos após uma hora conforme a política do Replicate.",
+                  "Esses serviços podem ter suas próprias políticas de privacidade, que você pode revisar para entender como eles lidam com seus dados."
                 ]
               },
               {
-                title: "6. Your Rights",
+                title: "6. Seus Direitos",
                 content: [
-                  "As a user, you have the following rights:",
-                  "Data Deletion: Since no images or personal data are permanently stored on our servers, your data is automatically removed after processing or upon exiting the Service."
+                  "Como usuário, você tem os seguintes direitos:",
+                  "Exclusão de Dados: Como nenhuma imagem ou dados pessoais são armazenados permanentemente em nosso servidor, seus dados são automaticamente removidos após o processamento ou ao sair do Serviço."
                 ]
               },
               {
-                title: "7. Changes to This Privacy Policy",
-                content: "We may update this Privacy Policy from time to time. Any changes will be posted on this page, and the updated policy will become effective upon posting."
+                title: "7. Alterações nesta Política de Privacidade",
+                content: "Podemos atualizar esta Política de Privacidade ocasionalmente. Qualquer alteração será postada nesta página, e a nova política entrará em vigor após a postagem."
               },
               {
-                title: "8. Contact Us",
+                title: "8. Contato",
                 content: [
-                  "If you have any questions or concerns about this Privacy Policy, please contact us:",
-                  "Email: dailifyofficial@gmail.com",
+                  "Se você tiver alguma dúvida ou preocupação sobre esta Política de Privacidade, por favor entre em contato conosco:",
+                  "Email: odevvictor@gmail.com",
                   "Website: https://www.underlayx.com"
                 ]
               }

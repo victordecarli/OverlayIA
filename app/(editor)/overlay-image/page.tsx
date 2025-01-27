@@ -18,19 +18,19 @@ export default function OverlayImagePage() {
       {/* Navigation */}
       <nav className="w-full max-w-7xl mx-auto py-2 md:py-4">
         <Link href="/" className={`text-xl font-bold ${textColor} hover:opacity-80`}>
-          UnderlayX AI
+          Queflow IA
         </Link>
       </nav>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto text-center pt-4 md:pt-0">
         <h1 className={`text-4xl md:text-5xl font-bold ${textColor} mb-4`}>
-          Image Overlay Transformation
+          Sobrepor Imagens
         </h1>
-        
+
         <p className={`${textColorMuted} text-lg mb-6 max-w-2xl`}>
-          Transform your images by adding stunning overlays, text, and effects. 
-          Create professional-looking visuals in minutes with our intuitive editor.
+          Transforme suas imagens adicionando sobreposições impressionantes, texto e efeitos.
+          Crie visuais profissionais em minutos com nosso editor intuitivo.
         </p>
 
         <div className="space-y-4 mb-8">
@@ -38,10 +38,10 @@ export default function OverlayImagePage() {
             onClick={() => router.push('/custom-editor')}
             className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
           >
-            Open the Editor
+            Abrir o Editor
           </button>
           <p className={`${textColorMuted} text-sm`}>
-            Start creating your own transformed images now
+            Comece a criar suas próprias imagens transformadas agora
           </p>
         </div>
 
@@ -49,13 +49,13 @@ export default function OverlayImagePage() {
           <div className="text-center">
             <Image
               src="/personbefore.jpg"
-              alt="Original image before transformation"
+              alt="Imagem original antes da transformação"
               width={300}
               height={400}
               className="rounded-lg shadow-lg"
               priority
             />
-            <p className={`${textColorMuted} mt-2 font-medium`}>Original Image</p>
+            <p className={`${textColorMuted} mt-2 font-medium`}>Imagem Original</p>
           </div>
 
           {/* Transform Arrow */}
@@ -78,13 +78,13 @@ export default function OverlayImagePage() {
           <div className="text-center">
             <Image
               src="/personafter.jpg"
-              alt="Transformed image with overlay effects"
+              alt="Imagem transformada com sobreposições"
               width={300}
               height={400}
               className="rounded-lg shadow-lg"
               priority
             />
-            <p className={`${textColorMuted} mt-2 font-medium`}>Transformed Image</p>
+            <p className={`${textColorMuted} mt-2 font-medium`}>Imagem Transformada</p>
           </div>
         </div>
       </main>

@@ -9,14 +9,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { DrawingPoint } from '@/types/editor';  // Add this import
 
 export function CanvasPreview() {
-  const { 
-    image, 
-    textSets, 
-    shapeSets, 
-    imageEnhancements, 
-    hasTransparentBackground, 
-    foregroundPosition, 
-    hasChangedBackground, 
+  const {
+    image,
+    textSets,
+    shapeSets,
+    imageEnhancements,
+    hasTransparentBackground,
+    foregroundPosition,
+    hasChangedBackground,
     clonedForegrounds,
     backgroundImages,  // Add this line
     backgroundColor,
@@ -27,7 +27,7 @@ export function CanvasPreview() {
     drawingSize,
     drawingColor,
     drawings,
-    addDrawingPath 
+    addDrawingPath
   } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
@@ -61,7 +61,7 @@ export function CanvasPreview() {
   useEffect(() => {
     const loadImages = async () => {
       const newBgImages = new Map();
-      
+
       for (const bgImage of backgroundImages) {
         if (!bgImagesRef.current.has(bgImage.id)) {
           const img = await loadBackgroundImage(bgImage.url);
@@ -70,7 +70,7 @@ export function CanvasPreview() {
           newBgImages.set(bgImage.id, bgImagesRef.current.get(bgImage.id)!);
         }
       }
-      
+
       bgImagesRef.current = newBgImages;
       render();
     };
@@ -130,12 +130,12 @@ export function CanvasPreview() {
       for (const bgImage of backgroundImages) {
         const img = bgImagesRef.current.get(bgImage.id);
         if (!img) continue;
-        
+
         ctx.save();
-        
+
         const x = (canvas.width * bgImage.position.horizontal) / 100;
         const y = (canvas.height * bgImage.position.vertical) / 100;
-        
+
         ctx.translate(x, y);
         ctx.rotate((bgImage.rotation * Math.PI) / 180);
         ctx.globalAlpha = bgImage.opacity;
@@ -182,7 +182,7 @@ export function CanvasPreview() {
           );
           roundedCtx.clip();
           roundedCtx.drawImage(tempCanvas, 0, 0);
-          
+
           // Copy back to main temp canvas
           tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
           tempCtx.drawImage(roundedCanvas, 0, 0);
@@ -194,14 +194,14 @@ export function CanvasPreview() {
           tempCtx.shadowBlur = bgImage.glow.intensity;
           tempCtx.shadowOffsetX = 0;
           tempCtx.shadowOffsetY = 0;
-          
+
           // Create another temp canvas to apply glow
           const glowCanvas = document.createElement('canvas');
           glowCanvas.width = tempCanvas.width;
           glowCanvas.height = tempCanvas.height;
           const glowCtx = glowCanvas.getContext('2d');
           if (!glowCtx) continue;
-          
+
           glowCtx.drawImage(tempCanvas, 0, 0);
           tempCtx.drawImage(glowCanvas, 0, 0);
         }
@@ -214,7 +214,7 @@ export function CanvasPreview() {
           scale + padding * 2,
           scale + padding * 2
         );
-        
+
         ctx.restore();
       }
 
@@ -231,20 +231,20 @@ export function CanvasPreview() {
       // Draw shapes with consistent scaling
       shapeSets.forEach(shapeSet => {
         ctx.save();
-        
+
         const x = (canvas.width * shapeSet.position.horizontal) / 100;
         const y = (canvas.height * shapeSet.position.vertical) / 100;
-        
+
         // Move to position
         ctx.translate(x, y);
-        
+
         // Apply rotation
         ctx.rotate((shapeSet.rotation * Math.PI) / 180);
 
         // Calculate scale
         const baseSize = Math.min(canvas.width, canvas.height);
         const scale = (baseSize * (shapeSet.scale / 100)) / 1000;
-        
+
         // Move to center, scale, then move back
         ctx.translate(-0.5, -0.5);  // Move to center of shape path
         ctx.scale(scale, scale);    // Apply scaling
@@ -265,7 +265,7 @@ export function CanvasPreview() {
         const shape = SHAPES.find(s => s.value === shapeSet.type);
         if (shape) {
           const path = new Path2D(shape.path);
-          
+
           if (shapeSet.isFilled) {
             ctx.fillStyle = shapeSet.color;
             ctx.fill(path);
@@ -275,31 +275,31 @@ export function CanvasPreview() {
             ctx.stroke(path);
           }
         }
-        
+
         ctx.restore();
       });
 
       // Draw text layers with font family and weight
       textSets.forEach(textSet => {
         ctx.save();
-        
+
         try {
           // Create proper font string
           const fontString = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
-          
+
           // Set the font
           ctx.font = fontString;
           ctx.fillStyle = textSet.color;
           ctx.globalAlpha = textSet.opacity;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-  
+
           const x = (canvas.width * textSet.position.horizontal) / 100;
           const y = (canvas.height * textSet.position.vertical) / 100;
-  
+
           ctx.translate(x, y);
           ctx.rotate((textSet.rotation * Math.PI) / 180);
-  
+
           // Add glow effect if enabled
           if (textSet.glow?.enabled && textSet.glow.color && textSet.glow.intensity > 0) {
             ctx.shadowColor = textSet.glow.color;
@@ -307,11 +307,11 @@ export function CanvasPreview() {
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
           }
-  
+
           ctx.fillText(textSet.text, 0, 0);
         } catch (error) {
-          toast({variant:'destructive', title: "Something went wrong. Please try again."});
-          console.warn(`Failed to render text: ${textSet.text}`, error);
+          toast({ variant: 'destructive', title: "Algo deu errado. Por favor, tente novamente." });
+          console.warn(`Falhou ao renderizar texto: ${textSet.text}`, error);
         } finally {
           ctx.restore();
         }
@@ -326,11 +326,11 @@ export function CanvasPreview() {
           canvas.width / fgImageRef.current.width,
           canvas.height / fgImageRef.current.height
         );
-        
+
         const sizeMultiplier = foregroundSize / 100;
         const newWidth = fgImageRef.current.width * scale * sizeMultiplier;
         const newHeight = fgImageRef.current.height * scale * sizeMultiplier;
-        
+
         const x = (canvas.width - newWidth) / 2;
         const y = (canvas.height - newHeight) / 2;
 
@@ -348,13 +348,13 @@ export function CanvasPreview() {
             canvas.width / fgImageRef.current!.width,
             canvas.height / fgImageRef.current!.height
           );
-          
+
           const newWidth = fgImageRef.current!.width * scale * (clone.size / 100);
           const newHeight = fgImageRef.current!.height * scale * (clone.size / 100);
-          
+
           const x = (canvas.width - newWidth) / 2;
           const y = (canvas.height - newHeight) / 2;
-          
+
           const offsetX = (canvas.width * clone.position.x) / 100;
           const offsetY = (canvas.height * clone.position.y) / 100;
 
@@ -363,20 +363,20 @@ export function CanvasPreview() {
 
           // Move to center point
           ctx.translate(x + offsetX + newWidth / 2, y + offsetY + newHeight / 2);
-          
+
           // Apply rotation
           ctx.rotate((clone.rotation * Math.PI) / 180);
-          
+
           // Apply flips if needed
           if (clone.flip.horizontal) ctx.scale(-1, 1);
           if (clone.flip.vertical) ctx.scale(1, -1);
-          
+
           // Draw image centered at origin
           ctx.drawImage(
-            fgImageRef.current!, 
-            -newWidth / 2, 
-            -newHeight / 2, 
-            newWidth, 
+            fgImageRef.current!,
+            -newWidth / 2,
+            -newHeight / 2,
+            newWidth,
             newHeight
           );
 
@@ -439,7 +439,7 @@ export function CanvasPreview() {
       await Promise.all(fontPromises);
       render();
     };
-    
+
     loadFonts();
   }, [textSets]);
 
@@ -447,12 +447,12 @@ export function CanvasPreview() {
   useEffect(() => {
     render();
   }, [
-    textSets, 
-    shapeSets, 
-    imageEnhancements, 
-    foregroundPosition, 
-    clonedForegrounds, 
-    hasChangedBackground, 
+    textSets,
+    shapeSets,
+    imageEnhancements,
+    foregroundPosition,
+    clonedForegrounds,
+    hasChangedBackground,
     backgroundColor,
     foregroundSize  // Add foregroundSize here
   ]);
@@ -492,7 +492,7 @@ export function CanvasPreview() {
   // Handle drawing interactions
   const handleDrawStart = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDrawingMode) return;
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -507,7 +507,7 @@ export function CanvasPreview() {
 
   const handleDrawMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDrawing || !isDrawingMode) return;
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -521,7 +521,7 @@ export function CanvasPreview() {
 
   const handleDrawEnd = () => {
     if (!isDrawing || !isDrawingMode) return;
-    
+
     if (currentPath.length > 0) {
       addDrawingPath(currentPath);
     }
@@ -532,25 +532,25 @@ export function CanvasPreview() {
   // Helper function to draw a path
   const drawPath = (ctx: CanvasRenderingContext2D, points: DrawingPoint[]) => {
     if (points.length < 2) return;
-  
+
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    
+
     for (let i = 1; i < points.length; i++) {
       const start = points[i - 1];
       const end = points[i];
-  
+
       ctx.beginPath();
       ctx.moveTo(start.x, start.y);
       ctx.lineTo(end.x, end.y);
-  
+
       ctx.globalCompositeOperation = 'source-over';
       ctx.strokeStyle = start.color;
       ctx.lineWidth = start.size;
       ctx.stroke();
     }
-  
+
     ctx.restore();
   };
 
@@ -569,7 +569,7 @@ export function CanvasPreview() {
       const touch = e.touches[0];
       return getCoordinates(touch.clientX, touch.clientY);
     }
-    
+
     return getCoordinates(e.clientX, e.clientY);
   };
 

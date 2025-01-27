@@ -12,14 +12,14 @@ import { AuthDialog } from './AuthDialog';
 
 const features = {
   free: [
-    "✨ Unlimited Creations",
-    "🐌 Basic Speed",
-    // "🎨 Standard Quality (JPEG)",
+    "✨ Criações Limitadas - 30 por mês",
+    "🐌 Velocidade básica",
+    "🎨 Qualidade padrão (JPEG)",
   ],
   pro: [
-    "✨ Unlimited Creations",
-    "⚡️ High Speed",
-    "🎨 Premium Quality (PNG)",
+    "🚀 Criações ilimitadas",
+    "⚡️ Rápido e eficiente",
+    "🎨 Qualidade premium (PNG)",
   ]
 };
 
@@ -30,7 +30,7 @@ export function Pricing() {
   const [subscriptionInfo, setSubscriptionInfo] = useState<{
     expires_at: string | null;
   } | null>(null);
-  const currencySymbol = selectedCountry === 'India' ? '₹' : '$';
+  const currencySymbol = selectedCountry === 'India' ? '₹' : 'R$';
 
   useEffect(() => {
     async function fetchSubscriptionInfo() {
@@ -40,7 +40,7 @@ export function Pricing() {
           .select('expires_at')
           .eq('id', user.id)
           .single();
-        
+
         setSubscriptionInfo(data);
       }
     }
@@ -55,13 +55,12 @@ export function Pricing() {
       return (
         <button
           onClick={() => setShowAuthDialog(true)}
-          className={`block w-full py-3 px-6 text-center ${
-            plan === 'pro' 
-              ? 'bg-purple-600 hover:bg-purple-700' 
-              : 'bg-white/10 hover:bg-white/20'
-          } text-white rounded-lg font-medium transition-colors`}
+          className={`block w-full py-3 px-6 text-center ${plan === 'pro'
+            ? 'bg-purple-600 hover:bg-purple-700'
+            : 'bg-white/10 hover:bg-white/20'
+            } text-white rounded-lg font-medium transition-colors`}
         >
-          Login to Start
+          Login para começar
         </button>
       );
     }
@@ -69,7 +68,7 @@ export function Pricing() {
     if (isProActive) {
       return (
         <div className="text-center py-3 px-6 bg-purple-600/20 text-purple-400 rounded-lg font-medium">
-          Pro Plan Active
+          Plano Pro Ativo
         </div>
       );
     }
@@ -77,27 +76,26 @@ export function Pricing() {
     return (
       <Link
         href={plan === 'pro' ? '/pay' : '/custom-editor'}
-        className={`block w-full py-3 px-6 text-center ${
-          plan === 'pro' 
-            ? 'bg-purple-600 hover:bg-purple-700' 
-            : 'bg-white/10 hover:bg-white/20'
-        } text-white rounded-lg font-medium transition-colors`}
+        className={`block w-full py-3 px-6 text-center ${plan === 'pro'
+          ? 'bg-purple-600 hover:bg-purple-700'
+          : 'bg-white/10 hover:bg-white/20'
+          } text-white rounded-lg font-medium transition-colors`}
       >
-        {plan === 'pro' ? 'Upgrade to Pro' : 'Start Free'}
+        {plan === 'pro' ? 'Ativar Plano Pro' : 'Começar grátis'}
       </Link>
     );
   };
 
-  const getOriginalPrice = () => selectedCountry === 'India' ? 99 : 6;  // Changed from 199/10
-  const getDiscountedPrice = () => selectedCountry === 'India' ? 49 : 3; // Changed from 99/6
+  const getOriginalPrice = () => selectedCountry === 'India' ? 99 : 50;  // Changed from 199/10
+  const getDiscountedPrice = () => selectedCountry === 'India' ? 49 : 27.50; // Changed from 99/6
 
   return (
     <div className="py-24 px-4 bg-zinc-950/50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-white mb-4">Simple, Transparent Pricing</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Planos simples</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Choose your plan. No subscriptions. No auto-renewals.
+            Escolha o plano que é a sua cara. Nada de assinaturas ou renovações automáticas.
           </p>
         </div>
 
@@ -108,17 +106,17 @@ export function Pricing() {
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">Free Plan</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Plano Grátis</h3>
                 <div className="flex items-baseline">
                   <span className="text-4xl font-bold text-white">{currencySymbol}0</span>
-                  <span className="text-gray-400 ml-2">/forever</span>
+                  <span className="text-gray-400 ml-2">/sempre</span>
                 </div>
               </div>
               <div className="text-xs text-gray-400 text-right">
-                Basic<br />Processing
+                Básico
               </div>
             </div>
-            <p className="text-gray-400 mb-6">Perfect for getting started</p>
+            <p className="text-gray-400 mb-6">Ideal para começar!</p>
             {renderActionButton('free')}
             <div className="space-y-4 mt-8">
               {features.free.map((feature, index) => (
@@ -132,11 +130,11 @@ export function Pricing() {
           {/* Pro Plan Card */}
           <div className="bg-white/5 border border-purple-500/20 rounded-2xl p-8 backdrop-blur-sm relative">
             <div className="absolute -top-4 right-4 bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-              Popular
+              Mais popular
             </div>
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">Pro Plan</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Plano Pro</h3>
                 <div className="flex items-baseline">
                   <span className="text-4xl font-bold text-white">
                     <span className="line-through text-gray-500 text-3xl mr-2">
@@ -144,17 +142,18 @@ export function Pricing() {
                     </span>
                     {currencySymbol}{getDiscountedPrice()}
                   </span>
-                  <span className="text-gray-400 ml-2">/month</span>
+                  <span className="text-gray-400 ml-2">/mês</span>
                 </div>
               </div>
               <div className="text-xs text-purple-400 text-right">
-                Premium<br />Processing
+                Premium
               </div>
             </div>
             <p className="text-gray-400 mb-6">
               <span className="block mt-2 text-purple-400">
-                Limited time offer - Save {selectedCountry === 'India' ? '₹50' : '$3'} today!
+                Oferta limitada: 45% de desconto apenas hoje!
               </span>
+
             </p>
             {renderActionButton('pro')}
             <div className="space-y-4 mt-8">

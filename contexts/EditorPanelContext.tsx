@@ -22,7 +22,7 @@ export function EditorPanelProvider({ children }: { children: ReactNode }) {
 export function useEditorPanel() {
   const context = useContext(EditorPanelContext);
   if (context === undefined) {
-    throw new Error('useEditorPanel must be used within an EditorPanelProvider');
+    throw new Error('useEditorPanel deve ser usado dentro de um EditorPanelProvider');
   }
   return context;
 }

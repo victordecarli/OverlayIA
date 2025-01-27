@@ -7,7 +7,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { isSubscriptionActive } from '@/lib/utils';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import {  incrementGenerationCount } from '@/lib/supabase-utils';
+import { incrementGenerationCount } from '@/lib/supabase-utils';
 import { ProPlanDialog } from './ProPlanDialog';
 import { useToast } from '@/hooks/use-toast';
 import { removeBackground } from "@imgly/background-removal"; // Add this import
@@ -30,10 +30,10 @@ interface PendingImage {
 }
 
 export function ImageEditor() {
-  const { 
-    backgroundImages, 
-    addBackgroundImage, 
-    removeBackgroundImage, 
+  const {
+    backgroundImages,
+    addBackgroundImage,
+    removeBackgroundImage,
     updateBackgroundImage,
     pendingImages,
     addPendingImage,
@@ -64,7 +64,7 @@ export function ImageEditor() {
             .select('expires_at')
             .eq('id', user.id)
             .single();
-          
+
           const isProActive = !!(data?.expires_at && isSubscriptionActive(data.expires_at));
           setUserSubscriptionStatus({
             isProActive,
@@ -104,7 +104,7 @@ export function ImageEditor() {
         };
         img.src = url;
       });
-      
+
       const newPendingImage = {
         id: Date.now(),
         file, // Use original file directly
@@ -120,7 +120,7 @@ export function ImageEditor() {
     } catch (error) {
       setUploadError((error as Error).message);
     }
-    
+
     e.target.value = '';
   };
 
@@ -139,9 +139,9 @@ export function ImageEditor() {
     // Check cache first
     const cachedUrl = processedImageCache.get(pendingImage.file);
     if (cachedUrl) {
-      updatePendingImage(pendingImage.id, { 
+      updatePendingImage(pendingImage.id, {
         processedUrl: cachedUrl,
-        isProcessing: false 
+        isProcessing: false
       });
       return;
     }
@@ -157,7 +157,7 @@ export function ImageEditor() {
 
       if (user && userSubscriptionStatus?.isProActive) {
         // Pro user path - use API
-        console.log('Using pro API endpoint for background removal');
+        console.log('Usando API de plano pro para remoção de fundo');
         const formData = new FormData();
         formData.append('file', pendingImage.file);
         formData.append('isAuthenticated', 'true');
@@ -168,20 +168,20 @@ export function ImageEditor() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to remove background');
+          throw new Error('Falha ao remover fundo');
         }
 
         const responseData = await response.json();
         const processedImageResponse = await fetch(responseData.url);
         if (!processedImageResponse.ok) {
-          throw new Error('Failed to fetch processed image');
+          throw new Error('Falha ao buscar imagem processada');
         }
-  
+
         const processedBlob = await processedImageResponse.blob();
         processedUrl = URL.createObjectURL(processedBlob);
       } else {
         // Free plan path
-        console.log('Using client-side background removal');
+        console.log('Usando remoção de fundo do lado do cliente');
         const imageUrl = URL.createObjectURL(pendingImage.file);
         const imageBlob = await removeBackground(imageUrl);
         processedUrl = URL.createObjectURL(imageBlob);
@@ -191,9 +191,9 @@ export function ImageEditor() {
       // Cache the processed URL
       processedImageCache.set(pendingImage.file, processedUrl);
 
-      updatePendingImage(pendingImage.id, { 
-        processedUrl, 
-        isProcessing: false 
+      updatePendingImage(pendingImage.id, {
+        processedUrl,
+        isProcessing: false
       });
 
       if (user) {
@@ -201,12 +201,12 @@ export function ImageEditor() {
       }
 
     } catch (error) {
-      console.error('Error removing background:', error);
+      console.error('Erro ao remover fundo:', error);
       updatePendingImage(pendingImage.id, { isProcessing: false });
       toast({
         variant: 'destructive',
-        title: 'Background removal failed',
-        description: 'Something went wrong while processing your image. Please try again.'
+        title: 'Falha ao remover fundo',
+        description: 'Algo deu errado ao processar sua imagem. Por favor, tente novamente.'
       });
     }
   };
@@ -216,11 +216,11 @@ export function ImageEditor() {
 
     try {
       const finalUrl = pendingImage.processedUrl || pendingImage.url;
-      
+
       // Create a new blob from the image URL
       const response = await fetch(finalUrl);
       if (!response.ok) {
-        throw new Error('Failed to fetch image');
+        throw new Error('Falha ao buscar imagem');
       }
 
       const blob = await response.blob();
@@ -230,11 +230,11 @@ export function ImageEditor() {
       updatePendingImage(pendingImage.id, { isInEditor: true });
 
     } catch (error) {
-      console.error('Error moving image to editor:', error);
+      console.error('Erro ao mover imagem para editor:', error);
       toast({
         variant: 'destructive',
-        title: 'Unable to move to editor',
-        description: 'Failed to prepare image for editing. Please try again or upload a new image.'
+        title: 'Não foi possível mover para editor',
+        description: 'Falha ao preparar imagem para edição. Por favor, tente novamente ou carregue uma nova imagem.'
       });
     }
   };
@@ -272,14 +272,14 @@ export function ImageEditor() {
       return (
         <>
           <ImageOff className="w-4 h-4 mr-2" />
-          Reprocess Background
+          Reprocessar fundo
         </>
       );
     }
     return (
       <>
         <ImageOff className="w-4 h-4 mr-2" />
-        Remove Background
+        Remover fundo
       </>
     );
   };
@@ -312,7 +312,7 @@ export function ImageEditor() {
               className="flex items-center justify-center w-full p-2 rounded-md bg-white dark:bg-black text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
-              <span>Add Image {pendingImages.length > 0 ? `(${2 - pendingImages.length} remaining)` : ''}</span>
+              <span>Adicionar imagem {pendingImages.length > 0 ? `(${2 - pendingImages.length} restantes)` : ''}</span>
             </label>
             {uploadError && (
               <p className="mt-2 text-sm text-red-500">{uploadError}</p>
@@ -338,7 +338,7 @@ export function ImageEditor() {
                 )}
               </div>
             </div>
-            
+
             {/* Controls - Vertically stacked buttons */}
             <div className="p-3 space-y-3 border-t border-gray-200 dark:border-white/10">
               {!pendingImage.isInEditor ? (
@@ -351,9 +351,9 @@ export function ImageEditor() {
                     className="w-full h-8"
                   >
                     <ImageOff className="w-4 h-4 mr-2" />
-                    Remove Background
+                    Remover fundo
                   </Button>
-                  
+
                   <Button
                     variant="default"
                     size="sm"
@@ -362,9 +362,9 @@ export function ImageEditor() {
                     className="w-full h-8"
                   >
                     <ArrowRight className="w-4 h-4 mr-2" />
-                    Move to Editor
+                    Mover para editor
                   </Button>
-                  
+
                   <Button
                     variant="destructive"
                     size="sm"
@@ -373,14 +373,14 @@ export function ImageEditor() {
                     className="w-full h-8"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Remove Image
+                    Remover imagem
                   </Button>
                 </div>
               ) : (
                 // Editor Controls - Same as before but ensure it only affects this image
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium">Image Settings</h3>
+                    <h3 className="text-sm font-medium">Configurações</h3>
                     {/* Removed reset button, keeping only delete button */}
                     <Button
                       variant="destructive"
@@ -399,17 +399,17 @@ export function ImageEditor() {
                         {/* X Position */}
                         <div>
                           <div className="flex justify-between text-xs mb-1">
-                            <span>Position X</span>
+                            <span>Posição X</span>
                             <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.position.horizontal || 0)}%</span>
                           </div>
                           <Slider
                             value={[backgroundImages.find(img => img.id === pendingImage.id)?.position.horizontal || 0]}
-                            onValueChange={([value]) => 
-                              updateBackgroundImage(pendingImage.id, { 
-                                position: { 
-                                  ...backgroundImages.find(img => img.id === pendingImage.id)?.position || { vertical: 50 }, 
-                                  horizontal: value 
-                                } 
+                            onValueChange={([value]) =>
+                              updateBackgroundImage(pendingImage.id, {
+                                position: {
+                                  ...backgroundImages.find(img => img.id === pendingImage.id)?.position || { vertical: 50 },
+                                  horizontal: value
+                                }
                               })
                             }
                             min={0}
@@ -422,17 +422,17 @@ export function ImageEditor() {
                         {/* Y Position */}
                         <div>
                           <div className="flex justify-between text-xs mb-1">
-                            <span>Position Y</span>
+                            <span>Posição Y</span>
                             <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.position.vertical || 0)}%</span>
                           </div>
                           <Slider
                             value={[backgroundImages.find(img => img.id === pendingImage.id)?.position.vertical || 0]}
-                            onValueChange={([value]) => 
-                              updateBackgroundImage(pendingImage.id, { 
-                                position: { 
-                                  ...backgroundImages.find(img => img.id === pendingImage.id)?.position || { horizontal: 50 }, 
-                                  vertical: value 
-                                } 
+                            onValueChange={([value]) =>
+                              updateBackgroundImage(pendingImage.id, {
+                                position: {
+                                  ...backgroundImages.find(img => img.id === pendingImage.id)?.position || { horizontal: 50 },
+                                  vertical: value
+                                }
                               })
                             }
                             min={0}
@@ -445,12 +445,12 @@ export function ImageEditor() {
                         {/* Scale */}
                         <div>
                           <div className="flex justify-between text-xs mb-1">
-                            <span>Scale</span>
+                            <span>Escala</span>
                             <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.scale || 0)}%</span>
                           </div>
                           <Slider
                             value={[backgroundImages.find(img => img.id === pendingImage.id)?.scale || 0]}
-                            onValueChange={([value]) => 
+                            onValueChange={([value]) =>
                               updateBackgroundImage(pendingImage.id, { scale: value })
                             }
                             min={10}
@@ -463,12 +463,12 @@ export function ImageEditor() {
                         {/* Rotation */}
                         <div>
                           <div className="flex justify-between text-xs mb-1">
-                            <span>Rotation</span>
+                            <span>Rotação</span>
                             <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.rotation || 0)}°</span>
                           </div>
                           <Slider
                             value={[backgroundImages.find(img => img.id === pendingImage.id)?.rotation || 0]}
-                            onValueChange={([value]) => 
+                            onValueChange={([value]) =>
                               updateBackgroundImage(pendingImage.id, { rotation: value })
                             }
                             min={-180}
@@ -481,12 +481,12 @@ export function ImageEditor() {
                         {/* Opacity */}
                         <div>
                           <div className="flex justify-between text-xs mb-1">
-                            <span>Opacity</span>
+                            <span>Opacidade</span>
                             <span>{Math.round((backgroundImages.find(img => img.id === pendingImage.id)?.opacity || 0) * 100)}%</span>
                           </div>
                           <Slider
                             value={[(backgroundImages.find(img => img.id === pendingImage.id)?.opacity || 0) * 100]}
-                            onValueChange={([value]) => 
+                            onValueChange={([value]) =>
                               updateBackgroundImage(pendingImage.id, { opacity: value / 100 })
                             }
                             min={0}
@@ -499,14 +499,14 @@ export function ImageEditor() {
 
                       <div className="space-y-4 pt-2 border-t border-gray-200 dark:border-white/10">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium">Effects</h4>
+                          <h4 className="text-sm font-medium">Efeitos</h4>
                         </div>
 
                         {/* Glow Effect - Simplified */}
                         <div className="space-y-2">
                           <div>
                             <div className="flex justify-between text-xs mb-1">
-                              <span>Glow</span>
+                              <span>Brilho</span>
                               <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.glow.intensity || 0)}px</span>
                             </div>
                             <Slider
@@ -533,7 +533,7 @@ export function ImageEditor() {
                         {/* Border Radius */}
                         <div>
                           <div className="flex justify-between text-xs mb-1">
-                            <span>Border Radius</span>
+                            <span>Borda</span>
                             <span>{Math.round(backgroundImages.find(img => img.id === pendingImage.id)?.borderRadius || 0)}px</span>
                           </div>
                           <Slider
@@ -562,7 +562,7 @@ export function ImageEditor() {
           </div>
         ))}
       </div>
-      
+
       <ProPlanDialog
         isOpen={showProDialog}
         onClose={() => setShowProDialog(false)}

@@ -33,7 +33,7 @@ export function TransformationPage({
     <div className={`min-h-screen ${bgColor} flex flex-col p-4`}>
       <nav className="w-full max-w-7xl mx-auto py-2 md:py-4">
         <Link href="/" className={`text-xl font-bold ${textColor} hover:opacity-80`}>
-          UnderlayX AI
+          Queflow IA
         </Link>
       </nav>
 
@@ -41,7 +41,7 @@ export function TransformationPage({
         <h1 className={`text-4xl md:text-5xl font-bold ${textColor} mb-4`}>
           {title}
         </h1>
-        
+
         <p className={`${textColorMuted} text-lg mb-6 max-w-2xl`}>
           {description}
         </p>
@@ -51,10 +51,10 @@ export function TransformationPage({
             onClick={() => router.push('/custom-editor')}
             className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
           >
-            Open the Editor
+            Abrir o Editor
           </button>
           <p className={`${textColorMuted} text-sm`}>
-            Start creating your own transformed images now
+            Comece a criar suas próprias imagens transformadas agora
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export function TransformationPage({
               priority
             />
             <p className={`${textColorMuted} mt-2 font-medium text-sm`}> {/* Added text-sm */}
-              Original Image
+              Imagem Original
             </p>
           </div>
 
@@ -99,7 +99,7 @@ export function TransformationPage({
               priority
             />
             <p className={`${textColorMuted} mt-2 font-medium text-sm`}> {/* Added text-sm */}
-              Transformed Image
+              Imagem Transformada
             </p>
           </div>
         </div>

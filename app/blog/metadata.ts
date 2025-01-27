@@ -1,4 +1,4 @@
 export const metadata = {
-  title: 'Design Resources & Tutorials | UnderlayX AI Blog',
-  description: 'Learn how to create stunning designs with text behind images, glowing effects, and more. Tips and tutorials for content creators and designers.',
+  title: 'Tutoriais e Recursos de Design | Queflow IA Blog',
+  description: 'Aprenda como criar designs incríveis com texto por trás de imagens, efeitos luminosos e mais. Dicas e tutoriais para criadores de conteúdo e designers.',
 };

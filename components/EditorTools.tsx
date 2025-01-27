@@ -11,15 +11,15 @@ export function EditorTools() {
 
   const getButtonText = (type: 'text' | 'shape') => {
     if (!isImageUploaded) {
-      return `Upload an image to add ${type}`;
+      return `Carregar uma imagem para adicionar ${type}`;
     }
     if (isConverting) {
-      return 'Converting HEIC to JPEG...';
+      return 'Convertendo HEIC para JPEG...';
     }
     if (isProcessing) {
-      return 'Processing image...';
+      return 'Processando imagem...';
     }
-    return `Add ${type}`;
+    return `Adicionar ${type}`;
   };
 
   return (

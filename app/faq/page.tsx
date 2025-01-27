@@ -5,72 +5,72 @@ import Link from 'next/link';
 export default function FAQ() {
   const faqs = [
     {
-      question: "What is UnderlayX AI?",
-      answer: "UnderlayX AI is a free online tool designed for creative image editing. It allows you to clone images, add text and shapes behind objects, customize backgrounds, and download high-quality edits, all from your browser."
+      question: "O que é Queflow IA?",
+      answer: "Queflow IA é uma ferramenta online gratuita projetada para edição de imagens criativas. Permite clonar imagens, adicionar texto e formas por trás de objetos, personalizar fundos e baixar edições de alta qualidade, tudo diretamente do seu navegador."
     },
     {
-      question: "Do I need to create an account to use UnderlayX AI?",
-      answer: "Yes, you need to sign up with Google to access UnderlayX AI and unlock its full suite of features."
+      question: "Preciso criar uma conta para usar Queflow IA?",
+      answer: "Sim, você precisa se cadastrar com o Google para acessar Queflow IA e desbloquear seu conjunto completo de recursos."
     },
     {
-      question: "Does UnderlayX AI store my images or personal data?",
-      answer: "No, UnderlayX AI operates fully client-side. Your images and edits are processed locally on your device and are never uploaded or stored on our servers."
+      question: "Queflow IA armazena minhas imagens ou dados pessoais?",
+      answer: "Não, Queflow IA opera totalmente no lado do cliente. Suas imagens e edições são processadas localmente em seu dispositivo e nunca são enviadas ou armazenadas em nossos servidores."
     },
     {
-      question: "Is UnderlayX AI free to use?",
-      answer: "Yes, UnderlayX AI is free to use. Premium features and options will be introduced soon for even more functionality."
+      question: "Queflow IA é gratuito?",
+      answer: "Sim, Queflow IA é gratuito. O plano premium será introduzido em breve para mais funcionalidades."
     },
     {
-      question: "What features does UnderlayX AI offer?",
-      answer: "UnderlayX AI provides powerful editing tools, including cloning images, customizing backgrounds, adding text behind images, placing shapes behind objects, and downloading high-resolution edits."
+      question: "Queflow IA oferece quais recursos?",
+      answer: "Queflow IA oferece ferramentas de edição poderosas, incluindo clonar imagens, personalizar fundos, adicionar texto por trás de imagens, colocar formas por trás de objetos e baixar edições de alta qualidade."
     },
     {
-      question: "How do I place text behind an image?",
-      answer: <span>You can place text behind images effortlessly. Simply visit <Link href="https://www.underlayx.com/text-behind-image" className="text-blue-400 hover:underline">Text Behind Image</Link>.</span>
+      question: "Como adicionar texto por trás de uma imagem?",
+      answer: <span>Você pode adicionar texto por trás de imagens facilmente. Basta visitar <Link href="https://www.underlayx.com/text-behind-image" className="text-blue-400 hover:underline">Texto por trás da imagem</Link>.</span>
     },
     {
-      question: "How do I place shapes behind objects in an image?",
-      answer: <span>To place shapes behind objects in your image, visit <Link href="https://www.underlayx.com/shape-behind-image" className="text-blue-400 hover:underline">Shape Behind Image</Link>.</span>
+      question: "Como colocar formas por trás de objetos em uma imagem?",
+      answer: <span>Para colocar formas por trás de objetos em sua imagem, visite <Link href="https://www.underlayx.com/shape-behind-image" className="text-blue-400 hover:underline">Forma por trás da imagem</Link>.</span>
     },
     {
-      question: "How do I remove the background from an image?",
-      answer: <span>Removing the background of any image is simple. Visit <Link href="https://www.underlayx.com/remove-background" className="text-blue-400 hover:underline">Remove Background</Link>.</span>
+      question: "Como remover o fundo de uma imagem?",
+      answer: <span>Remover o fundo de qualquer imagem é simples. Visite <Link href="https://www.underlayx.com/remove-background" className="text-blue-400 hover:underline">Remover fundo</Link>.</span>
     },
     {
-      question: "How do I change the background of an image?",
-      answer: <span>Changing the background of an image is quick and easy. Visit <Link href="https://www.underlayx.com/change-background" className="text-blue-400 hover:underline">Change Background</Link>.</span>
+      question: "Como alterar o fundo de uma imagem?",
+      answer: <span>Alterar o fundo de uma imagem é rápido e fácil. Visite <Link href="https://www.underlayx.com/change-background" className="text-blue-400 hover:underline">Alterar fundo</Link>.</span>
     },
     {
-      question: "How do I clone images using UnderlayX AI?",
-      answer: <span>Cloning images is straightforward. Just visit <Link href="https://www.underlayx.com/clone-image" className="text-blue-400 hover:underline">Clone Image</Link>.</span>
+      question: "Como clonar uma imagem usando Queflow IA?",
+      answer: <span>Clonar imagens é fácil. Basta visitar <Link href="https://www.underlayx.com/clone-image" className="text-blue-400 hover:underline">Clonar imagem</Link>.</span>
     },
     {
-      question: "Can I customize backgrounds with UnderlayX AI?",
-      answer: "Yes, you can easily remove, change, or customize backgrounds to fit your creative needs."
+      question: "Posso personalizar fundos com Queflow IA?",
+      answer: "Sim, você pode facilmente remover, alterar ou personalizar fundos para atender às suas necessidades criativas."
     },
     {
-      question: "Does UnderlayX AI support high-resolution downloads?",
-      answer: "Absolutely! All your edited images can be downloaded in high resolution to ensure the best quality."
+      question: "Queflow IA suporta downloads de alta resolução?",
+      answer: "Sim! Todas as suas imagens editadas podem ser baixadas em alta resolução para garantir a melhor qualidade."
     },
     {
-      question: "Do I need any design experience to use UnderlayX AI?",
-      answer: "Not at all! UnderlayX AI is user-friendly and designed for everyone, from beginners to professionals."
+      question: "Preciso ter experiência em design para usar Queflow IA?",
+      answer: "Não! Queflow IA é projetado para todos, desde iniciantes até profissionais."
     },
     {
-      question: "Is there a limit to how many images I can edit on UnderlayX AI?",
-      answer: "No, you can edit as many images as you like without any restrictions."
+      question: "Há um limite para quantas imagens posso editar no Queflow IA?",
+      answer: "Não, você pode editar quantas imagens quiser sem nenhuma restrição."
     },
     {
-      question: "Does UnderlayX AI work on all devices?",
-      answer: "Yes, UnderlayX AI is a web-based tool designed to work on any device with an internet connection and a modern browser."
+      question: "Queflow IA funciona em todos os dispositivos?",
+      answer: "Sim, Queflow IA é uma ferramenta baseada em web projetada para funcionar em qualquer dispositivo com uma conexão com a internet e um navegador moderno."
     },
     {
-      question: "How do I report a bug or request a feature?",
-      answer: "You can contact me at dailifyofficial@gmail.com."
+      question: "Como reportar um bug ou solicitar uma funcionalidade?",
+      answer: "Você pode me contatar em odevvictor@gmail.com."
     },
     {
-      question: "Does UnderlayX AI work offline?",
-      answer: "No, UnderlayX AI requires an internet connection to function, as it is a web-based tool."
+      question: "Queflow IA funciona offline?",
+      answer: "Não, Queflow IA requer uma conexão com a internet para funcionar, pois é uma ferramenta baseada em web."
     }
   ];
 
@@ -79,7 +79,7 @@ export default function FAQ() {
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-12 text-center">
-          Frequently Asked Questions
+          Perguntas frequentes
         </h1>
         <div className="max-w-3xl mx-auto space-y-8">
           {faqs.map((faq, index) => (

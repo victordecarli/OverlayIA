@@ -5,12 +5,12 @@ import { TransformationPage } from '@/components/TransformationPage';
 export default function DrawBehindImagePage() {
   return (
     <TransformationPage
-      title="Draw Behind Image Transform"
-      description="Create custom drawings and effects behind your images."
+      title="Desenhar Atrás de Imagens"
+      description="Crie desenhos e efeitos personalizados atrás de suas imagens."
       beforeImage="/drawbefore.jpg"
       afterImage="/drawafter.jpeg"
-      beforeAlt="Original image without drawings"
-      afterAlt="Image with custom drawings behind"
+      beforeAlt="Imagem original"
+      afterAlt="Imagem com desenhos personalizados atrás"
     />
   );
 }

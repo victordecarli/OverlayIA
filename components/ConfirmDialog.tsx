@@ -37,13 +37,13 @@ export function ConfirmDialog({ isOpen, onClose, onConfirm, title, description }
             onClick={onClose}
             className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5"
           >
-            Cancel
+            Cancelar
           </button>
           <button
             onClick={handleConfirm}
             className="flex-1 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100"
           >
-            Continue
+            Continuar
           </button>
         </DialogFooter>
       </DialogContent>

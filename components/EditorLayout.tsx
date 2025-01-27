@@ -18,14 +18,14 @@ import { ProUpgradeButton } from "./ProUpgradeButton"; // Add ProUpgradeButton t
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
   mode?:
-    | "full"
-    | "draw-only"
-    | "text-only"
-    | "shapes-only"
-    | "remove-background-only"
-    | "change-background-only"
-    | "clone-image-only"
-    | "overlay-only"; // Add overlay-only
+  | "full"
+  | "draw-only"
+  | "text-only"
+  | "shapes-only"
+  | "remove-background-only"
+  | "change-background-only"
+  | "clone-image-only"
+  | "overlay-only"; // Add overlay-only
 }
 
 interface UserInfo {
@@ -93,7 +93,7 @@ export function EditorLayout({
             setUserInfo(data);
           }
         } catch (error) {
-          console.error("Error fetching user info:", error);
+          console.error("Erro ao buscar informações do usuário:", error);
         }
       }
     }
@@ -126,12 +126,12 @@ export function EditorLayout({
               className="flex items-center gap-2 text-gray-900 dark:text-white hover:opacity-80 transition-opacity"
             >
               <span className="text-xl font-semibold hidden sm:inline">
-                UnderlayX AI
+                Queflow IA
               </span>
               <div className="flex items-center flex-col">
                 <Home className="sm:hidden w-5 h-5" />
                 <span className="sm:hidden text-xs mt-0.5 text-gray-600 dark:text-gray-400">
-                  Home
+                  Início
                 </span>
               </div>
             </a>
@@ -169,7 +169,7 @@ export function EditorLayout({
                 >
                   <Save className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
                   <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                    {isDownloading ? "Downloading..." : "Download"}
+                    {isDownloading ? "Baixando..." : "Baixar"}
                   </span>
                 </button>
               </>
@@ -231,13 +231,13 @@ export function EditorLayout({
                         {userInfo && (
                           <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
                             {userInfo.expires_at &&
-                            isSubscriptionActive(userInfo.expires_at) ? (
+                              isSubscriptionActive(userInfo.expires_at) ? (
                               <>
                                 <div className="text-purple-600 font-medium">
-                                  Pro Plan Active
+                                  Plano Pro Ativo
                                 </div>
                                 <div>
-                                  Expires:{" "}
+                                  Expira em:{" "}
                                   {new Date(
                                     userInfo.expires_at
                                   ).toLocaleDateString()}
@@ -245,7 +245,7 @@ export function EditorLayout({
                               </>
                             ) : (
                               <>
-                                <div>Free Plan</div>
+                                <div>Plano Gratuito</div>
                               </>
                             )}
                           </div>
@@ -261,7 +261,7 @@ export function EditorLayout({
                 >
                   <LogIn className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
                   <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
-                    Login
+                    Entrar
                   </span>
                 </button>
               )}
@@ -288,8 +288,8 @@ export function EditorLayout({
                 ? "pb-[32vh]"
                 : "pb-16"
               : isPanelOpen
-              ? "pb-[calc(32vh+120px)]"
-              : "pb-24 xl:pb-12"
+                ? "pb-[calc(32vh+120px)]"
+                : "pb-24 xl:pb-12"
           )}
         >
           {/* Bottom Navigation for mobile, tablet and small desktop */}
@@ -310,8 +310,8 @@ export function EditorLayout({
                   ? "h-[48vh]"
                   : "h-[75vh]"
                 : isPanelOpen
-                ? "h-[calc(80vh-9rem)]"
-                : "h-[calc(100vh-11rem)]",
+                  ? "h-[calc(80vh-9rem)]"
+                  : "h-[calc(100vh-11rem)]",
               "xl:h-[calc(100vh-8rem)]"
             )}
           >

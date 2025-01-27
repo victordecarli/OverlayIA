@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Add Text Behind Image - UnderlayX AI',
-  description: 'Add text behind your images with our easy-to-use editor. Perfect for creating unique designs and compositions.',
-  keywords: 'text behind image, image text editor, text overlay, image text tool'
+  title: 'Queflow IA - Adicionar Texto Atrás de Imagens',
+  description: 'Adicione texto atrás de suas imagens com nosso editor fácil de usar. Ideal para criar designs únicos e composições.',
+  keywords: 'texto atrás de imagem, editor de texto, sobreposição de texto, ferramenta de texto de imagem'
 };
 
 export default function Layout({

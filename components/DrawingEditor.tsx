@@ -29,8 +29,8 @@ export function DrawingEditor() {
           onClick={() => setIsDrawingMode(!isDrawingMode)}
           className={cn(
             "p-2 rounded-lg border transition-all flex items-center justify-center",
-            isDrawingMode 
-              ? "border-primary bg-primary/10 text-primary" 
+            isDrawingMode
+              ? "border-primary bg-primary/10 text-primary"
               : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
           )}
         >
@@ -43,11 +43,11 @@ export function DrawingEditor() {
         {/* Size Control */}
         <div className="space-y-1.5">
           <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-            Brush Size
+            Tamanho do Pincel
           </Label>
           <Slider
             min={1}
-            max={500} 
+            max={500}
             step={1}
             value={[drawingSize]}
             onValueChange={([value]) => setDrawingSize(value)}
@@ -59,7 +59,7 @@ export function DrawingEditor() {
         {/* Color Picker */}
         <div className="space-y-1.5">
           <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-            Color
+            Cor
           </Label>
           <ColorInput
             id="drawing-color"

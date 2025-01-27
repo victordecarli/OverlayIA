@@ -8,25 +8,25 @@ import { PricingProvider } from '@/contexts/PricingContext';
 
 
 export const metadata = {
-  title: 'Transform Your Images with Cloning, Text Behind, and Background Customization - UnderlayX AI',
-  description: 'The ultimate tool to add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Perfect for creators and designers.',
+  title: 'Queflow IA - Transforme Suas Imagens com Clonagem, Texto Atrás e Fundos Personalizados',
+  description: 'A ferramenta definitiva para adicionar texto e formas atrás de imagens, remover fundos, clonar objetos, mudar fundos e criar efeitos luminosos de forma fácil e rápida. Ideal para criadores e designers.',
   metadataBase: new URL('https://www.underlayx.com'),
   openGraph: {
     type: 'website',
     url: 'https://www.underlayx.com',
-    title: 'Transform Your Images with Cloning, Text Behind, and Background Customization - UnderlayX AI',
-    description: 'Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects. Elevate your visuals with UnderlayX AI.',
+    title: 'Queflow IA - Transforme Suas Imagens com Clonagem, Texto Atrás e Fundos Personalizados',
+    description: 'A ferramenta definitiva para adicionar texto e formas atrás de imagens, remover fundos, clonar objetos, mudar fundos e criar efeitos luminosos de forma fácil e rápida. Ideal para criadores e designers.',
     images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'UnderlayX AI | Transform Your Images with Cloning, Text Behind, and Background Customization',
-    description: 'Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Try it now!',
+    title: 'Queflow IA - Transforme Suas Imagens com Clonagem, Texto Atrás e Fundos Personalizados',
+    description: 'A ferramenta definitiva para adicionar texto e formas atrás de imagens, remover fundos, clonar objetos, mudar fundos e criar efeitos luminosos de forma fácil e rápida. Ideal para criadores e designers.',
     creator: '@underlayx',
     images: ['/og-image.png'],
     site: '@underlayx',
   },
-  keywords: 'image behind image, image overlay, blend image, logo behind image, text behind image, logos behind image, shapes behind image, remove background, clone objects, change background, glowing text effect, image editor, photo editing, advanced image editor, youtube thumbnail maker',
+  keywords: 'mudar fundo, editor de fundo de imagem, substituir fundo de imagem, ferramenta para mudar fundo, editar imagens online, queflow, remove fundo',
   icons: {
     icon: '/favicon.ico',
   },
@@ -39,15 +39,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
-        <meta 
-          name="viewport" 
+        <meta
+          name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
         />
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
       </head>
-      <body className={`${inter.className} bg-[#0A0A0A] min-h-screen`}>
+      <body className={`${inter.className} bg-[#191819] min-h-screen`}>
         <PricingProvider>
           <ThemeProvider
             attribute="class"

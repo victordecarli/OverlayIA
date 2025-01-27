@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Smart Image Overlay | UnderlayX AI',
-  description: 'Easily blend and overlay images with AI. Create stunning visual compositions by seamlessly combining multiple images together.',
+  title: 'Queflow IA - Sobrepor Imagens',
+  description: 'Sobreponha imagens com IA. Crie composições visuais impressionantes ao combinar várias imagens juntas.',
   openGraph: {
-    title: 'Smart Image Overlay | UnderlayX AI',
-    description: 'Easily blend and overlay images with AI. Create stunning visual compositions by seamlessly combining multiple images together.',
+    title: 'Queflow IA - Sobrepor Imagens',
+    description: 'Sobreponha imagens com IA. Crie composições visuais impressionantes ao combinar várias imagens juntas.',
   },
 };
 

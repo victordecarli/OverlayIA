@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Add Shapes Behind Image - UnderlayX AI',
-  description: 'Add shapes behind your images with our intuitive editor. Create stunning designs with geometric shapes.',
-  keywords: 'shapes behind image, image shape editor, shape overlay, image design tool'
+  title: 'Queflow IA - Adicionar Formas Atrás de Imagens',
+  description: 'Adicione formas atrás de suas imagens com nosso editor intuitivo. Crie designs impressionantes com formas geométricas.',
+  keywords: 'formas atrás de imagem, editor de forma, sobreposição de forma, ferramenta de design de imagem'
 };
 
 export default function Layout({

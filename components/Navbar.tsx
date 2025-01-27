@@ -90,7 +90,7 @@ export function Navbar() {
             free_generations_used: data?.free_generations_used || 0
           });
         } catch (error) {
-          toast({variant:'destructive', title: "Something went wrong"});
+          toast({ variant: 'destructive', title: "Something went wrong" });
           console.error('Error fetching subscription info:', error);
         }
       }
@@ -112,50 +112,50 @@ export function Navbar() {
     {
       href: '/overlay-image',  // Add new route
       icon: Images,
-      title: 'Smart Image Overlay',
-      description: 'Blend and overlay images with AI'
+      title: 'Sobreposição com IA',
+      description: 'Adicionar imagens e elementos atrás da imagem'
     },
     {
       href: '/clone-image',
       icon: ImageDown,
-      title: 'Clone Image',
-      description: 'Effortlessly clone and position objects in your image'
+      title: 'Clonar imagem',
+      description: 'Clonar e posicionar objetos na sua imagem'
     },
     {
       href: '/remove-background',
       icon: ImageDown,
-      title: 'Remove Image Background',
-      description: 'Remove the background from your image'
+      title: 'Remover fundo',
+      description: 'Remover o fundo da imagem'
     },
     {
       href: '/change-background',
       icon: ImageDown,
-      title: 'Change Image Background',
-      description: 'Easily change the background of your image'
+      title: 'Trocar fundo',
+      description: 'Trocar o fundo da imagem'
     },
     {
       href: '/draw-behind-image',  // Add new route
       icon: Pencil,
-      title: 'Draw Behind Image',
-      description: 'Draw behind your images'
+      title: 'Desenhar atrás da imagem',
+      description: 'Desenhar atrás da imagem'
     },
     {
       href: '/text-behind-image',
       icon: Type,
-      title: 'Text Behind Image',
-      description: 'Add text behind your images'
+      title: 'Texto atrás da imagem',
+      description: 'Adicionar texto atrás da imagem'
     },
     {
       href: '/shape-behind-image',
       icon: Shapes,
-      title: 'Shapes Behind Image',
-      description: 'Add shapes behind your images'
+      title: 'Elementos extras',
+      description: 'Adicionar formas e elementos atrás da imagem'
     },
   ];
-  
+
   const renderNavigationItems = (isMobile = false) => (
     navigationItems.map((item) => (
-      <Link 
+      <Link
         key={item.href}
         href={item.href}
         className={cn(
@@ -187,7 +187,7 @@ export function Navbar() {
         <div className="max-w-2xl mx-auto bg-[#141414] backdrop-blur-xl border border-white/5 rounded-full shadow-xl">
           <div className="px-8 py-3 flex items-center justify-between">
             <Link href="/" className="text-xl font-bold text-white hover:text-gray-200 transition-colors">
-              UnderlayX AI
+              Queflow IA
             </Link>
 
             {/* Desktop Menu */}
@@ -205,8 +205,8 @@ export function Navbar() {
                   aria-haspopup="true"
                   aria-label="Open features menu"
                 >
-                  <span>Features</span>
-                  <ChevronDown 
+                  <span>Ferramentas</span>
+                  <ChevronDown
                     className={cn(
                       "w-4 h-4 transition-transform",
                       isOpen && "rotate-180"
@@ -216,7 +216,7 @@ export function Navbar() {
                 </button>
 
                 {isOpen && (
-                  <div 
+                  <div
                     className="absolute top-full right-0 mt-2 w-72 bg-black backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-xl"
                     role="menu"
                     aria-orientation="vertical"
@@ -236,7 +236,7 @@ export function Navbar() {
               </button> */}
 
               <a
-                href="https://github.com/nagavineerpasam/UnderlayX"
+                href="https://github.com/victordecarli"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/80 hover:text-white transition-colors"
@@ -282,7 +282,7 @@ export function Navbar() {
                       </div>
                     </div>
                   </button>
-                  
+
                   {showUserMenu && (
                     <div className="absolute right-0 mt-2 w-60 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10 z-50">
                       <div className="px-4 py-2 text-sm border-b border-gray-200 dark:border-white/10">
@@ -293,12 +293,12 @@ export function Navbar() {
                           <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
                             {generationInfo.expires_at && isSubscriptionActive(generationInfo.expires_at) ? (
                               <>
-                                <div className="text-purple-600 font-medium">Pro Plan Active</div>
-                                <div>Expires: {new Date(generationInfo.expires_at).toLocaleDateString()}</div>
+                                <div className="text-purple-600 font-medium">Plano Pro Ativo</div>
+                                <div>Expira em: {new Date(generationInfo.expires_at).toLocaleDateString()}</div>
                               </>
                             ) : (
                               <>
-                                <div>Free Plan</div>
+                                <div>Plano Gratuito</div>
                               </>
                             )}
                           </div>
@@ -313,7 +313,7 @@ export function Navbar() {
                   className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors"
                 >
                   <LogIn className="w-4 h-4" />
-                  <span>Login</span>
+                  <span>Entrar</span>
                 </button>
               )}
             </div>
@@ -366,7 +366,7 @@ export function Navbar() {
                         <span className="font-medium">{user.email}</span>
                       </div>
                     </div>
-                    
+
                     {/* User Generation Info for Mobile */}
                     {generationInfo && (
                       <div className="bg-white/5 rounded-lg p-3 text-sm text-gray-300">
@@ -378,14 +378,14 @@ export function Navbar() {
                         </div>
                         {generationInfo.expires_at && isSubscriptionActive(generationInfo.expires_at) ? (
                           <div className="flex justify-between items-center mb-2">
-                            <span>Expires:</span>
+                            <span>Expira em:</span>
                             <span className="font-medium">
                               {new Date(generationInfo.expires_at).toLocaleDateString()}
                             </span>
                           </div>
                         ) : (
                           <div className="flex justify-between items-center">
-                            <span>Free generations left:</span>
+                            <span>Gerações gratuitas restantes:</span>
                           </div>
                         )}
                       </div>

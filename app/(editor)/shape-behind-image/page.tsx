@@ -5,12 +5,12 @@ import { TransformationPage } from '@/components/TransformationPage';
 export default function ShapeBehindImagePage() {
   return (
     <TransformationPage
-      title="Shape Behind Image Transform"
-      description="Add geometric shapes and patterns behind your images. Create stunning visual effects with customizable shapes and designs."
+      title="Adicionar Formas Atrás de Imagens"
+      description="Adicione formas geométricas e padrões atrás de suas imagens. Crie efeitos visuais impressionantes com formas e designs personalizáveis."
       beforeImage="/personbefore.jpg"
       afterImage="/personafter.jpg"
-      beforeAlt="Original image without shapes"
-      afterAlt="Image with shapes behind"
+      beforeAlt="Imagem original sem formas"
+      afterAlt="Imagem com formas atrás"
     />
   );
 }

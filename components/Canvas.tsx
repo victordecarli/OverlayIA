@@ -20,14 +20,14 @@ import { supabase } from "@/lib/supabaseClient";
 interface CanvasProps {
   shouldAutoUpload?: boolean;
   mode?:
-    | "full"
-    | "draw-only"
-    | "text-only"
-    | "shapes-only"
-    | "remove-background-only"
-    | "change-background-only"
-    | "clone-image-only"
-    | "overlay-only"; // Add overlay-only
+  | "full"
+  | "draw-only"
+  | "text-only"
+  | "shapes-only"
+  | "remove-background-only"
+  | "change-background-only"
+  | "clone-image-only"
+  | "overlay-only"; // Add overlay-only
 }
 
 export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
@@ -346,8 +346,8 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                   ? "h-[65vh]" // Increased height for upload area
                   : "h-[75vh]" // Increased height for upload area
                 : isPanelOpen
-                ? "h-[calc(80vh-8rem)]"
-                : "h-[calc(100vh-10rem)]"
+                  ? "h-[calc(80vh-8rem)]"
+                  : "h-[calc(100vh-10rem)]"
             )}
           >
             <input
@@ -363,22 +363,22 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
               <div className="flex flex-col items-center gap-4">
                 <p className="text-gray-600 dark:text-gray-400 text-center">
                   {isConverting
-                    ? "Converting image..."
-                    : "Upload an image to get started"}
+                    ? "Convertendo imagem..."
+                    : "Carregue uma imagem para começar"}
                 </p>
                 <label
                   htmlFor="canvas-upload"
                   className={cn(
                     "bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-colors",
                     (isConverting || isProcessing) &&
-                      "opacity-50 cursor-not-allowed"
+                    "opacity-50 cursor-not-allowed"
                   )}
                   onClick={(e) =>
                     (isConverting || isProcessing) && e.preventDefault()
                   }
                 >
                   <Upload className="w-5 h-5" />
-                  <span>{isConverting ? "Converting..." : "Upload"}</span>
+                  <span>{isConverting ? "Convertendo..." : "Carregar"}</span>
                 </label>
               </div>
             ) : (
@@ -387,7 +387,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                 className={cn(
                   "absolute inset-0 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl transition-all bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer",
                   (isConverting || isProcessing) &&
-                    "opacity-50 cursor-not-allowed"
+                  "opacity-50 cursor-not-allowed"
                 )}
                 onClick={(e) =>
                   (isConverting || isProcessing) && e.preventDefault()
@@ -396,18 +396,18 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                 <div className="text-center space-y-6">
                   <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">
                     {isConverting
-                      ? "Converting image format..."
-                      : "Upload an image to get started"}
+                      ? "Convertendo formato da imagem..."
+                      : "Carregue uma imagem para começar"}
                   </h3>
                   <div className="w-20 h-20 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-xl">
                     <Upload className="w-10 h-10 text-gray-400" />
                   </div>
                   <div className="space-y-2">
                     <p className="text-gray-600 font-medium dark:text-gray-400">
-                      Click here or drag & drop to upload
+                      Clique aqui ou arraste e solte a imagem
                     </p>
                     <p className="text-gray-600 text-sm dark:text-gray-400">
-                      Supports: JPG, PNG, WEBP, HEIC, HEIF
+                      Suporta: JPG, PNG, WEBP, HEIC, HEIF
                     </p>
                   </div>
                 </div>
@@ -425,8 +425,8 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                   ? "h-[48vh] mb-6" // Reduced height and increased bottom margin
                   : "h-full"
                 : isPanelOpen
-                ? "h-[calc(85vh-8rem)]"
-                : "h-full",
+                  ? "h-[calc(85vh-8rem)]"
+                  : "h-full",
               !user && "pt-10"
             )}
           >

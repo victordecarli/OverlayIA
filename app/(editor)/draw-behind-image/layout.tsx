@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Draw Behind Image - UnderlayX AI',
-  description: 'Draw behind objects in your images with AI',
+  title: 'Queflow IA - Desenhar Atrás de Imagens',
+  description: 'Desenhe atrás de objetos em suas imagens com IA',
 };
 
 export default function Layout({

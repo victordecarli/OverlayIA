@@ -9,12 +9,12 @@ import { TransformationPage } from '@/components/TransformationPage';
 export default function TextBehindImagePage() {
   return (
     <TransformationPage
-      title="Text Behind Image Transform"
-      description="Add stunning text effects behind your images."
+      title="Adicionar Texto Atrás de Imagens"
+      description="Adicione efeitos de texto impressionantes atrás de suas imagens."
       beforeImage="/povbefore.jpg"
       afterImage="/povafter.jpg"
-      beforeAlt="Original image without text behind"
-      afterAlt="Image with text effect behind"
+      beforeAlt="Imagem original sem texto atrás"
+      afterAlt="Imagem com efeito de texto atrás"
     />
   );
 }

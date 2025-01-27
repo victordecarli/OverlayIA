@@ -3,26 +3,26 @@ import path from "node:path";
 export const blogPosts = {
   'shapes-behind-images': {
     slug: 'shapes-behind-images',
-    title: 'How to Place Shapes Behind Your Image\'s Subject',
-    description: 'Learn how to enhance your photos with creative shapes using UnderlayX AI\'s intuitive tools.',
+    title: 'Como adicionar formas por trás do sujeito da sua imagem',
+    description: 'Aprenda a melhorar suas fotos com formas criativas usando as ferramentas intuitivas do Queflow IA.',
     content: `
-      <p>Want to make your photos pop with creative shapes?</p>
-      <p>With UnderlayX AI, adding shapes to your images is as easy as it gets. Whether you're designing social media posts, creating professional graphics, or just exploring your creativity, our shape tool lets you add a unique flair to your photos in seconds.</p>
-      <p>Here's how it works:</p>
+      <p>Quer melhorar suas fotos com formas criativas?</p>
+      <p>Com Queflow IA, adicionar formas às suas imagens é tão fácil quanto isso. Seja você que está criando posts para redes sociais, criando gráficos profissionais ou explorando sua criatividade, nossa ferramenta de formas permite adicionar um toque único às suas fotos em segundos.</p>
+      <p>Aqui está como funciona:</p>
       <ul>
-        <li>Upload your image: Start by selecting the photo you want to enhance.</li>
-        <li>Choose your shape: Pick from a wide variety of customizable shapes—circles, rectangles, arrows, stars, and more.</li>
-        <li>Customize your design: Adjust the size, color, and transparency of the shape to perfectly match your image's vibe.</li>
-        <li>Position with precision: Drag and drop the shape anywhere on your image, or layer it to create depth and perspective.</li>
-        <li>Refine your masterpiece: Use our smart tools to ensure the shape seamlessly integrates into your photo.</li>
+        <li>Selecione sua imagem: Comece selecionando a foto que você deseja melhorar.</li>
+        <li>Escolha sua forma: Escolha uma variedade de formas personalizáveis—círculos, retângulos, setas, estrelas e mais.</li>
+        <li>Personalize seu design: Ajuste o tamanho, a cor e a transparência da forma para que ela se integre perfeitamente com o seu estilo de imagem.</li>
+        <li>Position with precision: Arraste e solte a forma em qualquer lugar da sua imagem, ou sobreponha para criar profundidade e perspectiva.</li>
+        <li>Refine seu trabalho: Use nossas ferramentas inteligentes para garantir que a forma se integre perfeitamente à sua imagem.</li>
       </ul>
-      <p>With UnderlayX AI, you can:</p>
+      <p>Com Queflow IA, você pode:</p>
       <ul>
-        <li>Experiment with different shapes to create standout visuals.</li>
-        <li>Combine shapes with text for even more impact.</li>
-        <li>Save your creations in high quality, ready to download and share.</li>
+        <li>Experimente diferentes formas para criar visuais impressionantes.</li>
+        <li>Combine formas com texto para mais impacto.</li>
+        <li>Salve suas criações em alta qualidade, prontas para download e compartilhamento.</li>
       </ul>
-      <p>Whether you're highlighting important details, framing key elements, or adding a playful touch to your photos, UnderlayX AI makes it simple to bring your ideas to life.</p>
+      <p>Seja você que está destacando detalhes importantes, enquadrando elementos chave ou adicionando um toque descontraído às suas fotos, Queflow IA torna fácil levar suas ideias à vida.</p>
     `,
     date: '2025-01-03',
     category: 'Tutorial',
@@ -30,19 +30,19 @@ export const blogPosts = {
   },
   'text-behind-images': {
     slug: 'text-behind-images',
-    title: 'How to Add Text Behind Your Image\'s Subject',
-    description: 'Learn how to create stunning designs by placing text behind image subjects with UnderlayX AI.',
+    title: 'Como adicionar texto por trás do sujeito da sua imagem',
+    description: 'Aprenda a criar visuais impressionantes adicionando texto por trás do sujeito da sua imagem com Queflow IA.',
     content: `
-      <p>Ever wanted to create the stunning effect of text appearing seamlessly behind the subject in your photos?</p>
-      <p>With UnderlayX AI, it's not just possible—it's effortless. Upload your image, type your desired text, and watch the tool work its magic as it intelligently places the text behind the main subject. It's perfect for crafting eye-catching social media posts, unique presentations, or adding a creative touch to personal projects.</p>
-      <p>But we don't stop there. UnderlayX AI also allows you to:</p>
+      <p>Você já quis criar o efeito impressionante de texto aparecendo de forma suave por trás do sujeito da sua imagem?</p>
+      <p>Com Queflow IA, não é apenas possível—é fácil. Faça upload da sua imagem, digite o texto que você deseja e observe o tool trabalhar seu feitiço ao adicionar o texto por trás do sujeito da imagem. É perfeito para criar posts para redes sociais, apresentações únicas ou adicionar uma criatividade à seus projetos pessoais.</p>
+      <p>Mas não para por aí. Queflow IA também permite que você:</p>
       <ul>
-      <li>Customize your text with various fonts, colors, and styles.</li>
-      <li>Add shapes and elements for an extra layer of visual appeal.</li>
-      <li>Preview and refine your designs instantly.</li>
-      <li>Download high-quality images ready to share or use anywhere.</li>
+        <li>Personalize seu texto com vários fontes, cores e estilos.</li>
+        <li>Adicione formas e elementos para um extra de visual impacto.</li>
+        <li>Preview e refine seu design instantaneamente.</li>
+        <li>Baixe imagens de alta qualidade prontas para compartilhar ou usar em qualquer lugar.</li>
       </ul>
-      <p>Whether you're a designer, a content creator, or just someone who loves unique visuals, UnderlayX AI empowers you to create like never before. It's not just a tool; it's your gateway to creativity.</p>
+      <p>Seja você que está criando posts para redes sociais, apresentações únicas ou adicionando uma criatividade à seus projetos pessoais, Queflow IA te permite criar como nunca antes. Não é apenas uma ferramenta; é seu portal para criatividade.</p>
     `,
     date: '2025-01-03',
     category: 'Tutorial',
@@ -50,10 +50,10 @@ export const blogPosts = {
   },
   'glowing-text-effects': {
     slug: 'glowing-text-effects',
-    title: 'Creating Stunning Glowing Text Effects',
-    description: 'Master the art of creating eye-catching glowing text effects for your designs.',
+    title: 'Criando efeitos de texto brilhantes',
+    description: 'Aprenda a criar efeitos de texto brilhantes para suas imagens com Queflow IA.',
     content: `
-      <p>Adding a glowing effect to text can make your designs pop! UnderlayX AI lets you customize text styles, including adding vibrant color effects and shadows. Pair this with the behind-the-subject placement, and you'll have a design that stands out in any crowd. Try it now and elevate your creativity.</p>
+      <p>Adicionar um efeito brilhante ao texto pode fazer suas imagens brilhar! Queflow IA permite que você personalize estilos de texto, incluindo adicionar efeitos de cores vibrantes e sombras. Combine isso com a posição por trás do sujeito e você terá um design que se destaca em qualquer lugar. Experimente agora e eleve sua criatividade.</p>
     `,
     date: '2025-01-03',
     category: 'Design Tips',
@@ -61,10 +61,10 @@ export const blogPosts = {
   },
   'shapes-transform-designs': {
     slug: 'shapes-transform-designs',
-    title: 'Shapes That Transform Your Designs',
-    description: 'Learn how to use geometric patterns and shapes to enhance your images and create professional-looking designs.',
+    title: 'Formas que transformam seus designs',
+    description: 'Aprenda a usar padrões geométricos e formas para melhorar suas imagens e criar designs profissionais.',
     content: `
-      <p>Shapes aren't just for fun—they're a powerful design element. Use UnderlayX AI to add geometric patterns, abstract symbols, or even subtle accents behind your subject. Customize the size, color, and position for endless possibilities. Your photos will look more professional and polished in just minutes.</p>
+      <p>Formas não são apenas para diversão—são um elemento poderoso de design. Use Queflow IA para adicionar padrões geométricos, símbolos abstratos ou até mesmo acentos sutis por trás do seu sujeito. Personalize o tamanho, a cor e a posição para infinitas possibilidades. Suas fotos ficarão mais profissionais e polidas em apenas minutos.</p>
     `,
     date: '2025-01-03',
     category: 'Design Tips',
@@ -73,10 +73,10 @@ export const blogPosts = {
 
   'minimalism-in-photo-design': {
     slug: 'minimalism-in-photo-design',
-    title: 'Why Minimalism Works in Photo Design',
-    description: 'Discover how minimal design elements can create maximum impact in your photos.',
+    title: 'Por que o minimalismo funciona em design de fotos',
+    description: 'Descubra como elementos de design minimalista podem criar um impacto máximo em suas fotos.',
     content: `
-      <p>Sometimes, less is more. UnderlayX AI empowers you to create minimalist designs by placing subtle text or shapes behind your subject. It's a simple touch that can make a big impact. Minimalist designs are not only trendy but also versatile across platforms and purposes.</p>
+      <p>Às vezes, menos é mais. Queflow IA te permite criar designs minimalistas adicionando texto ou formas sutis por trás do seu sujeito. É uma simples toque que pode criar um grande impacto. Designs minimalistas não são apenas trendy, mas também versáteis em plataformas e propósitos.</p>
     `,
     date: '2025-01-03',
     category: 'Design Theory',
@@ -85,10 +85,10 @@ export const blogPosts = {
 
   'layered-effects-guide': {
     slug: 'layered-effects-guide',
-    title: 'Transforming Photos with Layered Effects',
-    description: 'Master the art of creating depth and sophistication using layered effects in your images.',
+    title: 'Transformando fotos com efeitos sobrepostos',
+    description: 'Aprenda a criar profundidade e sofisticação usando efeitos sobrepostos em suas imagens com Queflow IA.',
     content: `
-      <p>Layered effects, like text or shapes behind subjects, add depth and sophistication to any image. With UnderlayX AI, achieving this effect is easy. Just upload your photo, choose your design elements, and let the tool handle the rest. Perfect for creatives, marketers, and anyone who loves impactful visuals.</p>
+      <p>Efeitos sobrepostos, como texto ou formas por trás do sujeito, adicionam profundidade e sofisticação a qualquer imagem. Com Queflow IA, alcançar este efeito é fácil. Basta fazer upload da sua foto, escolher seus elementos de design e deixar a ferramenta cuidar do resto. Perfeito para criativos, marceneiros e qualquer pessoa que ame visuais impactantes.</p>
     `,
     date: '2025-01-03',
     category: 'Tutorial',
@@ -97,18 +97,18 @@ export const blogPosts = {
 
   'quick-photo-design-tips': {
     slug: 'quick-photo-design-tips',
-    title: 'Quick Tips for Better Photo Designs',
-    description: 'Essential tips and tricks to enhance your photo designs using UnderlayX AI.',
+    title: 'Dicas rápidas para melhorar seus designs de fotos',
+    description: 'Dicas essenciais e truques para melhorar seus designs de fotos usando Queflow IA.',
     content: `
       <article>
-        <p>Creating stunning designs doesn't have to be complicated. Here are some essential tips:</p><br>
+        <p>Criar designs impressionantes não precisa ser complicado. Aqui estão algumas dicas essenciais:</p><br>
         <ul>
-          <li>Stick to one or two fonts for a clean look</li>
-          <li>Use shapes sparingly to avoid clutter</li>
-          <li>Add glowing effects to highlight important details</li>
-          <li>Experiment with color contrasts for text and shapes</li>
+          <li>Use apenas uma ou duas fontes para um look limpo</li>
+          <li>Use formas com moderação para evitar confusão</li>
+          <li>Adicione efeitos brilhantes para destacar detalhes importantes</li>
+          <li>Experimente contrastes de cores para texto e formas</li>
         </ul>
-        <p>With UnderlayX AI, these design tips are easy to apply!</p>
+        <p>Com Queflow IA, essas dicas de design são fáceis de aplicar!</p>
       </article>
     `,
     date: '2025-01-03',
@@ -118,10 +118,10 @@ export const blogPosts = {
 
   'text-behind-subject-popularity': {
     slug: 'text-behind-subject-popularity',
-    title: 'What Makes Text Behind Subject So Popular?',
-    description: 'Explore why the text-behind-subject effect has become a trending design choice in social media.',
+    title: 'O que torna o efeito de texto por trás do sujeito tão popular?',
+    description: 'Explore por que o efeito de texto por trás do sujeito se tornou uma escolha de design popular nas redes sociais.',
     content: `
-      <p>The text-behind-subject effect creates a seamless and professional look that's trending across social media. This effect draws attention to your subject while adding context or a creative twist. UnderlayX AI makes this trend accessible for everyone—no advanced editing skills required!</p>
+      <p>O efeito de texto por trás do sujeito cria um look profissional e fluido que está em alta nas redes sociais. Este efeito chama atenção para o seu sujeito enquanto adiciona contexto ou uma criatividade. Queflow IA torna este efeito acessível para todos—não é necessário ter habilidades avançadas de edição!</p>
     `,
     date: '2025-01-03',
     category: 'Trends',
@@ -130,17 +130,17 @@ export const blogPosts = {
 
   'remove-background-guide': {
     slug: 'remove-background-guide',
-    title: 'How to Remove Backgrounds from Images with Precision',
-    description: 'Learn how to effortlessly remove image backgrounds for clean, professional results with UnderlayX AI.',
+    title: 'Como remover fundos de imagens com precisão',
+    description: 'Aprenda a remover fundos de imagens para resultados limpos e profissionais com Queflow IA.',
     content: `
-      <p>Removing backgrounds from images is no longer a task reserved for professionals. With UnderlayX AI, you can quickly isolate your subject, creating stunning visuals perfect for e-commerce, presentations, or social media.</p>
-      <p>Why choose UnderlayX AI?</p>
+      <p>Remover fundos de imagens não é mais uma tarefa reservada para profissionais. Com Queflow IA, você pode rapidamente isolar seu sujeito, criando visuais impressionantes perfeitos para e-commerce, apresentações ou redes sociais.</p>
+      <p>Por que escolher Queflow IA?</p>
       <ul>
-        <li>AI-powered precision for clean edges.</li>
-        <li>Retain high image quality after removal.</li>
-        <li>Perfect for creating transparent PNGs or placing your subject on a new background.</li>
+        <li>Precisão com IA para bordas limpas.</li>
+        <li>Manter alta qualidade da imagem após a remoção.</li>
+        <li>Perfeito para criar PNGs transparentes ou colocar seu sujeito em um novo fundo.</li>
       </ul>
-      <p>Whether you're a business owner, content creator, or hobbyist, UnderlayX AI gives you the tools to elevate your designs effortlessly.</p>
+      <p>Seja você um empresário, criador de conteúdo ou hobbyista, Queflow IA oferece as ferramentas para elevar seus designs de forma fácil e rápida.</p>
     `,
     date: '2025-01-11',
     category: 'Tutorial',
@@ -149,17 +149,17 @@ export const blogPosts = {
 
   'change-backgrounds-pro': {
     slug: 'change-backgrounds-pro',
-    title: 'Change Backgrounds Like a Pro with UnderlayX AI',
-    description: 'Transform your images by swapping backgrounds in just a few clicks.',
+    title: 'Mudar fundos como um profissional com Queflow IA',
+    description: 'Transforme suas imagens trocando fundos em apenas alguns cliques.',
     content: `
-      <p>Want to place your image in a dreamy landscape or a minimalist studio setting? With UnderlayX AI, you can replace your image background with ease.</p>
-      <p>Features you'll love:</p>
+      <p>Quer colocar sua imagem em um cenário deslumbrante ou um estúdio minimalista? Com Queflow IA, você pode substituir o fundo da sua imagem com facilidade.</p>
+      <p>Features que você vai adorar:</p>
       <ul>
-        <li>Wide range of preset backgrounds to choose from.</li>
-        <li>Upload your own custom backgrounds.</li>
-        <li>Advanced blending options to make changes look natural.</li>
+        <li>Uma ampla variedade de fundos predefinidos para escolher.</li>
+        <li>Carregue seus próprios fundos personalizados.</li>
+        <li>Opções avançadas de mistura para tornar as mudanças parecer naturais.</li>
       </ul>
-      <p>Unleash your creativity and let your designs tell the story you want.</p>
+      <p>Libere sua criatividade e deixe seus designs contar a história que você quer.</p>
     `,
     date: '2025-01-11',
     category: 'Tutorial',
@@ -168,17 +168,17 @@ export const blogPosts = {
 
   'clone-transform-objects': {
     slug: 'clone-transform-objects',
-    title: 'Clone and Transform Objects in Your Images',
-    description: 'Master the art of object cloning and create visually compelling designs.',
+    title: 'Clonar e transformar objetos em suas imagens',
+    description: 'Aprenda a clonar e transformar objetos em suas imagens para criar designs visualmente impactantes.',
     content: `
-      <p>UnderlayX AI makes it easy to duplicate and transform objects within your images. Perfect for creating patterns, enhancing compositions, or fixing details in photos.</p>
-      <p>Key benefits:</p>
+      <p>Queflow IA torna fácil duplicar e transformar objetos dentro de suas imagens. Perfeito para criar padrões, melhorar composições ou corrigir detalhes em fotos.</p>
+      <p>Benefícios:</p>
       <ul>
-        <li>Intuitive cloning with precise placement.</li>
-        <li>Adjust sizes, rotations, and positions of cloned objects.</li>
-        <li>Use cloned elements to fill gaps or create symmetrical designs.</li>
+        <li>Clonagem intuitiva com posicionamento preciso.</li>
+        <li>Ajuste o tamanho, rotação e posição dos objetos clonados.</li>
+        <li>Use elementos clonados para preencher espaços ou criar designs simétricos.</li>
       </ul>
-      <p>With UnderlayX AI, you have the power to refine every detail of your image effortlessly.</p>
+      <p>Com Queflow IA, você tem o poder de refinar cada detalhe da sua imagem de forma fácil.</p>
     `,
     date: '2025-01-11',
     category: 'Tutorial',
@@ -189,7 +189,7 @@ export const blogPosts = {
 export async function getBlogPost(slug: string) {
   const post = blogPosts[slug];
   if (!post) {
-    throw new Error(`Blog post ${slug} not found`);
+    throw new Error(`Artigo ${slug} não encontrado`);
   }
   return post;
 }

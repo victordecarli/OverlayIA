@@ -21,10 +21,10 @@ export function PaymentStatusDialog({ isOpen, status }: PaymentStatusDialogProps
               <CheckCircle2 className="w-12 h-12 text-green-500" />
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  Payment Successful!
+                  Pagamento Confirmado!
                 </h3>
                 <p className="text-gray-600">
-                  Happy Editing!
+                  Bora editar e arrasar nas foto
                 </p>
               </div>
             </>
@@ -33,10 +33,10 @@ export function PaymentStatusDialog({ isOpen, status }: PaymentStatusDialogProps
               <XCircle className="w-12 h-12 text-red-500" />
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  Payment Failed
+                  Falha no pagamento
                 </h3>
                 <p className="text-gray-600">
-                  Something went wrong with the payment. Please try again.
+                  Algo deu errado com o pagamento. Tente novamente!
                 </p>
               </div>
             </>

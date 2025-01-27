@@ -45,18 +45,18 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   };
 
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTab());
-  const { 
-    image, 
-    isProcessing, 
-    isConverting, 
-    addTextSet, 
+  const {
+    image,
+    isProcessing,
+    isConverting,
+    addTextSet,
     addShapeSet,
-    isBackgroundRemoved 
+    isBackgroundRemoved
   } = useEditor();
-  const canAddLayers = !!image.original && 
-    !!image.background && 
-    !isProcessing && 
-    !isConverting && 
+  const canAddLayers = !!image.original &&
+    !!image.background &&
+    !isProcessing &&
+    !isConverting &&
     !isBackgroundRemoved;  // Add this condition
   const { setIsPanelOpen } = useEditorPanel();
 
@@ -65,19 +65,19 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     if (!image.original) {
       switch (activeTab) {
         case 'text':
-          return 'Please upload an image first to add text behind objects';
+          return 'Por favor, carregue uma imagem primeiro para adicionar texto atrás de objetos';
         case 'shapes':
-          return 'Please upload an image first to add shapes behind objects';
+          return 'Por favor, carregue uma imagem primeiro para adicionar formas atrás de objetos';
         case 'remove-background':
-          return 'Please upload an image first to remove the background';
+          return 'Por favor, carregue uma imagem primeiro para remover o fundo';
         case 'change-background':
-          return 'Please upload an image first to change the background';
+          return 'Por favor, carregue uma imagem primeiro para mudar o fundo';
         case 'clone-image':
-          return 'Please upload an image first to use the clone feature';
+          return 'Por favor, carregue uma imagem primeiro para usar a funcionalidade de clonar';
         case 'draw':
-          return 'Please upload an image first to use the draw feature';
+          return 'Por favor, carregue uma imagem primeiro para usar a funcionalidade de desenhar';
         default:
-          return 'Please upload an image first';
+          return 'Por favor, carregue uma imagem primeiro';
       }
     }
     return null;
@@ -147,7 +147,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     showChangeBackground && renderTabButton(
       'change-background' as TabType,
       <Image className={mobile ? "w-4 h-4" : "w-5 h-5"} />,
-      'Change BG'
+      'Mudar Fundo'
     )
   );
 
@@ -156,33 +156,33 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     showCloneImage && renderTabButton(
       'clone-image' as TabType,
       <Copy className={mobile ? "w-4 h-4" : "w-5 h-5"} />,
-      'Clone Image'
+      'Clonar Imagem'
     )
   );
 
   const renderMobileNavigation = () => (
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50 overflow-x-auto">
       <div className="flex gap-2 min-w-fit px-2">  {/* Changed from max-w-md mx-auto to min-w-fit px-2 */}
-        {showSmartOverlay && renderTabButton('images', <Images className="w-4 h-4" />, 'Smart Overlay')}
+        {showSmartOverlay && renderTabButton('images', <Images className="w-4 h-4" />, 'Sobreposição')}
         {cloneImageButton}
-        {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
+        {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remover Fundo')}
         {changeBackgroundButton}
-        {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Draw')}
-        {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
-        {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
+        {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Desenhar')}
+        {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Texto')}
+        {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Formas')}
       </div>
     </div>
   );
 
   const renderDesktopNavigation = () => (
     <div className="w-[80px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2">
-      {showSmartOverlay && renderTabButton('images', <Images className="w-5 h-5" />, 'Smart Overlay')}
+      {showSmartOverlay && renderTabButton('images', <Images className="w-5 h-5" />, 'Sobreposição')}
       {cloneImageButton}
       {changeBackgroundButton}
-      {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
-      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
-      {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
-      {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
+      {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remover Fundo ')}
+      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Desenhar')}
+      {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Texto')}
+      {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Formas')}
     </div>
   );
 
@@ -199,23 +199,23 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
             "max-h-[35vh]" // Slightly increased height for better spacing
           )}>
             <div className="sticky top-0 bg-white dark:bg-zinc-950 p-2.5 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
-                 {(activeTab === 'text' || activeTab === 'shapes') ? (
-                   <button
-                   onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
-                   disabled={!canAddLayers}
-                   className="flex-1 p-2 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-900 dark:text-white rounded-lg transition-colors flex items-center justify-center gap-2"
-                 >
-                   <Plus className="w-4 h-4" />
-                   <span>Add {activeTab === 'text' ? 'Text' : 'Shape'}</span>
-                 </button>
-                ) : (
+              {(activeTab === 'text' || activeTab === 'shapes') ? (
+                <button
+                  onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
+                  disabled={!canAddLayers}
+                  className="flex-1 p-2 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-900 dark:text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Adicionar {activeTab === 'text' ? 'Text' : 'Shape'}</span>
+                </button>
+              ) : (
                 <h3 className="text-lg font-semibold">
-                  {activeTab === 'remove-background' ? 'Remove Background' : ''}
-                  {activeTab === 'change-background' ? 'Change Background' : ''}
-                  {activeTab === 'clone-image' ? 'Clone Image' : ''}
+                  {activeTab === 'remove-background' ? 'Remover Fundo' : ''}
+                  {activeTab === 'change-background' ? 'Mudar Fundo' : ''}
+                  {activeTab === 'clone-image' ? 'Clonar Imagem' : ''}
                 </h3>)
               }
-               
+
               {/* Add close button */}
               <button
                 onClick={() => setActiveTab(null)}
@@ -268,24 +268,24 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
         {activeTab && (
           <div className="w-[280px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 flex flex-col">
             <div className="sticky top-0 bg-white dark:bg-zinc-950 p-4 border-b border-gray-200 dark:border-white/10 z-10">
-             {(activeTab === 'text' || activeTab === 'shapes') && canAddLayers ? (
-              <button
-                onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
-                disabled={!canAddLayers}
-                className="w-full p-2 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-900 dark:text-white rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add {activeTab === 'text' ? 'Text' : 'Shape'}</span>
-              </button>
-             ) : (
+              {(activeTab === 'text' || activeTab === 'shapes') && canAddLayers ? (
+                <button
+                  onClick={() => activeTab === 'text' ? addTextSet() : addShapeSet('square')}
+                  disabled={!canAddLayers}
+                  className="w-full p-2 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-900 dark:text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Adicionar {activeTab === 'text' ? 'Texto' : 'Forma'}</span>
+                </button>
+              ) : (
                 <h3 className="text-lg font-semibold">
-                  {activeTab === 'remove-background' ? 'Remove Background' : 
-                  activeTab === 'images' ? 'Smart overlay' : 
-                   activeTab === 'change-background' ? 'Change Background' : 
-                   activeTab === 'clone-image' ? 'Clone Image' :
-                   activeTab === 'text' ? 'Add Text' :
-                   activeTab === 'draw' ? 'Draw' :
-                   'Add Shapes'}
+                  {activeTab === 'remove-background' ? 'Remover Fundo' :
+                    activeTab === 'images' ? 'Sobreposição Inteligente' :
+                      activeTab === 'change-background' ? 'Mudar Fundo' :
+                        activeTab === 'clone-image' ? 'Clonar Imagem' :
+                          activeTab === 'text' ? 'Adicionar Texto' :
+                            activeTab === 'draw' ? 'Desenhar' :
+                              'Adicionar Formas'}
                 </h3>
               )}
             </div>

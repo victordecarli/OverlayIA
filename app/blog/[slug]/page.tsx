@@ -20,12 +20,12 @@ export async function generateMetadata(
   // Wait for params to resolve
   const resolvedParams = await params;
   const post = blogPosts[resolvedParams.slug];
-  
+
   // Get parent metadata
   const previousImages = (await parent).openGraph?.images || [];
 
   return {
-    title: `${post.title} | UnderlayX AI Blog`,
+    title: `${post.title} | Queflow IA Blog`,
     description: post.description,
     openGraph: {
       title: post.title,

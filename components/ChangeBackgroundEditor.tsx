@@ -22,9 +22,9 @@ const PRESET_COLORS = [
 ];
 
 export function ChangeBackgroundEditor() {
-  const { 
-    changeBackground, 
-    resetBackground, 
+  const {
+    changeBackground,
+    resetBackground,
     hasChangedBackground,
     foregroundPosition,
     updateForegroundPosition,
@@ -45,7 +45,7 @@ export function ChangeBackgroundEditor() {
       {/* Background Colors */}
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Background Color</label>
+          <label className="text-sm font-medium">Cor do Fundo</label>
           <div className="grid grid-cols-6 gap-2">
             {PRESET_COLORS.map((color) => (
               <button
@@ -54,7 +54,7 @@ export function ChangeBackgroundEditor() {
                 className={cn(
                   "w-8 h-8 rounded-md border-2 transition-all",
                   (backgroundColor === color && !image.background)  // Now image is defined
-                    ? "border-blue-500 scale-110" 
+                    ? "border-blue-500 scale-110"
                     : "border-gray-200 dark:border-gray-700 hover:scale-105"
                 )}
                 style={{ backgroundColor: color }}
@@ -81,13 +81,13 @@ export function ChangeBackgroundEditor() {
             <div className="w-full border-t border-gray-200 dark:border-gray-700" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white dark:bg-zinc-950 px-2 text-gray-500">or</span>
+            <span className="bg-white dark:bg-zinc-950 px-2 text-gray-500">ou</span>
           </div>
         </div>
 
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            Upload an image to use as background
+            Carregue uma imagem para usar como fundo
           </p>
           <Button
             onClick={changeBackground}
@@ -96,7 +96,7 @@ export function ChangeBackgroundEditor() {
             disabled={isProcessing}
           >
             <Upload className="w-4 h-4 mr-2" />
-            {isProcessing ? 'Processing...' : 'Upload Background Image'}
+            {isProcessing ? 'Processando...' : 'Carregar Imagem de Fundo'}
           </Button>
         </div>
       </div>
@@ -106,7 +106,7 @@ export function ChangeBackgroundEditor() {
         <div className="space-y-4">
           {/* Foreground Size Control */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Foreground Size</label>
+            <label className="text-sm font-medium">Tamanho do Fundo</label>
             <Slider
               value={[foregroundSize]}
               onValueChange={([value]) => updateForegroundSize(value)}
@@ -121,7 +121,7 @@ export function ChangeBackgroundEditor() {
 
           {/* Position controls */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Horizontal Position</label>
+            <label className="text-sm font-medium">Posição Horizontal</label>
             <Slider
               value={[foregroundPosition.x]}
               onValueChange={([value]) => updateForegroundPosition({ x: value, y: foregroundPosition.y })}
@@ -132,7 +132,7 @@ export function ChangeBackgroundEditor() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Vertical Position</label>
+            <label className="text-sm font-medium">Posição Vertical</label>
             <Slider
               value={[foregroundPosition.y]}
               onValueChange={([value]) => updateForegroundPosition({ x: foregroundPosition.x, y: value })}
@@ -149,7 +149,7 @@ export function ChangeBackgroundEditor() {
             // Enable button if background is changed or color is selected
             disabled={!hasChangedBackground && !backgroundColor}
           >
-            Reset Background
+            Resetar Fundo
           </Button>
         </div>
       )}

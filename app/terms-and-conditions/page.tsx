@@ -7,64 +7,64 @@ export default function Terms() {
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 text-center">
-          Terms and Conditions
+          Termos e Condições
         </h1>
-        <p className="text-gray-400 text-center mb-12">Effective Date: January 21, 2024</p>
+        <p className="text-gray-400 text-center mb-12">Data de entrada em vigor: 21 de janeiro de 2024</p>
         <div className="max-w-3xl mx-auto">
           <div className="bg-black/20 backdrop-blur-sm p-8 rounded-xl border border-gray-800">
             <p className="text-gray-300 mb-6">
-              By accessing or using UnderlayX AI ("the Service"), you agree to comply with and be bound by these Terms and Conditions ("Terms"). If you do not agree to these Terms, do not use the Service.
+              Ao acessar ou usar Queflow IA ("o Serviço"), você concorda em cumprir e estar vinculado a estes Termos e Condições ("Termos"). Se você não concordar com estes Termos, não use o Serviço.
             </p>
 
             {[
               {
-                title: "1. Acceptance of Terms",
-                content: "By using UnderlayX AI, you agree to these Terms and Conditions, which may be updated from time to time. We encourage you to review these Terms periodically to stay informed of any changes."
+                title: "1. Aceitação de Termos",
+                content: "Ao usar Queflow IA, você concorda com estes Termos e Condições, que podem ser atualizados ocasionalmente. Encorajamos você a revisar estes Termos periodicamente para se manter informado sobre quaisquer mudanças."
               },
               {
-                title: "2. User Authentication",
-                content: ["Google Sign-In: To access certain features of the Service, you must authenticate via Google Sign-In. We use the Google Sign-In redirect method to authenticate you and retrieve your email address and avatar from Google. This information will be used to create your account and display your avatar and email on the user interface (UI).",
-                "You are solely responsible for maintaining the confidentiality of your login credentials."]
+                title: "2. Autenticação do Usuário",
+                content: ["Google Sign-In: Para acessar certas funcionalidades do Serviço, você deve autenticar via Google Sign-In. Usamos o método de redirecionamento do Google Sign-In para autenticar você e recuperar seu endereço de e-mail e avatar do Google. Esta informação será usada para criar sua conta e exibir seu avatar e e-mail na interface do usuário (UI).",
+                  "Você é responsável por manter a confidencialidade de suas credenciais de login."]
               },
               {
-                title: "3. Image Processing",
-                content: ["All image processing, including adding text and shapes behind images, occurs entirely on your device's browser. UnderlayX AI does not process or store any of your images on our servers.",
-                "The Service only processes images locally, which means your data never leaves your device unless you choose to download the processed file."]
+                title: "3. Processamento de Imagens",
+                content: ["Todos os processamentos de imagens, incluindo a adição de texto e formas por trás das imagens, ocorrem inteiramente no navegador do seu dispositivo. Queflow IA não processa ou armazena nenhuma de suas imagens em nosso servidor.",
+                  "O Serviço apenas processa imagens localmente, o que significa que seus dados nunca saem do seu dispositivo a menos que você escolha baixar o arquivo processado."]
               },
               {
-                title: "4. Data Privacy and Security",
-                content: ["UnderlayX AI does not store any images or personal data on its servers. All images and data are processed on your device's browser.",
-                "We do not track or store personal data. Any data (such as images) provided by you is processed locally and deleted once you exit the page or download the processed image.",
-                "Third-Party Integrations:",
-                "• We use PayU for payments within India, requiring a phone number to send transaction SMS. This information is passed to PayU securely but is not stored in our database.",
-                "• We use Replicate API to process images. Images are sent to their API for processing, and results are returned without being stored by us. Replicate deletes any input or output files after one hour."]
+                title: "4. Privacidade e Segurança de Dados",
+                content: ["Queflow IA não armazena nenhuma imagem ou dados pessoais em seus servidores. Todas as imagens e dados são processados no navegador do seu dispositivo.",
+                  "Não rastreamos ou armazenamos dados pessoais. Qualquer dado (como imagens) fornecido por você é processado localmente e excluído assim que você sair da página ou baixar a imagem processada.",
+                  "Integrações de Terceiros:",
+                  "• Usamos PayU para pagamentos dentro da Índia, exigindo um número de telefone para enviar mensagens de transação. Esta informação é passada para PayU de forma segura, mas não é armazenada em nosso banco de dados.",
+                  "• Usamos a API do Replicate para processar imagens. Imagens são enviadas para sua API para processamento, e os resultados são retornados sem ser armazenados por nós. O Replicate exclui qualquer arquivo de entrada ou saída após uma hora."]
               },
               {
-                title: "5. User Responsibilities",
-                content: ["We encourage you to explore your creativity and have fun using UnderlayX AI! To keep the platform enjoyable and safe for everyone, we ask that you:",
-                "• Use the Service responsibly and in ways that inspire creativity.",
-                "• Avoid uploading or creating content that could harm others or violate any laws, such as offensive, explicit, or illegal material.",
-                "• Respect intellectual property rights and ensure the content you create does not infringe on the rights of others.",
-                "• Help us maintain smooth operations by using the platform as intended and avoiding unauthorized activities."]
+                title: "5. Responsabilidades do Usuário",
+                content: ["Encorajamos você a explorar sua criatividade e se divertir usando Queflow IA! Para manter a plataforma divertida e segura para todos, pedimos que você:",
+                  "• Use o Serviço de forma responsável e inspiradora.",
+                  "• Evite enviar ou criar conteúdo que possa prejudicar outros ou violar quaisquer leis, como material ofensivo, explícito ou ilegal.",
+                  "• Respeitar os direitos autorais e garantir que o conteúdo que você criar não infrinja os direitos de outros.",
+                  "• Mantenha o Serviço funcionando suavemente usando-o como pretendido e evitando atividades não autorizadas."]
               },
               {
-                title: "6. Limitations of Liability",
-                content: ["UnderlayX AI provides the Service \"as is\" and does not guarantee that the Service will be uninterrupted or error-free.",
-                "We are not responsible for any direct, indirect, incidental, or consequential damages arising from the use of the Service, including but not limited to any loss of data or images."]
+                title: "6. Limitações de Responsabilidade",
+                content: ["Queflow IA fornece o Serviço \"como está\" e não garante que o Serviço será contínuo ou sem erros.",
+                  "Não somos responsáveis por quaisquer danos diretos, indiretos, incidentais ou consequentes decorrentes do uso do Serviço, incluindo, mas não se limitando a qualquer perda de dados ou imagens."]
               },
               {
-                title: "7. Termination",
-                content: "UnderlayX AI reserves the right to suspend or terminate your access to the Service if we determine that you have violated these Terms."
+                title: "7. Terminação",
+                content: "Queflow IA reserva o direito de suspender ou terminar seu acesso ao Serviço se determinarmos que você violou estes Termos."
               },
               {
-                title: "8. Changes to Terms",
-                content: "We reserve the right to modify or update these Terms at any time. When we make changes, we will post the updated Terms on this page, and the changes will become effective immediately upon posting."
+                title: "8. Alterações aos Termos",
+                content: "Reservamos o direito de modificar ou atualizar estes Termos a qualquer momento. Quando fazemos alterações, publicaremos os Termos atualizados nesta página, e as alterações se tornarão eficazes imediatamente após a publicação."
               },
               {
-                title: "9. Contact Information",
-                content: ["If you have any questions about these Terms and Conditions, please contact us at:",
-                "Email: dailifyofficial@gmail.com",
-                "Website: https://www.underlayx.com/"]
+                title: "9. Informações de Contato",
+                content: ["Se você tiver alguma dúvida sobre estes Termos e Condições, por favor entre em contato conosco:",
+                  "Email: odevvictor@gmail.com",
+                  "Website: https://www.underlayx.com/"]
               }
             ].map((section, index) => (
               <div key={index} className="mb-8">

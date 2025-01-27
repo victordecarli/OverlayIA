@@ -5,12 +5,12 @@ import { TransformationPage } from '@/components/TransformationPage';
 export default function RemoveBackgroundPage() {
   return (
     <TransformationPage
-      title="Remove Background Transform"
-      description="Remove backgrounds from your images with precision. Perfect for creating professional product photos and portraits."
+      title="Remover Fundo de Imagens"
+      description="Remover fundos de suas imagens com precisão. Ideal para criar fotos profissionais de produtos e retratos."
       beforeImage="/shirtbefore.jpg"
       afterImage="/shirtafter.jpg"
-      beforeAlt="Original image with background"
-      afterAlt="Image with background removed"
+      beforeAlt="Imagem original com fundo"
+      afterAlt="Imagem com fundo removido"
     />
   );
 }
