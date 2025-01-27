@@ -179,8 +179,8 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
       {showSmartOverlay && renderTabButton('images', <Images className="w-5 h-5" />, 'Smart Overlay')}
       {cloneImageButton}
       {changeBackgroundButton}
-      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
       {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
+      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
       {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
       {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
     </div>
