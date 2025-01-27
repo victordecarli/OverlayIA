@@ -14,7 +14,7 @@ const features = {
   free: [
     "✨ Unlimited Creations",
     "🐌 Basic Speed",
-    "🎨 Standard Quality (JPEG)",
+    // "🎨 Standard Quality (JPEG)",
   ],
   pro: [
     "✨ Unlimited Creations",
